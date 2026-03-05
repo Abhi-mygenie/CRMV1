@@ -545,17 +545,12 @@ export default function CustomersPage() {
                         {/* Sync button only shows when NOT in demo mode AND no customers exist */}
                         {!isDemoMode && !loading && customers.length === 0 && (
                             <Button 
-                                onClick={syncFromMyGenie}
-                                disabled={syncing}
+                                onClick={() => navigate("/settings?tab=migration")}
                                 variant="outline"
-                                className="rounded-full h-10 px-4 border-[#329937] text-[#329937] hover:bg-[#329937]/10"
+                                className="rounded-full h-10 px-4 border-[#3B82F6] text-[#3B82F6] hover:bg-[#3B82F6]/10"
                                 data-testid="sync-mygenie-btn"
                             >
-                                {syncing ? (
-                                    <>⏳ Syncing...</>
-                                ) : (
-                                    <>🔄 Sync MyGenie</>
-                                )}
+                                🔄 Sync MyGenie
                             </Button>
                         )}
                         <Button 

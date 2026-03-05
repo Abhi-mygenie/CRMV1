@@ -1,90 +1,63 @@
-# DinePoints (MyGenie CRM) - Restaurant CRM & Loyalty System
+# DinePoints (MyGenie CRM) - PRD
 
 ## Original Problem Statement
-Build a Restaurant CRM and Loyalty System with customer management, loyalty points, WhatsApp automation, coupon management, feedback collection, and native mobile app support.
+Clone and set up the repository: https://github.com/Abhi-mygenie/CMV2.git
 
 ## Architecture
-- **Frontend**: React 18 + Tailwind CSS + Shadcn/UI (modular components)
-- **Backend**: FastAPI (Python)
+- **Frontend**: React 18 + Tailwind CSS + Shadcn/UI + Capacitor 6 (iOS/Android)
+- **Backend**: Python FastAPI
 - **Database**: MongoDB
-- **Auth**: JWT-based with Demo Mode
-- **Native Apps**: Capacitor 6 (iOS + Android from same codebase)
+- **Auth**: JWT-based + Demo Mode
 
-## File Structure
-```
-frontend/src/
-  App.js                          # Routing only (59 lines)
-  pages/                          # 12 page components
-  components/
-    MobileLayout.jsx              # App shell + bottom nav
-    ProtectedRoute.jsx            # Auth guard
-    shared/
-      WhatsAppAutomationContent.jsx
-      ComingSoonOverlay.jsx
-      DemoModeBanner.jsx
-  contexts/AuthContext.jsx
-  lib/constants.js
+## What's Been Implemented
+**Date: March 5, 2026**
+- ✅ Repository cloned and set up
+- ✅ Backend dependencies installed (FastAPI, MongoDB, APScheduler, etc.)
+- ✅ Frontend dependencies installed (React 19, Tailwind, Shadcn/UI, Capacitor)
+- ✅ Demo data seeded (55 customers, 292 orders, 1015 order items, etc.)
+- ✅ Database imported from db_export (1967 customers, 280 points transactions)
+- ✅ Added `customer_app_config` collection from separate git repo
+- ✅ Services running (backend on port 8001, frontend on port 3000)
+- ✅ Demo mode login verified working
 
-frontend/android/                 # Capacitor Android project
-frontend/ios/                     # Capacitor iOS project
-frontend/resources/               # Source icon + splash images
-frontend/capacitor.config.ts      # Capacitor config (plugins, splash, status bar)
-```
+**Migration Feature (March 5, 2026)**
+- ✅ Added new "Migration" tab in Settings (between Coupons and WhatsApp)
+- ✅ 3-step migration flow UI:
+  - Step 1: Sync Customers (working)
+  - Step 2: Sync Orders (placeholder - awaiting MyGenie API)
+  - Step 3: Confirm / Revert buttons
+- ✅ Backend endpoints:
+  - GET /api/migration/status
+  - POST /api/migration/confirm
+  - POST /api/migration/revert
+  - POST /api/migration/sync-orders (placeholder)
+- ✅ After confirmation, shows "Migration Complete" state
+- ✅ Revert deletes synced data and allows re-sync
 
-## Core Features (All Implemented)
-- Customer CRUD with 55+ fields, advanced filtering (11 params)
-- Loyalty program: Tier-based (Bronze/Silver/Gold/Platinum), configurable rules
-- Coupon management (CRUD)
-- WhatsApp automation with event-based templates
-- Feedback collection with star ratings
-- QR code customer registration
-- Settings: Unified 4-tab interface (Profile/Coupons/WhatsApp/Loyalty)
-- Demo Mode with pre-loaded data
+## Core Features (Existing)
+- Customer Management with 75+ fields
+- AI Insights (top items, cuisine preferences, visit patterns)
+- Loyalty Program (Bronze/Silver/Gold/Platinum tiers)
+- POS Order Webhook integration
+- Coupon Management
+- WhatsApp Automation templates
+- Feedback Collection
+- QR Code Registration
+- Customer Segments
 
-## Order System
-- **Order webhook**: Supports `order_notes` (order-level) + `items[]` with `item_notes` (food-level) + `item_category`
-- **Dual storage**: Items embedded in order doc + separate `order_items` collection (AI-ready)
-- **Indexes**: `customer_id`, `item_name`, `order_id` on `order_items`
-- **avg_order_value**: Recalculated on every order in both webhook paths
+## Demo Credentials
+- **Demo Mode**: Click "Try Demo Mode" on login page
+- **Demo Account**: demo@restaurant.com / demo123
 
-## Native App (Capacitor 6)
-- Bundle ID: `com.crmmygenie.app`
-- App Name: MyGenie CRM
-- Plugins: Push Notifications, Camera, Splash Screen, Status Bar
-- Icons: Generated for all Android densities + iOS sizes
-- Splash: Orange (#F26B33) themed, all screen sizes
-- Build: `yarn build && npx cap sync` then open in Android Studio / Xcode
+## Database Collections (15 total)
+- customers, orders, order_items, points_transactions, wallet_transactions
+- coupons, loyalty_settings, feedback, whatsapp_templates, automation_rules
+- segments, users, customer_app_config, cron_job_logs, whatsapp_event_template_map
 
-## Customer Fields Architecture
-- **POS-sourced**: name, phone, email, address, allergies, etc.
-- **CRM-managed**: preferences, consent flags, VIP status, etc.
-- **System-calculated**: total_visits, total_spent, avg_order_value, tier, last_visit
-- **AI-derived (future)**: favorites, favorite_category (from order_items data)
-- **Notes**: order_notes (order-level from POS), item_notes (food-level from POS)
+## Next Action Items
+- Implement Sync Orders when MyGenie Order API endpoint is provided
 
-## Key DB Collections
-- `customers`, `orders` (embedded items[]), `order_items` (flat, indexed), 
-- `points_transactions`, `wallet_transactions`, `coupons`, `loyalty_settings`, `users`
-
-## Completed Work Timeline
-- **Feb 2026**: Initial setup, Customer CRUD, Advanced filtering
-- **Feb 2026**: Settings page 4-tab refactor
-- **Mar 2026**: WhatsApp tab inline embedding
-- **Mar 2026**: Full codebase refactor (App.js 8400+ → 59 lines)
-- **Mar 2026**: Order items + notes schema (dual storage, AI-ready)
-- **Mar 2026**: avg_order_value live recalculation fix
-- **Mar 2026**: item_category added to OrderItem schema
-- **Mar 2026**: Capacitor native app setup (Android + iOS + plugins + icons)
-- **Mar 2026**: P0 AI Insights on Customer Detail page (top items, preferred cuisine, visit pattern, common requests)
-- **Mar 2026**: Complete 25-screen video reel (1080x1920, 2min, crossfade transitions)
-- **Mar 2026**: Demo data script updated with orders, order_items, categories, notes (AI Insights ready)
-- **Mar 2026**: All project documents updated (README, API docs, User Guide 25 screens, Architecture, Demo Mode, Auth, Integration Guide)
-
-## Prioritized Backlog
-- P1: Build Data Migration Script (bulk import from legacy POS)
-- P1: AI Insights Phase 2 - Churn risk, next visit prediction, birthday alerts (rules-based)
-- P2: AI Insights Phase 3 - Upsell recommendations, sentiment analysis (LLM-powered)
-- P2: Activate native features (push notifications, offline data)
-- P2: Connect WhatsApp integration to live API
-- P3: Display order items + notes in Customer Detail UI
-- P3: App Store / Play Store signing & submission
+## Backlog / Future Enhancements
+- P1: MyGenie Order API integration for order sync
+- P2: Add more analytics dashboards
+- P3: Push notification integration for mobile apps

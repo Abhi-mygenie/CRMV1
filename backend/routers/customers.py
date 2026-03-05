@@ -128,6 +128,12 @@ async def sync_customers_from_mygenie(user: dict = Depends(get_current_user)):
                     await db.customers.insert_one(customer_data)
                     synced_count += 1
             
+            # Update last sync timestamp
+            await db.users.update_one(
+                {"id": user["id"]},
+                {"$set": {"last_customer_sync_at": datetime.now(timezone.utc).isoformat()}}
+            )
+            
             return {
                 "success": True,
                 "synced": synced_count,
