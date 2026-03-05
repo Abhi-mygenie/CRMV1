@@ -9,7 +9,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://hybrid-pos-system-3.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://cmv2-crm-dev.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_EMAIL = "test@dhaba.com"

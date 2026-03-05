@@ -675,7 +675,7 @@ qr_router = APIRouter(prefix="/qr", tags=["QR Code"])
 @qr_router.get("/generate")
 async def generate_customer_qr(user: dict = Depends(get_current_user)):
     """Generate QR code for customer registration"""
-    frontend_url = os.environ.get('FRONTEND_URL', 'https://hybrid-pos-system-3.preview.emergentagent.com')
+    frontend_url = os.environ.get('FRONTEND_URL', 'https://cmv2-crm-dev.preview.emergentagent.com')
     registration_url = f"{frontend_url}/register-customer/{user['id']}"
     
     qr_base64 = generate_qr_code(registration_url)

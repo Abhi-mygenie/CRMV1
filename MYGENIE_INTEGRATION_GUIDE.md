@@ -102,12 +102,12 @@ Items are stored in two places:
 ### Step 6: Test
 ```bash
 # Test regular login
-curl -X POST "https://hybrid-pos-system-3.preview.emergentagent.com/api/auth/login" \
+curl -X POST "https://cmv2-crm-dev.preview.emergentagent.com/api/auth/login" \
   -H "Content-Type: application/json" \
   -d '{"email": "owner@18march.com", "password": "Qplazm@10"}'
 
 # Test demo mode
-curl -X POST "https://hybrid-pos-system-3.preview.emergentagent.com/api/auth/demo-login"
+curl -X POST "https://cmv2-crm-dev.preview.emergentagent.com/api/auth/demo-login"
 ```
 
 ## File References

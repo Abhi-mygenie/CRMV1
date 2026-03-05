@@ -1,6 +1,6 @@
 # MyGenie POS Integration API Documentation
 
-**Base URL:** `https://hybrid-pos-system-3.preview.emergentagent.com/api`
+**Base URL:** `https://cmv2-crm-dev.preview.emergentagent.com/api`
 
 **Authentication:** All POS endpoints require `X-API-Key` header. All CRM endpoints require `Authorization: Bearer <token>` header.
 
@@ -137,7 +137,7 @@ POST /api/pos/customers
 
 **Example:**
 ```bash
-curl -X POST "https://hybrid-pos-system-3.preview.emergentagent.com/api/pos/customers" \
+curl -X POST "https://cmv2-crm-dev.preview.emergentagent.com/api/pos/customers" \
   -H "X-API-Key: dp_live_u-AFJd9rSTjej07ENWfbXT3XaK9OuoxdAJ70BWSylb4" \
   -H "Content-Type: application/json" \
   -d '{
@@ -310,7 +310,7 @@ POST /api/pos/orders
 
 **Example (Full MyGenie Format):**
 ```bash
-curl -X POST "https://content-manager-114.preview.emergentagent.com/api/pos/orders" \
+curl -X POST "https://cmv2-crm-dev.preview.emergentagent.com/api/pos/orders" \
   -H "X-API-Key: your_api_key" \
   -H "Content-Type: application/json" \
   -d '{

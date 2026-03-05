@@ -97,10 +97,10 @@ python seed_demo_data.py
 ### API Testing
 ```bash
 # Demo login
-curl -X POST https://hybrid-pos-system-3.preview.emergentagent.com/api/auth/demo-login
+curl -X POST https://cmv2-crm-dev.preview.emergentagent.com/api/auth/demo-login
 
 # Login with credentials
-curl -X POST https://hybrid-pos-system-3.preview.emergentagent.com/api/auth/login \
+curl -X POST https://cmv2-crm-dev.preview.emergentagent.com/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"demo@restaurant.com","password":"demo123"}'
 ```

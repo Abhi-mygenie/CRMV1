@@ -1664,35 +1664,7 @@ export default function CustomersPage() {
                                     </AccordionItem>
                                 )}
 
-                                {/* Source & Journey */}
-                                {/* Dining Preferences & Special Occasions - Auto Detected */}
-                                <AccordionItem value="ai-detected" className="border-b-0">
-                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl mb-2">
-                                        <span className="flex items-center gap-2 text-sm font-semibold text-rose-600">
-                                            <Sparkles className="w-4 h-4" /> AI-Detected Preferences
-                                            <span className="ml-auto text-[10px] bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full">Auto</span>
-                                        </span>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="px-1">
-                                        <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl p-4 text-center">
-                                            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
-                                                <Sparkles className="w-6 h-6 text-rose-500" />
-                                            </div>
-                                            <p className="font-semibold text-gray-800 text-sm">Smart Detection</p>
-                                            <p className="text-xs text-gray-500 mt-2 leading-relaxed">
-                                                Dining preferences, cuisine choices, spice levels, and festival preferences will be <strong>automatically detected</strong> from order history.
-                                            </p>
-                                            <div className="flex flex-wrap justify-center gap-2 mt-4">
-                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Time Slot</span>
-                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Cuisine</span>
-                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Spice Level</span>
-                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Festivals</span>
-                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Diet</span>
-                                            </div>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-                                                {/* Tags & Flags */}
+                                {/* Tags & Flags */}
                                 <AccordionItem value="flags" className="border-b-0">
                                     <AccordionTrigger className="hover:no-underline py-3 px-3 bg-indigo-50 rounded-xl mb-2">
                                         <span className="flex items-center gap-2 text-sm font-semibold text-indigo-600">
@@ -1721,6 +1693,34 @@ export default function CustomersPage() {
                                                     checked={newCustomer.complaint_flag} 
                                                     onCheckedChange={(v) => setNewCustomer({...newCustomer, complaint_flag: v})}
                                                 />
+                                            </div>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                {/* AI-Detected Preferences */}
+                                <AccordionItem value="ai-detected" className="border-b-0">
+                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl mb-2">
+                                        <span className="flex items-center gap-2 text-sm font-semibold text-rose-600">
+                                            <Sparkles className="w-4 h-4" /> AI-Detected Preferences
+                                            <span className="ml-auto text-[10px] bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full">Auto</span>
+                                        </span>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-1">
+                                        <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl p-4 text-center">
+                                            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
+                                                <Sparkles className="w-6 h-6 text-rose-500" />
+                                            </div>
+                                            <p className="font-semibold text-gray-800 text-sm">Smart Detection</p>
+                                            <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                                                Dining preferences, cuisine choices, spice levels, and festival preferences will be <strong>automatically detected</strong> from order history.
+                                            </p>
+                                            <div className="flex flex-wrap justify-center gap-2 mt-4">
+                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Time Slot</span>
+                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Cuisine</span>
+                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Spice Level</span>
+                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Festivals</span>
+                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Diet</span>
                                             </div>
                                         </div>
                                     </AccordionContent>
