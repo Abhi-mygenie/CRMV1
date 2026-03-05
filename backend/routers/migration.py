@@ -107,6 +107,59 @@ async def revert_migration(user: dict = Depends(get_current_user)):
     }
 
 
+@router.post("/revert-customers")
+async def revert_customers(user: dict = Depends(get_current_user)):
+    """
+    Revert only synced customers - keeps orders intact
+    """
+    # Delete synced customers (only those marked as mygenie_synced)
+    customers_result = await db.customers.delete_many({
+        "user_id": user["id"],
+        "mygenie_synced": True
+    })
+    
+    # Reset customer sync timestamp
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"last_customer_sync_at": None}}
+    )
+    
+    return {
+        "success": True,
+        "message": "Customers reverted successfully",
+        "customers_deleted": customers_result.deleted_count
+    }
+
+
+@router.post("/revert-orders")
+async def revert_orders(user: dict = Depends(get_current_user)):
+    """
+    Revert only synced orders - keeps customers intact
+    """
+    # Delete synced orders
+    orders_result = await db.orders.delete_many({
+        "user_id": user["id"],
+        "mygenie_synced": True
+    })
+    
+    # Delete related order_items
+    await db.order_items.delete_many({
+        "user_id": user["id"]
+    })
+    
+    # Reset order sync timestamp
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"last_order_sync_at": None}}
+    )
+    
+    return {
+        "success": True,
+        "message": "Orders reverted successfully",
+        "orders_deleted": orders_result.deleted_count
+    }
+
+
 @router.post("/sync-orders")
 async def sync_orders_from_mygenie(user: dict = Depends(get_current_user)):
     """

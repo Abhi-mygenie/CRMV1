@@ -55,6 +55,8 @@ export default function SettingsPage() {
     const [syncingOrders, setSyncingOrders] = useState(false);
     const [confirmingMigration, setConfirmingMigration] = useState(false);
     const [revertingMigration, setRevertingMigration] = useState(false);
+    const [revertingCustomers, setRevertingCustomers] = useState(false);
+    const [revertingOrders, setRevertingOrders] = useState(false);
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -165,6 +167,34 @@ export default function SettingsPage() {
         }
     };
 
+    const handleRevertCustomers = async () => {
+        if (!confirm("This will delete all synced customers. Are you sure?")) return;
+        setRevertingCustomers(true);
+        try {
+            const res = await api.post("/migration/revert-customers");
+            toast.success(`${res.data.customers_deleted} customers deleted`);
+            fetchMigrationStatus();
+        } catch (err) {
+            toast.error(err.response?.data?.detail || "Failed to revert customers");
+        } finally {
+            setRevertingCustomers(false);
+        }
+    };
+
+    const handleRevertOrders = async () => {
+        if (!confirm("This will delete all synced orders. Are you sure?")) return;
+        setRevertingOrders(true);
+        try {
+            const res = await api.post("/migration/revert-orders");
+            toast.success(`${res.data.orders_deleted} orders deleted`);
+            fetchMigrationStatus();
+        } catch (err) {
+            toast.error(err.response?.data?.detail || "Failed to revert orders");
+        } finally {
+            setRevertingOrders(false);
+        }
+    };
+
     const handleSaveApiKey = async () => {
         setSavingApiKey(true);
         try { await api.put("/whatsapp/api-key", { authkey_api_key: whatsappApiKey }); toast.success("WhatsApp API key saved!"); } catch (_) { toast.error("Failed to save API key"); } finally { setSavingApiKey(false); }
@@ -211,11 +241,11 @@ export default function SettingsPage() {
     const isCouponActive = (coupon) => { const now = new Date(); return coupon.is_active && now >= new Date(coupon.start_date) && now <= new Date(coupon.end_date); };
 
     const tabs = [
-        { key: "profile", icon: User, label: "Profile", color: "#F26B33" },
-        { key: "coupons", icon: Tag, label: "Coupons", color: "#F26B33" },
         { key: "migration", icon: RefreshCw, label: "Migration", color: "#3B82F6" },
+        { key: "profile", icon: User, label: "Profile", color: "#F26B33" },
         { key: "whatsapp", icon: MessageSquare, label: "WhatsApp", color: "#25D366" },
-        { key: "loyalty", icon: Gift, label: "Loyalty", color: "#329937" }
+        { key: "loyalty", icon: Gift, label: "Loyalty", color: "#329937" },
+        { key: "coupons", icon: Tag, label: "Coupons", color: "#F26B33" }
     ];
 
     return (
@@ -421,15 +451,29 @@ export default function SettingsPage() {
                                                 </Badge>
                                             )}
                                         </div>
-                                        <Button 
-                                            onClick={handleSyncCustomers}
-                                            disabled={syncingCustomers}
-                                            className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700"
-                                            data-testid="sync-customers-btn"
-                                        >
-                                            <Users className="w-4 h-4 mr-2" />
-                                            {syncingCustomers ? "Syncing..." : migrationStatus?.customers_synced > 0 ? "Sync Again" : "Sync Customers"}
-                                        </Button>
+                                        <div className="flex gap-2">
+                                            <Button 
+                                                onClick={handleSyncCustomers}
+                                                disabled={syncingCustomers}
+                                                className={`${migrationStatus?.customers_synced > 0 ? 'flex-1' : 'w-full'} h-11 rounded-xl bg-blue-600 hover:bg-blue-700`}
+                                                data-testid="sync-customers-btn"
+                                            >
+                                                <Users className="w-4 h-4 mr-2" />
+                                                {syncingCustomers ? "Syncing..." : migrationStatus?.customers_synced > 0 ? "Sync Again" : "Sync Customers"}
+                                            </Button>
+                                            {migrationStatus?.customers_synced > 0 && (
+                                                <Button 
+                                                    onClick={handleRevertCustomers}
+                                                    disabled={revertingCustomers}
+                                                    variant="outline"
+                                                    className="flex-1 h-11 rounded-xl border-red-300 text-red-600 hover:bg-red-50"
+                                                    data-testid="revert-customers-btn"
+                                                >
+                                                    <RotateCcw className="w-4 h-4 mr-2" />
+                                                    {revertingCustomers ? "Reverting..." : "Revert"}
+                                                </Button>
+                                            )}
+                                        </div>
                                     </CardContent>
                                 </Card>
 
@@ -450,52 +494,54 @@ export default function SettingsPage() {
                                                 </Badge>
                                             )}
                                         </div>
-                                        <Button 
-                                            onClick={handleSyncOrders}
-                                            disabled={syncingOrders}
-                                            className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700"
-                                            data-testid="sync-orders-btn"
-                                        >
-                                            <ShoppingCart className="w-4 h-4 mr-2" />
-                                            {syncingOrders ? "Syncing..." : migrationStatus?.orders_synced > 0 ? "Sync Again" : "Sync Orders"}
-                                        </Button>
+                                        <div className="flex gap-2">
+                                            <Button 
+                                                onClick={handleSyncOrders}
+                                                disabled={syncingOrders}
+                                                className={`${migrationStatus?.orders_synced > 0 ? 'flex-1' : 'w-full'} h-11 rounded-xl bg-blue-600 hover:bg-blue-700`}
+                                                data-testid="sync-orders-btn"
+                                            >
+                                                <ShoppingCart className="w-4 h-4 mr-2" />
+                                                {syncingOrders ? "Syncing..." : migrationStatus?.orders_synced > 0 ? "Sync Again" : "Sync Orders"}
+                                            </Button>
+                                            {migrationStatus?.orders_synced > 0 && (
+                                                <Button 
+                                                    onClick={handleRevertOrders}
+                                                    disabled={revertingOrders}
+                                                    variant="outline"
+                                                    className="flex-1 h-11 rounded-xl border-red-300 text-red-600 hover:bg-red-50"
+                                                    data-testid="revert-orders-btn"
+                                                >
+                                                    <RotateCcw className="w-4 h-4 mr-2" />
+                                                    {revertingOrders ? "Reverting..." : "Revert"}
+                                                </Button>
+                                            )}
+                                        </div>
                                         <p className="text-xs text-amber-600 mt-2 text-center">
                                             Coming soon - awaiting MyGenie API integration
                                         </p>
                                     </CardContent>
                                 </Card>
 
-                                {/* Step 3: Confirm or Revert */}
+                                {/* Step 3: Confirm Migration */}
                                 <Card className="rounded-xl border-0 shadow-sm">
                                     <CardContent className="p-4">
                                         <div className="flex items-center gap-3 mb-4">
                                             <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold">3</div>
                                             <div>
                                                 <p className="font-medium text-[#1A1A1A]">Confirm Migration</p>
-                                                <p className="text-xs text-[#52525B]">Finalize or revert your data sync</p>
+                                                <p className="text-xs text-[#52525B]">Finalize your data sync</p>
                                             </div>
                                         </div>
-                                        <div className="flex gap-3">
-                                            <Button 
-                                                onClick={handleConfirmMigration}
-                                                disabled={confirmingMigration || (!migrationStatus?.customers_synced && !migrationStatus?.orders_synced)}
-                                                className="flex-1 h-11 rounded-xl bg-green-600 hover:bg-green-700"
-                                                data-testid="confirm-migration-btn"
-                                            >
-                                                <Check className="w-4 h-4 mr-2" />
-                                                {confirmingMigration ? "Confirming..." : "Confirm"}
-                                            </Button>
-                                            <Button 
-                                                onClick={handleRevertMigration}
-                                                disabled={revertingMigration || (!migrationStatus?.customers_synced && !migrationStatus?.orders_synced)}
-                                                variant="outline"
-                                                className="flex-1 h-11 rounded-xl border-red-300 text-red-600 hover:bg-red-50"
-                                                data-testid="revert-migration-btn"
-                                            >
-                                                <RotateCcw className="w-4 h-4 mr-2" />
-                                                {revertingMigration ? "Reverting..." : "Revert"}
-                                            </Button>
-                                        </div>
+                                        <Button 
+                                            onClick={handleConfirmMigration}
+                                            disabled={confirmingMigration || (!migrationStatus?.customers_synced && !migrationStatus?.orders_synced)}
+                                            className="w-full h-11 rounded-xl bg-green-600 hover:bg-green-700"
+                                            data-testid="confirm-migration-btn"
+                                        >
+                                            <Check className="w-4 h-4 mr-2" />
+                                            {confirmingMigration ? "Confirming..." : "Confirm Migration"}
+                                        </Button>
                                     </CardContent>
                                 </Card>
                             </>

@@ -21,18 +21,21 @@ Clone and set up the repository: https://github.com/Abhi-mygenie/CMV2.git
 - ✅ Demo mode login verified working
 
 **Migration Feature (March 5, 2026)**
-- ✅ Added new "Migration" tab in Settings (between Coupons and WhatsApp)
+- ✅ Added new "Migration" tab in Settings (FIRST tab now)
+- ✅ Tab order: Migration → Profile → WhatsApp → Loyalty → Coupons
 - ✅ 3-step migration flow UI:
-  - Step 1: Sync Customers (working)
-  - Step 2: Sync Orders (placeholder - awaiting MyGenie API)
-  - Step 3: Confirm / Revert buttons
+  - Step 1: Sync Customers (with individual Revert button when synced)
+  - Step 2: Sync Orders (with individual Revert button when synced) - placeholder awaiting API
+  - Step 3: Confirm Migration button
 - ✅ Backend endpoints:
   - GET /api/migration/status
   - POST /api/migration/confirm
-  - POST /api/migration/revert
+  - POST /api/migration/revert (all data)
+  - POST /api/migration/revert-customers (only customers)
+  - POST /api/migration/revert-orders (only orders)
   - POST /api/migration/sync-orders (placeholder)
 - ✅ After confirmation, shows "Migration Complete" state
-- ✅ Revert deletes synced data and allows re-sync
+- ✅ Individual revert buttons appear after each sync completes
 
 ## Core Features (Existing)
 - Customer Management with 75+ fields
