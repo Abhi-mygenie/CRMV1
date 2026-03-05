@@ -12,7 +12,7 @@
 _id, address, allergies, anniversary, city, country_code, created_at,
 custom_field_1, custom_field_2, custom_field_3, customer_type, dob,
 email, favorites, gst_name, gst_number, id, last_synced_at, last_visit,
-mygenie_customer_id, mygenie_synced, name, notes, phone, pincode, tier,
+mygenie_synced, name, notes, phone, pincode, pos_customer_id, tier,
 total_points, total_points_earned, total_points_redeemed, total_spent,
 total_visits, total_wallet_deposit, user_id, wallet_balance, wallet_used
 ```
@@ -195,7 +195,7 @@ total_visits, total_wallet_deposit, user_id, wallet_balance, wallet_used
 | _id | `_id` | ✅ Mapped | MongoDB ObjectId |
 | id | `id` | ✅ Mapped | Custom customer ID |
 | user_id | `user_id` | ✅ Mapped | Restaurant/User reference |
-| mygenie_customer_id | `mygenie_customer_id` | ✅ Mapped | External sync ID |
+| pos_customer_id | `pos_customer_id` | ✅ Mapped | POS system customer ID (bridge between our DB and POS API) |
 | mygenie_synced | `mygenie_synced` | ✅ Mapped | Sync status boolean |
 | last_synced_at | `last_synced_at` | ✅ Mapped | datetime |
 | created_at | `created_at` | ✅ Mapped | datetime |

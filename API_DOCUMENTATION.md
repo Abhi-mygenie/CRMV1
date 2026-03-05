@@ -368,6 +368,18 @@ Off-peak bonus hours and birthday/anniversary bonuses are configurable via the L
 3. **Duplicate Prevention**: Same `pos_id` + `order_id` combination is rejected
 4. **Payment Status**: Only `payment_status: "success"` orders are processed
 5. **avg_order_value**: Automatically recalculated on customer record with each new order
+6. **pos_customer_id**: Customer ID from POS system, stored in our DB for sync/mapping between systems
+
+## Customer Data Fields
+
+When syncing customers from MyGenie POS API, the following key fields are stored:
+
+| Field | Description |
+|-------|-------------|
+| `id` | Our internal UUID (primary key) |
+| `pos_customer_id` | Customer ID from POS API (bridge between systems) |
+| `mygenie_synced` | Boolean flag indicating if customer was synced from POS |
+| `last_synced_at` | Timestamp of last sync |
 
 ## File References
 - **Backend Entry**: `/app/backend/server.py`
@@ -378,4 +390,4 @@ Off-peak bonus hours and birthday/anniversary bonuses are configurable via the L
 
 ---
 
-**Last Updated**: March 3, 2026
+**Last Updated**: March 5, 2026

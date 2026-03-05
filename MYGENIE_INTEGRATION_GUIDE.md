@@ -153,8 +153,23 @@ curl -X POST "https://hybrid-pos-system-3.preview.emergentagent.com/api/auth/dem
 3. Implement JWT refresh tokens if needed
 4. Add rate limiting for brute force prevention
 
+## Customer Sync Field Mapping
+
+When syncing customers from MyGenie API:
+
+| MyGenie API Field | Our DB Field | Description |
+|-------------------|--------------|-------------|
+| `id` | `pos_customer_id` | POS system customer ID (bridge for sync) |
+| N/A | `id` | Our internal UUID (auto-generated) |
+| `phone` | `phone` | Customer phone number |
+| `name` | `name` | Customer full name |
+
+The `pos_customer_id` field is the **true source of ID** for communication between our database and POS API. When syncing:
+- If customer with same `pos_customer_id` exists → Update existing record
+- If not found → Create new record with new UUID
+
 ---
 
 **Status**: Ready for MyGenie API Integration
 **Priority**: HIGH - Required for production deployment
-**Last Updated**: March 3, 2026
+**Last Updated**: March 5, 2026

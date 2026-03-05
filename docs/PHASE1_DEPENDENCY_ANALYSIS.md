@@ -40,7 +40,7 @@ allergies, custom_field_1, custom_field_2, custom_field_3, favorites
 ```python
 # CURRENT FIELDS (adds to CustomerBase)
 id, user_id, total_points, wallet_balance, total_visits,
-total_spent, tier, created_at, last_visit, mygenie_customer_id, mygenie_synced
+total_spent, tier, created_at, last_visit, pos_customer_id, mygenie_synced
 ```
 
 ### 2. Customer Router (`/app/backend/routers/customers.py`)
