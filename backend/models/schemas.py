@@ -357,7 +357,7 @@ class Customer(BaseModel):
     notes: Optional[str] = None
     
     # MyGenie Sync
-    mygenie_customer_id: Optional[int] = None
+    pos_customer_id: Optional[int] = None
     mygenie_synced: Optional[bool] = None
 
 # Wallet Transaction Models

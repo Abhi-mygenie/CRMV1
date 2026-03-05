@@ -20,7 +20,11 @@ Clone and set up the repository: https://github.com/Abhi-mygenie/CMV2.git
 - ✅ Services running (backend on port 8001, frontend on port 3000)
 - ✅ Demo mode login verified working
 
-**Migration Feature (March 5, 2026)**
+**Field Rename (March 5, 2026)**
+- ✅ Renamed `mygenie_customer_id` → `pos_customer_id`
+- This field stores the customer ID from POS API
+- Acts as the bridge/link between our DB and POS system
+- Updated 2146 existing customers in database
 - ✅ Added new "Migration" tab in Settings (FIRST tab now)
 - ✅ Tab order: Migration → Profile → WhatsApp → Loyalty → Coupons
 - ✅ 3-step migration flow UI:

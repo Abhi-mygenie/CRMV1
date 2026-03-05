@@ -77,7 +77,7 @@ async def sync_customers_from_mygenie(user: dict = Depends(get_current_user)):
                     "wallet_balance": float(mygenie_customer.get("wallet_balance") or 0),
                     "total_wallet_deposit": float(mygenie_customer.get("total_wallet_deposit") or 0),
                     "wallet_used": float(mygenie_customer.get("wallet_used") or 0),
-                    "mygenie_customer_id": mygenie_customer["id"],
+                    "pos_customer_id": mygenie_customer["id"],
                     "mygenie_synced": True,
                     "last_synced_at": datetime.now(timezone.utc).isoformat()
                 }
@@ -97,7 +97,7 @@ async def sync_customers_from_mygenie(user: dict = Depends(get_current_user)):
                 # Check if customer already exists
                 existing = await db.customers.find_one({
                     "user_id": user["id"],
-                    "mygenie_customer_id": mygenie_customer["id"]
+                    "pos_customer_id": mygenie_customer["id"]
                 })
                 
                 if existing:
@@ -163,7 +163,7 @@ async def create_customer(customer_data: CustomerCreate, user: dict = Depends(ge
     # Get user's MyGenie token for API sync
     user_record = await db.users.find_one({"id": user["id"]})
     mygenie_token = user_record.get("mygenie_token") if user_record else None
-    mygenie_customer_id = None
+    pos_customer_id = None
     
     # Sync to MyGenie if token available
     if mygenie_token:
@@ -201,8 +201,8 @@ async def create_customer(customer_data: CustomerCreate, user: dict = Depends(ge
                 
                 if resp.status_code == 200:
                     mygenie_resp = resp.json()
-                    mygenie_customer_id = mygenie_resp.get("user_id")
-                    print(f"✅ Customer synced to MyGenie: {mygenie_customer_id}")
+                    pos_customer_id = mygenie_resp.get("user_id")
+                    print(f"✅ Customer synced to MyGenie: {pos_customer_id}")
                 else:
                     print(f"⚠️ MyGenie sync failed: {resp.status_code} - {resp.text}")
         except Exception as e:
@@ -329,9 +329,9 @@ async def create_customer(customer_data: CustomerCreate, user: dict = Depends(ge
         # Notes
         "notes": customer_data.notes,
         
-        # MyGenie Sync
-        "mygenie_customer_id": mygenie_customer_id,
-        "mygenie_synced": mygenie_customer_id is not None,
+        # POS Sync
+        "pos_customer_id": pos_customer_id,
+        "mygenie_synced": pos_customer_id is not None,
         "first_visit_bonus_awarded": first_visit_bonus > 0
     }
     
@@ -643,14 +643,14 @@ async def update_customer(customer_id: str, update_data: CustomerUpdate, user: d
                 
                 if resp.status_code == 200:
                     mygenie_resp = resp.json()
-                    mygenie_customer_id = mygenie_resp.get("user_id")
-                    # Update mygenie_customer_id if not already set
-                    if not customer.get("mygenie_customer_id"):
+                    pos_customer_id = mygenie_resp.get("user_id")
+                    # Update pos_customer_id if not already set
+                    if not customer.get("pos_customer_id"):
                         await db.customers.update_one(
                             {"id": customer_id},
-                            {"$set": {"mygenie_customer_id": mygenie_customer_id, "mygenie_synced": True}}
+                            {"$set": {"pos_customer_id": pos_customer_id, "mygenie_synced": True}}
                         )
-                    print(f"✅ Customer updated in MyGenie: {mygenie_customer_id}")
+                    print(f"✅ Customer updated in MyGenie: {pos_customer_id}")
                 else:
                     print(f"⚠️ MyGenie update failed: {resp.status_code} - {resp.text}")
         except Exception as e:
