@@ -38,12 +38,20 @@ Clone and set up the repository: https://github.com/Abhi-mygenie/CMV2.git
 - AI-driven read-only fields for Dining Preferences and Special Occasions
 - Reorganized form layout with "Other Information" section
 - Implemented inline Corporate Customer fields with radio buttons (replacing button-style and separate accordion)
+- "Coming Soon" overlays on: Contact Preferences, Membership, Source & Journey, Custom Fields & Notes
 
 **Inline Corporate Fields (March 5, 2026)**
 - Replaced button-style Customer Type selection with radio buttons (Normal/Corporate)
 - When Corporate is selected, corporate fields (GST Name, GST Number, Billing Address, Credit Limit, Payment Terms) appear inline with orange-tinted background
 - Removed separate "Corporate Info" accordion section
 - Tested: 10/10 test cases passed (100% frontend)
+
+**Coming Soon Sections (March 5, 2026) - Already Complete**
+- Contact Preferences (blue) - WhatsApp Opt-in, Promo SMS switches
+- Membership (purple) - Membership ID, Referral Code fields
+- Source & Journey (amber) - Lead Source, Campaign Source fields
+- Custom Fields & Notes (gray) - Custom Field 1, Notes fields
+- All wrapped with ComingSoonOverlay component with rocket icon
 
 ## Core Features (Existing)
 - Customer Management with 75+ fields
@@ -70,7 +78,6 @@ Clone and set up the repository: https://github.com/Abhi-mygenie/CMV2.git
 
 ## Backlog / Future Enhancements
 - P1: Activate "Sync Orders" from MyGenie (blocked on API endpoint from user)
-- P1: "Coming Soon" sections implementation (Contact Preferences, Membership, Source & Journey, Custom Fields)
 - P2: Clarify business logic for MyGenie fields (self_discount, paid_room, room_id, address_id)
 - P2: Full E2E testing of MyGenie order webhook
 - P2: Full E2E testing of Sync Orders feature
