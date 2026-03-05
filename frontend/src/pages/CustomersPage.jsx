@@ -5,7 +5,7 @@ import {
     Users, Plus, Search, ChevronRight, Star, TrendingUp, Gift, Phone, User, Check,
     Edit2, Trash2, Building2, Calendar, MapPin, Filter, Clock, ChevronDown, Tag,
     ChevronLeft, Save, Layers, Wallet, Rocket, Cake, Heart, Utensils, MessageCircle,
-    Flag, Crown, Leaf, ChevronUp, Home
+    Flag, Crown, Leaf, ChevronUp, Home, Sparkles
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -1792,163 +1792,29 @@ export default function CustomersPage() {
                                         </div>
                                     </AccordionContent>
                                 </AccordionItem>
-                                {/* Dining Preferences */}
-                                <AccordionItem value="dining" className="border-b-0">
-                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-rose-50 rounded-xl mb-2">
+                                {/* Dining Preferences & Special Occasions - Auto Detected */}
+                                <AccordionItem value="ai-detected" className="border-b-0">
+                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl mb-2">
                                         <span className="flex items-center gap-2 text-sm font-semibold text-rose-600">
-                                            <Home className="w-4 h-4" /> Dining Preferences
+                                            <Sparkles className="w-4 h-4" /> AI-Detected Preferences
+                                            <span className="ml-auto text-[10px] bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full">Auto</span>
                                         </span>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-1">
-                                        <div className="space-y-4">
-                                            <div>
-                                                <Label className="form-label">Preferred Dining Type</Label>
-                                                <div className="flex gap-2 mt-2">
-                                                    {["Dine-In", "Takeaway", "Delivery"].map(type => (
-                                                        <button 
-                                                            key={type} 
-                                                            type="button" 
-                                                            onClick={() => setNewCustomer({...newCustomer, preferred_dining_type: type})}
-                                                            className={`flex-1 py-2 px-3 rounded-xl text-xs font-medium border-2 transition-all ${
-                                                                newCustomer.preferred_dining_type === type 
-                                                                    ? "bg-rose-500 text-white border-rose-500" 
-                                                                    : "bg-white text-gray-600 border-gray-200 hover:border-rose-300"
-                                                            }`}
-                                                        >
-                                                            {type}
-                                                        </button>
-                                                    ))}
-                                                </div>
+                                        <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl p-4 text-center">
+                                            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
+                                                <Sparkles className="w-6 h-6 text-rose-500" />
                                             </div>
-                                            <div>
-                                                <Label className="form-label">Preferred Time Slot</Label>
-                                                <Select value={newCustomer.preferred_time_slot} onValueChange={(v) => setNewCustomer({...newCustomer, preferred_time_slot: v})}>
-                                                    <SelectTrigger className="h-11 rounded-xl">
-                                                        <SelectValue placeholder="Select time slot" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="Breakfast">Breakfast (8-11 AM)</SelectItem>
-                                                        <SelectItem value="Lunch">Lunch (12-3 PM)</SelectItem>
-                                                        <SelectItem value="Evening">Evening (4-7 PM)</SelectItem>
-                                                        <SelectItem value="Dinner">Dinner (7-11 PM)</SelectItem>
-                                                        <SelectItem value="Late Night">Late Night (11 PM+)</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-3">
-                                                <div>
-                                                    <Label className="form-label">Favorite Table</Label>
-                                                    <Input 
-                                                        placeholder="Table #5" 
-                                                        className="h-11 rounded-xl"
-                                                        value={newCustomer.favorite_table}
-                                                        onChange={(e) => setNewCustomer({...newCustomer, favorite_table: e.target.value})}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label className="form-label">Avg Party Size</Label>
-                                                    <Input 
-                                                        placeholder="4" 
-                                                        type="number"
-                                                        className="h-11 rounded-xl"
-                                                        value={newCustomer.avg_party_size}
-                                                        onChange={(e) => setNewCustomer({...newCustomer, avg_party_size: e.target.value})}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <Label className="form-label">Diet Preference</Label>
-                                                <Select value={newCustomer.diet_preference} onValueChange={(v) => setNewCustomer({...newCustomer, diet_preference: v})}>
-                                                    <SelectTrigger className="h-11 rounded-xl">
-                                                        <SelectValue placeholder="Select diet" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="Vegetarian">Vegetarian</SelectItem>
-                                                        <SelectItem value="Non-Vegetarian">Non-Vegetarian</SelectItem>
-                                                        <SelectItem value="Vegan">Vegan</SelectItem>
-                                                        <SelectItem value="Eggetarian">Eggetarian</SelectItem>
-                                                        <SelectItem value="Jain">Jain</SelectItem>
-                                                        <SelectItem value="Halal">Halal</SelectItem>
-                                                        <SelectItem value="No Preference">No Preference</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="form-label">Spice Level</Label>
-                                                <div className="flex gap-2 mt-2">
-                                                    {["Mild", "Medium", "Spicy", "Extra Spicy"].map(level => (
-                                                        <button 
-                                                            key={level} 
-                                                            type="button" 
-                                                            onClick={() => setNewCustomer({...newCustomer, spice_level: level})}
-                                                            className={`flex-1 py-2 px-2 rounded-xl text-xs font-medium border-2 transition-all ${
-                                                                newCustomer.spice_level === level 
-                                                                    ? "bg-rose-500 text-white border-rose-500" 
-                                                                    : "bg-white text-gray-600 border-gray-200 hover:border-rose-300"
-                                                            }`}
-                                                        >
-                                                            {level}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <Label className="form-label">Cuisine Preference</Label>
-                                                <Input 
-                                                    placeholder="North Indian, Chinese, Italian..." 
-                                                    className="h-11 rounded-xl"
-                                                    value={newCustomer.cuisine_preference}
-                                                    onChange={(e) => setNewCustomer({...newCustomer, cuisine_preference: e.target.value})}
-                                                />
-                                            </div>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-                                {/* Special Occasions */}
-                                <AccordionItem value="occasions" className="border-b-0">
-                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-pink-50 rounded-xl mb-2">
-                                        <span className="flex items-center gap-2 text-sm font-semibold text-pink-600">
-                                            <Gift className="w-4 h-4" /> Special Occasions
-                                        </span>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="px-1">
-                                        <div className="space-y-4">
-                                            <div>
-                                                <Label className="form-label">Spouse/Partner Name</Label>
-                                                <Input 
-                                                    placeholder="Partner's name" 
-                                                    className="h-11 rounded-xl"
-                                                    value={newCustomer.spouse_name}
-                                                    onChange={(e) => setNewCustomer({...newCustomer, spouse_name: e.target.value})}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label className="form-label">Festival Preferences</Label>
-                                                <div className="flex flex-wrap gap-2 mt-2">
-                                                    {["Diwali", "Eid", "Christmas", "Holi", "New Year", "Navratri"].map(f => {
-                                                        const selected = (newCustomer.festival_preference || []).includes(f);
-                                                        return (
-                                                            <button
-                                                                key={f}
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    const current = newCustomer.festival_preference || [];
-                                                                    const updated = selected 
-                                                                        ? current.filter(x => x !== f)
-                                                                        : [...current, f];
-                                                                    setNewCustomer({...newCustomer, festival_preference: updated});
-                                                                }}
-                                                                className={`px-3 py-1.5 rounded-full text-xs transition-all ${
-                                                                    selected 
-                                                                        ? "bg-pink-500 text-white" 
-                                                                        : "bg-gray-100 text-gray-600 hover:bg-pink-100"
-                                                                }`}
-                                                            >
-                                                                {f}
-                                                            </button>
-                                                        );
-                                                    })}
-                                                </div>
+                                            <p className="font-semibold text-gray-800 text-sm">Smart Detection</p>
+                                            <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                                                Dining preferences, cuisine choices, spice levels, and festival preferences will be <strong>automatically detected</strong> from order history.
+                                            </p>
+                                            <div className="flex flex-wrap justify-center gap-2 mt-4">
+                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Time Slot</span>
+                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Cuisine</span>
+                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Spice Level</span>
+                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Festivals</span>
+                                                <span className="px-2 py-1 bg-white rounded-full text-[10px] text-gray-500 shadow-sm">Diet</span>
                                             </div>
                                         </div>
                                     </AccordionContent>
