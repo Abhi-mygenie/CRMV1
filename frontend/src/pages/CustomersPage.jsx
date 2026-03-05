@@ -1874,158 +1874,405 @@ export default function CustomersPage() {
 
             {/* Edit Customer Modal */}
             <Dialog open={showEditModal} onOpenChange={(open) => { setShowEditModal(open); if (!open) setEditingCustomer(null); }}>
-                <DialogContent className="max-w-md mx-4 rounded-2xl max-h-[90vh] overflow-hidden">
+                <DialogContent className="max-w-lg mx-4 rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
                     <DialogHeader>
                         <DialogTitle className="font-['Montserrat']">Edit Customer</DialogTitle>
                         <DialogDescription>Update customer details</DialogDescription>
                     </DialogHeader>
-                    <form onSubmit={handleUpdateCustomer}>
-                        <ScrollArea className="h-[60vh] pr-4">
-                            <div className="space-y-4 py-2">
-                                <div>
-                                    <Label className="form-label">Name *</Label>
-                                    <Input
-                                        value={editData.name || ""}
-                                        onChange={(e) => setEditData({...editData, name: e.target.value})}
-                                        placeholder="Customer name"
-                                        className="h-11 rounded-xl"
-                                        required
-                                        data-testid="edit-list-name-input"
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <Label className="form-label">Phone Number * (Unique)</Label>
-                                    <div className="flex gap-2">
-                                        <Select 
-                                            value={editData.country_code || "+91"} 
-                                            onValueChange={(v) => setEditData({...editData, country_code: v})}
-                                        >
-                                            <SelectTrigger className="w-24 h-11 rounded-xl">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="+91">+91</SelectItem>
-                                                <SelectItem value="+1">+1</SelectItem>
-                                                <SelectItem value="+44">+44</SelectItem>
-                                                <SelectItem value="+971">+971</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <Input
-                                            value={editData.phone || ""}
-                                            onChange={(e) => setEditData({...editData, phone: e.target.value})}
-                                            placeholder="9876543210"
-                                            className="flex-1 h-11 rounded-xl"
-                                            required
-                                            data-testid="edit-list-phone-input"
-                                        />
-                                    </div>
-                                    <p className="text-xs text-[#52525B] mt-1">Phone number must be unique</p>
-                                </div>
+                    <form onSubmit={handleUpdateCustomer} className="flex-1 overflow-hidden">
+                        <ScrollArea className="h-[calc(90vh-200px)] pr-4">
+                            <Accordion type="multiple" defaultValue={["basic"]} className="w-full">
 
-                                <div>
-                                    <Label className="form-label">Email</Label>
-                                    <Input
-                                        type="email"
-                                        value={editData.email || ""}
-                                        onChange={(e) => setEditData({...editData, email: e.target.value})}
-                                        placeholder="customer@email.com"
-                                        className="h-11 rounded-xl"
-                                    />
-                                </div>
+                                {/* Basic Information */}
+                                <AccordionItem value="basic" className="border-b-0">
+                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-[#329937]/5 rounded-xl mb-2">
+                                        <span className="flex items-center gap-2 text-sm font-semibold text-[#329937]">
+                                            <User className="w-4 h-4" /> Basic Information
+                                        </span>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-1">
+                                        <div className="space-y-4">
+                                            <div>
+                                                <Label className="form-label">Name *</Label>
+                                                <Input
+                                                    value={editData.name || ""}
+                                                    onChange={(e) => setEditData({...editData, name: e.target.value})}
+                                                    placeholder="Customer name"
+                                                    className="h-11 rounded-xl"
+                                                    required
+                                                    data-testid="edit-list-name-input"
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label className="form-label">Phone * (Unique)</Label>
+                                                <div className="flex gap-2">
+                                                    <Select 
+                                                        value={editData.country_code || "+91"} 
+                                                        onValueChange={(v) => setEditData({...editData, country_code: v})}
+                                                    >
+                                                        <SelectTrigger className="w-24 h-11 rounded-xl" data-testid="edit-country-code-select">
+                                                            <SelectValue />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {COUNTRY_CODES.map(cc => (
+                                                                <SelectItem key={cc.code} value={cc.code}>
+                                                                    {cc.flag} {cc.code}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <Input
+                                                        value={editData.phone || ""}
+                                                        onChange={(e) => setEditData({...editData, phone: e.target.value.replace(/\D/g, '')})}
+                                                        placeholder="9876543210"
+                                                        className="flex-1 h-11 rounded-xl"
+                                                        required
+                                                        maxLength={10}
+                                                        data-testid="edit-list-phone-input"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
 
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <Label className="form-label">Date of Birth</Label>
-                                        <Input
-                                            type="date"
-                                            value={editData.dob || ""}
-                                            onChange={(e) => setEditData({...editData, dob: e.target.value})}
-                                            className="h-11 rounded-xl"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label className="form-label">Anniversary</Label>
-                                        <Input
-                                            type="date"
-                                            value={editData.anniversary || ""}
-                                            onChange={(e) => setEditData({...editData, anniversary: e.target.value})}
-                                            className="h-11 rounded-xl"
-                                        />
-                                    </div>
-                                </div>
+                                {/* Other Information */}
+                                <AccordionItem value="other" className="border-b-0">
+                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-cyan-50 rounded-xl mb-2">
+                                        <span className="flex items-center gap-2 text-sm font-semibold text-cyan-600">
+                                            <Layers className="w-4 h-4" /> Other Information
+                                        </span>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-1">
+                                        <div className="space-y-4">
+                                            {/* Email */}
+                                            <div>
+                                                <Label className="form-label">Email</Label>
+                                                <Input
+                                                    type="email"
+                                                    value={editData.email || ""}
+                                                    onChange={(e) => setEditData({...editData, email: e.target.value})}
+                                                    placeholder="customer@email.com"
+                                                    className="h-11 rounded-xl"
+                                                    data-testid="edit-customer-email"
+                                                />
+                                            </div>
 
-                                <div>
-                                    <Label className="form-label">Customer Type</Label>
-                                    <Select 
-                                        value={editData.customer_type || "normal"} 
-                                        onValueChange={(v) => setEditData({...editData, customer_type: v})}
-                                    >
-                                        <SelectTrigger className="h-11 rounded-xl">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="normal">Normal</SelectItem>
-                                            <SelectItem value="corporate">Corporate</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                                            {/* Gender & Language */}
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <Label className="form-label">Gender</Label>
+                                                    <Select value={editData.gender || ""} onValueChange={(v) => setEditData({...editData, gender: v})}>
+                                                        <SelectTrigger className="h-11 rounded-xl" data-testid="edit-customer-gender">
+                                                            <SelectValue placeholder="Select" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {GENDER_OPTIONS.map(g => (
+                                                                <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                                <div>
+                                                    <Label className="form-label">Language</Label>
+                                                    <Select value={editData.preferred_language || ""} onValueChange={(v) => setEditData({...editData, preferred_language: v})}>
+                                                        <SelectTrigger className="h-11 rounded-xl" data-testid="edit-customer-language">
+                                                            <SelectValue placeholder="Select" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {LANGUAGE_OPTIONS.map(l => (
+                                                                <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            </div>
 
-                                {editData.customer_type === "corporate" && (
-                                    <>
+                                            {/* DOB & Anniversary */}
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <Label className="form-label flex items-center gap-1">
+                                                        <Calendar className="w-3.5 h-3.5" /> Date of Birth
+                                                    </Label>
+                                                    <Input
+                                                        type="date"
+                                                        value={editData.dob || ""}
+                                                        onChange={(e) => setEditData({...editData, dob: e.target.value})}
+                                                        className="h-11 rounded-xl"
+                                                        data-testid="edit-customer-dob"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label className="form-label flex items-center gap-1">
+                                                        <Calendar className="w-3.5 h-3.5" /> Anniversary
+                                                    </Label>
+                                                    <Input
+                                                        type="date"
+                                                        value={editData.anniversary || ""}
+                                                        onChange={(e) => setEditData({...editData, anniversary: e.target.value})}
+                                                        className="h-11 rounded-xl"
+                                                        data-testid="edit-customer-anniversary"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Customer Type - Radio Buttons */}
+                                            <div>
+                                                <Label className="form-label">Customer Type</Label>
+                                                <div className="flex items-center gap-6 mt-2">
+                                                    <label className="flex items-center gap-2 cursor-pointer" data-testid="edit-customer-type-normal">
+                                                        <input
+                                                            type="radio"
+                                                            name="edit_customer_type"
+                                                            value="normal"
+                                                            checked={editData.customer_type === "normal"}
+                                                            onChange={() => setEditData({...editData, customer_type: "normal"})}
+                                                            className="w-4 h-4 accent-[#329937]"
+                                                        />
+                                                        <User className="w-4 h-4 text-gray-600" />
+                                                        <span className="text-sm font-medium text-gray-700">Normal</span>
+                                                    </label>
+                                                    <label className="flex items-center gap-2 cursor-pointer" data-testid="edit-customer-type-corporate">
+                                                        <input
+                                                            type="radio"
+                                                            name="edit_customer_type"
+                                                            value="corporate"
+                                                            checked={editData.customer_type === "corporate"}
+                                                            onChange={() => setEditData({...editData, customer_type: "corporate"})}
+                                                            className="w-4 h-4 accent-[#F26B33]"
+                                                        />
+                                                        <Building2 className="w-4 h-4 text-gray-600" />
+                                                        <span className="text-sm font-medium text-gray-700">Corporate</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {/* Inline Corporate Fields */}
+                                            {editData.customer_type === "corporate" && (
+                                                <div className="space-y-4 p-4 bg-[#F26B33]/5 border border-[#F26B33]/20 rounded-xl" data-testid="edit-inline-corporate-fields">
+                                                    <p className="text-xs text-[#F26B33] font-semibold flex items-center gap-1">
+                                                        <Building2 className="w-3.5 h-3.5" /> Corporate Details
+                                                    </p>
+                                                    <div>
+                                                        <Label className="form-label">Company/GST Name</Label>
+                                                        <Input
+                                                            placeholder="Company name"
+                                                            className="h-11 rounded-xl"
+                                                            value={editData.gst_name || ""}
+                                                            onChange={(e) => setEditData({...editData, gst_name: e.target.value})}
+                                                            data-testid="edit-customer-gst-name"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label className="form-label">GST Number</Label>
+                                                        <Input
+                                                            placeholder="22AAAAA0000A1Z5"
+                                                            className="h-11 rounded-xl"
+                                                            value={editData.gst_number || ""}
+                                                            onChange={(e) => setEditData({...editData, gst_number: e.target.value})}
+                                                            data-testid="edit-customer-gst-number"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label className="form-label">Billing Address</Label>
+                                                        <Textarea
+                                                            placeholder="Billing address for invoices"
+                                                            className="rounded-xl resize-none"
+                                                            rows={2}
+                                                            value={editData.billing_address || ""}
+                                                            onChange={(e) => setEditData({...editData, billing_address: e.target.value})}
+                                                            data-testid="edit-customer-billing-address"
+                                                        />
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-3">
+                                                        <div>
+                                                            <Label className="form-label">Credit Limit</Label>
+                                                            <Input
+                                                                placeholder="50000"
+                                                                type="number"
+                                                                className="h-11 rounded-xl"
+                                                                value={editData.credit_limit || ""}
+                                                                onChange={(e) => setEditData({...editData, credit_limit: e.target.value})}
+                                                                data-testid="edit-customer-credit-limit"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <Label className="form-label">Payment Terms</Label>
+                                                            <Input
+                                                                placeholder="Net 30"
+                                                                className="h-11 rounded-xl"
+                                                                value={editData.payment_terms || ""}
+                                                                onChange={(e) => setEditData({...editData, payment_terms: e.target.value})}
+                                                                data-testid="edit-customer-payment-terms"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Address Details Divider */}
+                                            <div className="border-t pt-4 mt-4">
+                                                <p className="text-xs text-gray-500 font-medium mb-3 flex items-center gap-1">
+                                                    <MapPin className="w-3.5 h-3.5" /> Address Details
+                                                </p>
+                                            </div>
+
+                                            {/* Address Line 1 */}
+                                            <div>
+                                                <Label className="form-label">Address Line 1</Label>
+                                                <Textarea
+                                                    placeholder="House/Flat No., Building..."
+                                                    className="rounded-xl resize-none"
+                                                    rows={2}
+                                                    value={editData.address || ""}
+                                                    onChange={(e) => setEditData({...editData, address: e.target.value})}
+                                                    data-testid="edit-customer-address"
+                                                />
+                                            </div>
+
+                                            {/* Address Line 2 */}
+                                            <div>
+                                                <Label className="form-label">Address Line 2</Label>
+                                                <Input
+                                                    placeholder="Street, Area, Landmark"
+                                                    className="h-11 rounded-xl"
+                                                    value={editData.address_line_2 || ""}
+                                                    onChange={(e) => setEditData({...editData, address_line_2: e.target.value})}
+                                                    data-testid="edit-customer-address-line-2"
+                                                />
+                                            </div>
+
+                                            {/* City & State */}
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <Label className="form-label">City</Label>
+                                                    <Input
+                                                        placeholder="City"
+                                                        className="h-11 rounded-xl"
+                                                        value={editData.city || ""}
+                                                        onChange={(e) => setEditData({...editData, city: e.target.value})}
+                                                        data-testid="edit-customer-city"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label className="form-label">State</Label>
+                                                    <Input
+                                                        placeholder="State"
+                                                        className="h-11 rounded-xl"
+                                                        value={editData.state || ""}
+                                                        onChange={(e) => setEditData({...editData, state: e.target.value})}
+                                                        data-testid="edit-customer-state"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Pincode & Country */}
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <Label className="form-label">Pincode</Label>
+                                                    <Input
+                                                        placeholder="400001"
+                                                        className="h-11 rounded-xl"
+                                                        value={editData.pincode || ""}
+                                                        onChange={(e) => setEditData({...editData, pincode: e.target.value})}
+                                                        data-testid="edit-customer-pincode"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label className="form-label">Country</Label>
+                                                    <Input
+                                                        placeholder="India"
+                                                        className="h-11 rounded-xl"
+                                                        value={editData.country || ""}
+                                                        onChange={(e) => setEditData({...editData, country: e.target.value})}
+                                                        data-testid="edit-customer-country"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Delivery Instructions */}
+                                            <div>
+                                                <Label className="form-label">Delivery Instructions</Label>
+                                                <Textarea
+                                                    placeholder="Ring doorbell twice, leave at door..."
+                                                    className="rounded-xl resize-none"
+                                                    rows={2}
+                                                    value={editData.delivery_instructions || ""}
+                                                    onChange={(e) => setEditData({...editData, delivery_instructions: e.target.value})}
+                                                    data-testid="edit-customer-delivery-instructions"
+                                                />
+                                            </div>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                {/* Tags & Flags */}
+                                <AccordionItem value="flags" className="border-b-0">
+                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-indigo-50 rounded-xl mb-2">
+                                        <span className="flex items-center gap-2 text-sm font-semibold text-indigo-600">
+                                            <Tag className="w-4 h-4" /> Tags & Flags
+                                        </span>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-1">
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between p-3 bg-amber-50 rounded-xl">
+                                                <Label className="text-sm flex items-center gap-2">
+                                                    <Crown className="w-4 h-4 text-amber-500" /> VIP Customer
+                                                </Label>
+                                                <Switch
+                                                    checked={editData.vip_flag || false}
+                                                    onCheckedChange={(checked) => setEditData({...editData, vip_flag: checked})}
+                                                    data-testid="edit-customer-vip-flag"
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 bg-red-50 rounded-xl">
+                                                <Label className="text-sm flex items-center gap-2">
+                                                    <Flag className="w-4 h-4 text-red-500" /> Complaint Flag
+                                                </Label>
+                                                <Switch
+                                                    checked={editData.complaint_flag || false}
+                                                    onCheckedChange={(checked) => setEditData({...editData, complaint_flag: checked})}
+                                                    data-testid="edit-customer-complaint-flag"
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 bg-gray-100 rounded-xl">
+                                                <Label className="text-sm flex items-center gap-2">
+                                                    <Flag className="w-4 h-4 text-gray-500" /> Blacklisted
+                                                </Label>
+                                                <Switch
+                                                    checked={editData.blacklist_flag || false}
+                                                    onCheckedChange={(checked) => setEditData({...editData, blacklist_flag: checked})}
+                                                    data-testid="edit-customer-blacklist-flag"
+                                                />
+                                            </div>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                {/* Notes */}
+                                <AccordionItem value="notes" className="border-b-0">
+                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-gray-100 rounded-xl mb-2">
+                                        <span className="flex items-center gap-2 text-sm font-semibold text-gray-600">
+                                            <Edit2 className="w-4 h-4" /> Notes
+                                        </span>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-1">
                                         <div>
-                                            <Label className="form-label">GST Name</Label>
-                                            <Input
-                                                value={editData.gst_name || ""}
-                                                onChange={(e) => setEditData({...editData, gst_name: e.target.value})}
-                                                placeholder="Company Name"
-                                                className="h-11 rounded-xl"
+                                            <Textarea
+                                                placeholder="Any special notes about this customer..."
+                                                className="rounded-xl resize-none"
+                                                rows={3}
+                                                value={editData.notes || ""}
+                                                onChange={(e) => setEditData({...editData, notes: e.target.value})}
+                                                data-testid="edit-customer-notes"
                                             />
                                         </div>
-                                        <div>
-                                            <Label className="form-label">GST Number</Label>
-                                            <Input
-                                                value={editData.gst_number || ""}
-                                                onChange={(e) => setEditData({...editData, gst_number: e.target.value})}
-                                                placeholder="29ABCDE1234F1Z5"
-                                                className="h-11 rounded-xl"
-                                            />
-                                        </div>
-                                    </>
-                                )}
+                                    </AccordionContent>
+                                </AccordionItem>
 
-                                <div>
-                                    <Label className="form-label">City</Label>
-                                    <Input
-                                        value={editData.city || ""}
-                                        onChange={(e) => setEditData({...editData, city: e.target.value})}
-                                        placeholder="Mumbai"
-                                        className="h-11 rounded-xl"
-                                    />
-                                </div>
-
-                                <div>
-                                    <Label className="form-label">Address</Label>
-                                    <Input
-                                        value={editData.address || ""}
-                                        onChange={(e) => setEditData({...editData, address: e.target.value})}
-                                        placeholder="Full address"
-                                        className="h-11 rounded-xl"
-                                    />
-                                </div>
-
-                                <div>
-                                    <Label className="form-label">Notes</Label>
-                                    <Input
-                                        value={editData.notes || ""}
-                                        onChange={(e) => setEditData({...editData, notes: e.target.value})}
-                                        placeholder="Any special notes..."
-                                        className="h-11 rounded-xl"
-                                    />
-                                </div>
-                            </div>
+                            </Accordion>
                         </ScrollArea>
-                        <DialogFooter className="mt-4">
+                        <DialogFooter className="gap-2 pt-4 border-t">
                             <Button 
                                 type="button" 
                                 variant="outline" 
