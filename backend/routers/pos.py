@@ -793,47 +793,102 @@ async def _save_order_and_transactions(
     return order_id
 
 class OrderItem(BaseModel):
-    """Individual item within an order - supports food-level notes"""
+    """Individual item within an order - supports all MyGenie cart item fields"""
+    # Item Identification
     item_name: str
-    item_qty: int = 1
-    item_price: float = 0.0
-    item_notes: Optional[str] = None
+    pos_food_id: Optional[int] = None  # food_id from POS
     item_category: Optional[str] = None
+    
+    # Quantity & Price
+    item_qty: int = 1  # quantity
+    item_price: float = 0.0  # food_amount
+    
+    # Variants & Add-ons
+    variant: Optional[str] = None
+    variations: Optional[List] = None  # Full variation objects
+    add_on_ids: Optional[List[int]] = None
+    add_on_qtys: Optional[List[int]] = None
+    add_ons: Optional[List] = None  # Full add-on objects
+    
+    # Amounts
+    variation_amount: float = 0.0
+    addon_amount: float = 0.0
+    discount_amount: float = 0.0
+    service_charge: float = 0.0
+    
+    # Taxes
+    gst_amount: float = 0.0
+    vat_amount: float = 0.0
+    
+    # Kitchen
+    station: Optional[str] = None  # "OTHER", "BAR", "KITCHEN"
+    
+    # Notes
+    item_notes: Optional[str] = None  # food_level_notes
 
 
 class POSOrderWebhook(BaseModel):
-    """Schema for order data from MyGenie/POS systems"""
-    # POS Identification (Required)
-    pos_id: str  # "mygenie", "petpooja", "ezzo"
+    """Schema for order data from MyGenie/POS systems - supports all fields"""
+    # POS Identification
+    pos_id: str = "mygenie"  # Default to mygenie if not provided
     restaurant_id: str
+    restaurant_name: Optional[str] = None
     
-    # Order Identification (Required)
+    # Order Identification
     order_id: str
     
-    # Customer (Required)
+    # Customer Info
     cust_mobile: str
-    cust_name: Optional[str] = None  # Only needed for new customer
+    cust_name: Optional[str] = None
+    cust_email: Optional[str] = None
+    user_id: Optional[str] = None  # Maps to pos_customer_id
     
-    # Amount (Required)
+    # Amounts
     order_amount: float
+    order_sub_total_amount: Optional[float] = None
     
-    # Wallet (Optional)
-    wallet_used: Optional[float] = 0.0
-    
-    # Coupon (Optional)
+    # Discounts
+    order_discount: float = 0.0
+    self_discount: float = 0.0
     coupon_code: Optional[str] = None
-    coupon_discount: Optional[float] = 0.0
+    coupon_discount: float = 0.0
+    
+    # Wallet
+    wallet_used: float = 0.0
+    
+    # Taxes
+    tax_amount: float = 0.0
+    gst_tax: float = 0.0
+    vat_tax: float = 0.0
+    service_tax: float = 0.0
+    service_gst_tax_amount: float = 0.0
+    
+    # Tips & Charges
+    tip_amount: float = 0.0
+    tip_tax_amount: float = 0.0
+    delivery_charge: float = 0.0
+    round_up: float = 0.0
     
     # Payment Info
     payment_method: Optional[str] = None
     payment_status: str = "success"
+    payment_type: Optional[str] = None  # "prepaid", "postpaid"
+    transaction_id: Optional[str] = None
     
     # Order Meta
     order_type: Optional[str] = "pos"  # pos, dine_in, takeaway, delivery
+    table_id: Optional[str] = None
+    waiter_id: Optional[str] = None
+    print_kot: Optional[str] = None  # "Yes", "No"
+    
+    # Room/Address (for future use)
+    paid_room: Optional[str] = None
+    room_id: Optional[str] = None
+    address_id: Optional[str] = None
     
     # Notes & Items
-    order_notes: Optional[str] = None  # Order-level notes
-    items: Optional[List[OrderItem]] = None  # Line items with food-level notes
+    order_notes: Optional[str] = None  # order_note
+    items: Optional[List[OrderItem]] = None  # cart items
 
 
 @router.post("/orders", response_model=POSResponse)
