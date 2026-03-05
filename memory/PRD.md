@@ -78,6 +78,12 @@ Clone and set up the repository: https://github.com/Abhi-mygenie/CMV2.git
 - Now sends: corporate fields (GST, billing, credit limit, payment terms), full address (6 fields), flags (VIP, complaint, blacklist)
 - Verified via curl: all 17+ fields saved correctly to MongoDB
 
+**Phase 3 — Segment Filters + Seed Data Update (March 5, 2026)**
+- Added 3 new filters: Gender, Total Spent (range), Is Blocked — both frontend UI and backend query logic
+- Updated `seed_demo_data.py` with 25+ new fields per customer: gender, preferred_language, full address (state, country, address_line_2, delivery_instructions), flags (vip, complaint, blacklist, is_blocked), dining prefs (diet, dining type, time slot, spice, cuisine, party size), engagement (whatsapp_opt_in, lead_source, nps_score, last_rating, churn_risk_score, price_sensitivity_score), membership (membership_id, referral_code), pos_customer_id
+- Fixed `visits` → `total_visits` key alignment, fixed `db_import.py` default DB_NAME
+- All 15+ existing filters now return real data from seed
+
 ## Next Action Items
 - Phase 2: Align Edit Customer form with Add form (add missing fields, match UI patterns)
 - Phase 3: Add high-impact segment filters (gender, total_spent, is_blocked)

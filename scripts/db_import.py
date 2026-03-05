@@ -16,7 +16,7 @@ import sys
 from pymongo import MongoClient
 
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "loyalty_app")
+DB_NAME = os.environ.get("DB_NAME", "test_database")
 EXPORT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "db_export")
 
 
