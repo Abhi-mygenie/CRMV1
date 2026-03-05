@@ -312,6 +312,26 @@ export default function CustomersPage() {
                 anniversary: newCustomer.anniversary || null,
                 preferred_language: newCustomer.preferred_language || null,
                 customer_type: newCustomer.customer_type,
+                // Corporate fields
+                ...(newCustomer.customer_type === "corporate" && {
+                    gst_name: newCustomer.gst_name || null,
+                    gst_number: newCustomer.gst_number || null,
+                    billing_address: newCustomer.billing_address || null,
+                    credit_limit: newCustomer.credit_limit ? parseFloat(newCustomer.credit_limit) : null,
+                    payment_terms: newCustomer.payment_terms || null,
+                }),
+                // Address fields
+                address: newCustomer.address || null,
+                address_line_2: newCustomer.address_line_2 || null,
+                city: newCustomer.city || null,
+                state: newCustomer.state || null,
+                pincode: newCustomer.pincode || null,
+                country: newCustomer.country || null,
+                delivery_instructions: newCustomer.delivery_instructions || null,
+                // Flags
+                vip_flag: newCustomer.vip_flag || false,
+                complaint_flag: newCustomer.complaint_flag || false,
+                blacklist_flag: newCustomer.blacklist_flag || false,
             };
             await api.post("/customers", customerData);
             toast.success("Customer added!");

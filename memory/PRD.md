@@ -73,7 +73,14 @@ Clone and set up the repository: https://github.com/Abhi-mygenie/CMV2.git
 - coupons, loyalty_settings, feedback, whatsapp_templates, automation_rules
 - segments, users, customer_app_config, cron_job_logs, whatsapp_event_template_map
 
+**Phase 1 Bug Fix — Add Customer Data Loss (March 5, 2026)**
+- Fixed `handleAddCustomer` to send ALL user-filled fields (was only sending 9 basic fields)
+- Now sends: corporate fields (GST, billing, credit limit, payment terms), full address (6 fields), flags (VIP, complaint, blacklist)
+- Verified via curl: all 17+ fields saved correctly to MongoDB
+
 ## Next Action Items
+- Phase 2: Align Edit Customer form with Add form (add missing fields, match UI patterns)
+- Phase 3: Add high-impact segment filters (gender, total_spent, is_blocked)
 - Implement Sync Orders when MyGenie Order API endpoint is provided
 
 ## Backlog / Future Enhancements
