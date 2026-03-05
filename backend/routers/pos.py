@@ -515,13 +515,31 @@ async def _validate_order(order_data: "POSOrderWebhook", user: dict) -> Optional
 async def _find_or_create_customer(
     order_data: "POSOrderWebhook", user: dict, settings: dict, now: str
 ) -> tuple:
-    """Lookup customer by phone; auto-create if missing.
+    """Lookup customer by phone or pos_customer_id; auto-create if missing.
     Returns (customer_doc, is_new, first_visit_bonus_points)."""
+    
+    # First try to find by pos_customer_id if provided
+    if order_data.user_id:
+        customer = await db.customers.find_one({
+            "user_id": user["id"], 
+            "pos_customer_id": order_data.user_id
+        })
+        if customer:
+            return customer, False, 0
+    
+    # Then try to find by phone
     customer = await db.customers.find_one({
         "user_id": user["id"], "phone": order_data.cust_mobile
     })
 
     if customer:
+        # Update pos_customer_id if not set and we have it now
+        if order_data.user_id and not customer.get("pos_customer_id"):
+            await db.customers.update_one(
+                {"id": customer["id"]},
+                {"$set": {"pos_customer_id": order_data.user_id}}
+            )
+            customer["pos_customer_id"] = order_data.user_id
         return customer, False, 0
 
     first_visit_bonus = 0
@@ -539,7 +557,7 @@ async def _find_or_create_customer(
         "name": order_data.cust_name or f"Customer {order_data.cust_mobile[-4:]}",
         "phone": order_data.cust_mobile,
         "country_code": "+91",
-        "email": None,
+        "email": order_data.cust_email,  # Store customer email from order
         "gender": None,
         "dob": None,
         "anniversary": None,
@@ -647,6 +665,8 @@ async def _find_or_create_customer(
         # POS Info
         "pos_id": order_data.pos_id,
         "pos_restaurant_id": order_data.restaurant_id,
+        "pos_customer_id": order_data.user_id,  # Store POS customer ID
+        "mygenie_synced": True if order_data.user_id else False,
         "first_visit_bonus_awarded": first_visit_bonus > 0,
     }
     await db.customers.insert_one(customer)
@@ -716,34 +736,88 @@ async def _save_order_and_transactions(
     """Persist order, points transaction, and wallet transaction. Returns order id."""
     order_id = str(uuid.uuid4())
     
-    # Prepare embedded items array
+    # Prepare embedded items array with all fields
     items_embedded = []
     if order_data.items:
         for item in order_data.items:
             items_embedded.append(item.model_dump())
     
-    await db.orders.insert_one({
+    # Build complete order document with ALL MyGenie fields
+    order_doc = {
         "id": order_id,
         "user_id": user["id"],
         "customer_id": customer["id"],
+        
+        # POS Identification
         "pos_id": order_data.pos_id,
         "pos_restaurant_id": order_data.restaurant_id,
+        "restaurant_name": order_data.restaurant_name,
         "pos_order_id": order_data.order_id,
+        "pos_customer_id": order_data.user_id,  # user_id from MyGenie = pos_customer_id
+        
+        # Customer Info
+        "cust_mobile": order_data.cust_mobile,
+        "cust_name": order_data.cust_name,
+        "cust_email": order_data.cust_email,
+        
+        # Amounts
         "order_amount": order_data.order_amount,
-        "wallet_used": wallet_used,
+        "order_sub_total": order_data.order_sub_total_amount,
+        
+        # Discounts
+        "order_discount": order_data.order_discount,
+        "self_discount": order_data.self_discount,
         "coupon_code": order_data.coupon_code,
-        "coupon_discount": order_data.coupon_discount or 0.0,
-        "points_earned": points_earned,
-        "off_peak_bonus": off_peak_bonus,
+        "coupon_discount": order_data.coupon_discount,
+        
+        # Wallet
+        "wallet_used": wallet_used,
+        
+        # Taxes
+        "tax_amount": order_data.tax_amount,
+        "gst_tax": order_data.gst_tax,
+        "vat_tax": order_data.vat_tax,
+        "service_tax": order_data.service_tax,
+        "service_gst_tax_amount": order_data.service_gst_tax_amount,
+        
+        # Tips & Charges
+        "tip_amount": order_data.tip_amount,
+        "tip_tax_amount": order_data.tip_tax_amount,
+        "delivery_charge": order_data.delivery_charge,
+        "round_up": order_data.round_up,
+        
+        # Payment Info
         "payment_method": order_data.payment_method,
         "payment_status": order_data.payment_status,
+        "payment_type": order_data.payment_type,
+        "transaction_id": order_data.transaction_id,
+        
+        # Order Meta
         "order_type": order_data.order_type,
+        "table_id": order_data.table_id,
+        "waiter_id": order_data.waiter_id,
+        "print_kot": order_data.print_kot,
+        
+        # Room/Address (for future use)
+        "paid_room": order_data.paid_room,
+        "room_id": order_data.room_id,
+        "address_id": order_data.address_id,
+        
+        # Notes & Items
         "order_notes": order_data.order_notes,
         "items": items_embedded,
+        
+        # Loyalty Points
+        "points_earned": points_earned,
+        "off_peak_bonus": off_peak_bonus,
+        
+        # Timestamps
         "created_at": now,
-    })
+    }
     
-    # Write to order_items collection for AI queries
+    await db.orders.insert_one(order_doc)
+    
+    # Write to order_items collection for AI queries with ALL fields
     if order_data.items:
         order_items_docs = []
         for item in order_data.items:
@@ -752,11 +826,40 @@ async def _save_order_and_transactions(
                 "order_id": order_id,
                 "customer_id": customer["id"],
                 "user_id": user["id"],
+                
+                # Item Identification
                 "item_name": item.item_name,
+                "pos_food_id": item.pos_food_id,
+                "item_category": item.item_category,
+                
+                # Quantity & Price
                 "item_qty": item.item_qty,
                 "item_price": item.item_price,
+                
+                # Variants & Add-ons
+                "variant": item.variant,
+                "variations": item.variations,
+                "add_on_ids": item.add_on_ids,
+                "add_on_qtys": item.add_on_qtys,
+                "add_ons": item.add_ons,
+                
+                # Amounts
+                "variation_amount": item.variation_amount,
+                "addon_amount": item.addon_amount,
+                "discount_amount": item.discount_amount,
+                "service_charge": item.service_charge,
+                
+                # Taxes
+                "gst_amount": item.gst_amount,
+                "vat_amount": item.vat_amount,
+                
+                # Kitchen
+                "station": item.station,
+                
+                # Notes
                 "item_notes": item.item_notes,
-                "item_category": item.item_category,
+                
+                # Timestamps
                 "created_at": now,
             })
         await db.order_items.insert_many(order_items_docs)
