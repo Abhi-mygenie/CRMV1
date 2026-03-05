@@ -11,35 +11,39 @@ Clone and set up the repository: https://github.com/Abhi-mygenie/CMV2.git
 
 ## What's Been Implemented
 **Date: March 5, 2026**
-- ✅ Repository cloned and set up
-- ✅ Backend dependencies installed (FastAPI, MongoDB, APScheduler, etc.)
-- ✅ Frontend dependencies installed (React 19, Tailwind, Shadcn/UI, Capacitor)
-- ✅ Demo data seeded (55 customers, 292 orders, 1015 order items, etc.)
-- ✅ Database imported from db_export (1967 customers, 280 points transactions)
-- ✅ Added `customer_app_config` collection from separate git repo
-- ✅ Services running (backend on port 8001, frontend on port 3000)
-- ✅ Demo mode login verified working
+- Repository cloned and set up
+- Backend dependencies installed (FastAPI, MongoDB, APScheduler, etc.)
+- Frontend dependencies installed (React 19, Tailwind, Shadcn/UI, Capacitor)
+- Demo data seeded (55 customers, 292 orders, 1015 order items, etc.)
+- Database imported from db_export (1967 customers, 280 points transactions)
+- Added `customer_app_config` collection from separate git repo
+- Services running (backend on port 8001, frontend on port 3000)
+- Demo mode login verified working
 
 **Field Rename (March 5, 2026)**
-- ✅ Renamed `mygenie_customer_id` → `pos_customer_id`
-- This field stores the customer ID from POS API
-- Acts as the bridge/link between our DB and POS system
+- Renamed `mygenie_customer_id` to `pos_customer_id`
 - Updated 2146 existing customers in database
-- ✅ Added new "Migration" tab in Settings (FIRST tab now)
-- ✅ Tab order: Migration → Profile → WhatsApp → Loyalty → Coupons
-- ✅ 3-step migration flow UI:
-  - Step 1: Sync Customers (with individual Revert button when synced)
-  - Step 2: Sync Orders (with individual Revert button when synced) - placeholder awaiting API
-  - Step 3: Confirm Migration button
-- ✅ Backend endpoints:
-  - GET /api/migration/status
-  - POST /api/migration/confirm
-  - POST /api/migration/revert (all data)
-  - POST /api/migration/revert-customers (only customers)
-  - POST /api/migration/revert-orders (only orders)
-  - POST /api/migration/sync-orders (placeholder)
-- ✅ After confirmation, shows "Migration Complete" state
-- ✅ Individual revert buttons appear after each sync completes
+- Added new "Migration" tab in Settings (FIRST tab now)
+- Tab order: Migration -> Profile -> WhatsApp -> Loyalty -> Coupons
+- 3-step migration flow UI
+- Backend endpoints: GET /api/migration/status, POST /api/migration/confirm, POST /api/migration/revert, POST /api/migration/revert-customers, POST /api/migration/revert-orders, POST /api/migration/sync-orders (placeholder)
+
+**Order Webhook & Data Model Expansion (March 5, 2026)**
+- Expanded POST /api/pos/orders webhook to accept ~40 new fields
+- Updated Pydantic schemas (POSOrderWebhook, OrderItem)
+- Seeded 100 realistic orders for "18march" restaurant
+
+**UI Refactoring - Add New Customer Form (March 5, 2026)**
+- Removed/reinstated "Coming Soon" overlays per user request
+- AI-driven read-only fields for Dining Preferences and Special Occasions
+- Reorganized form layout with "Other Information" section
+- Implemented inline Corporate Customer fields with radio buttons (replacing button-style and separate accordion)
+
+**Inline Corporate Fields (March 5, 2026)**
+- Replaced button-style Customer Type selection with radio buttons (Normal/Corporate)
+- When Corporate is selected, corporate fields (GST Name, GST Number, Billing Address, Credit Limit, Payment Terms) appear inline with orange-tinted background
+- Removed separate "Corporate Info" accordion section
+- Tested: 10/10 test cases passed (100% frontend)
 
 ## Core Features (Existing)
 - Customer Management with 75+ fields
@@ -65,6 +69,10 @@ Clone and set up the repository: https://github.com/Abhi-mygenie/CMV2.git
 - Implement Sync Orders when MyGenie Order API endpoint is provided
 
 ## Backlog / Future Enhancements
-- P1: MyGenie Order API integration for order sync
-- P2: Add more analytics dashboards
+- P1: Activate "Sync Orders" from MyGenie (blocked on API endpoint from user)
+- P1: "Coming Soon" sections implementation (Contact Preferences, Membership, Source & Journey, Custom Fields)
+- P2: Clarify business logic for MyGenie fields (self_discount, paid_room, room_id, address_id)
+- P2: Full E2E testing of MyGenie order webhook
+- P2: Full E2E testing of Sync Orders feature
+- P3: Refactor CustomersPage.jsx into smaller components
 - P3: Push notification integration for mobile apps
