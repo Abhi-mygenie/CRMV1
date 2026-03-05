@@ -1500,103 +1500,6 @@ export default function CustomersPage() {
                                     </AccordionContent>
                                 </AccordionItem>
 
-                                {/* Contact Preferences */}
-                                <AccordionItem value="contact" className="border-b-0">
-                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-blue-50 rounded-xl mb-2">
-                                        <span className="flex items-center gap-2 text-sm font-semibold text-blue-600">
-                                            <Phone className="w-4 h-4" /> Contact Preferences
-                                        </span>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="px-1">
-                                        <div className="space-y-3">
-                                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                                <Label className="text-sm">WhatsApp Opt-in</Label>
-                                                <Switch 
-                                                    checked={newCustomer.whatsapp_opt_in} 
-                                                    onCheckedChange={(v) => setNewCustomer({...newCustomer, whatsapp_opt_in: v})}
-                                                />
-                                            </div>
-                                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                                <Label className="text-sm">Promo WhatsApp Allowed</Label>
-                                                <Switch 
-                                                    checked={newCustomer.promo_whatsapp_allowed} 
-                                                    onCheckedChange={(v) => setNewCustomer({...newCustomer, promo_whatsapp_allowed: v})}
-                                                />
-                                            </div>
-                                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                                <Label className="text-sm">Promo SMS Allowed</Label>
-                                                <Switch 
-                                                    checked={newCustomer.promo_sms_allowed} 
-                                                    onCheckedChange={(v) => setNewCustomer({...newCustomer, promo_sms_allowed: v})}
-                                                />
-                                            </div>
-                                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                                <Label className="text-sm">Email Marketing Allowed</Label>
-                                                <Switch 
-                                                    checked={newCustomer.email_marketing_allowed} 
-                                                    onCheckedChange={(v) => setNewCustomer({...newCustomer, email_marketing_allowed: v})}
-                                                />
-                                            </div>
-                                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                                <Label className="text-sm">Call Allowed</Label>
-                                                <Switch 
-                                                    checked={newCustomer.call_allowed} 
-                                                    onCheckedChange={(v) => setNewCustomer({...newCustomer, call_allowed: v})}
-                                                />
-                                            </div>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-
-                                {/* Membership */}
-                                <AccordionItem value="membership" className="border-b-0">
-                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-purple-50 rounded-xl mb-2">
-                                        <span className="flex items-center gap-2 text-sm font-semibold text-purple-600">
-                                            <Tag className="w-4 h-4" /> Membership
-                                        </span>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="px-1">
-                                        <div className="space-y-4">
-                                            <div>
-                                                <Label className="form-label">Membership ID</Label>
-                                                <Input 
-                                                    placeholder="External membership ID" 
-                                                    className="h-11 rounded-xl"
-                                                    value={newCustomer.membership_id}
-                                                    onChange={(e) => setNewCustomer({...newCustomer, membership_id: e.target.value})}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label className="form-label">Membership Expiry</Label>
-                                                <Input 
-                                                    type="date" 
-                                                    className="h-11 rounded-xl"
-                                                    value={newCustomer.membership_expiry}
-                                                    onChange={(e) => setNewCustomer({...newCustomer, membership_expiry: e.target.value})}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label className="form-label">Referral Code</Label>
-                                                <Input 
-                                                    placeholder="Customer's referral code" 
-                                                    className="h-11 rounded-xl"
-                                                    value={newCustomer.referral_code}
-                                                    onChange={(e) => setNewCustomer({...newCustomer, referral_code: e.target.value})}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label className="form-label">Referred By</Label>
-                                                <Input 
-                                                    placeholder="Who referred this customer?" 
-                                                    className="h-11 rounded-xl"
-                                                    value={newCustomer.referred_by}
-                                                    onChange={(e) => setNewCustomer({...newCustomer, referred_by: e.target.value})}
-                                                />
-                                            </div>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-
                                 {/* Address */}
                                 <AccordionItem value="address" className="border-b-0">
                                     <AccordionTrigger className="hover:no-underline py-3 px-3 bg-cyan-50 rounded-xl mb-2">
@@ -1744,54 +1647,6 @@ export default function CustomersPage() {
                                 )}
 
                                 {/* Source & Journey */}
-                                <AccordionItem value="source" className="border-b-0">
-                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-amber-50 rounded-xl mb-2">
-                                        <span className="flex items-center gap-2 text-sm font-semibold text-amber-600">
-                                            <TrendingUp className="w-4 h-4" /> Source & Journey
-                                        </span>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="px-1">
-                                        <div className="space-y-4">
-                                            <div>
-                                                <Label className="form-label">Lead Source</Label>
-                                                <Select value={newCustomer.lead_source} onValueChange={(v) => setNewCustomer({...newCustomer, lead_source: v})}>
-                                                    <SelectTrigger className="h-11 rounded-xl">
-                                                        <SelectValue placeholder="How did they find you?" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="Walk-in">Walk-in</SelectItem>
-                                                        <SelectItem value="Referral">Referral</SelectItem>
-                                                        <SelectItem value="Google">Google</SelectItem>
-                                                        <SelectItem value="Instagram">Instagram</SelectItem>
-                                                        <SelectItem value="Facebook">Facebook</SelectItem>
-                                                        <SelectItem value="Zomato">Zomato</SelectItem>
-                                                        <SelectItem value="Swiggy">Swiggy</SelectItem>
-                                                        <SelectItem value="WhatsApp">WhatsApp</SelectItem>
-                                                        <SelectItem value="Other">Other</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="form-label">Campaign Source</Label>
-                                                <Input 
-                                                    placeholder="UTM or campaign name" 
-                                                    className="h-11 rounded-xl"
-                                                    value={newCustomer.campaign_source}
-                                                    onChange={(e) => setNewCustomer({...newCustomer, campaign_source: e.target.value})}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label className="form-label">Assigned Salesperson</Label>
-                                                <Input 
-                                                    placeholder="Staff member name" 
-                                                    className="h-11 rounded-xl"
-                                                    value={newCustomer.assigned_salesperson}
-                                                    onChange={(e) => setNewCustomer({...newCustomer, assigned_salesperson: e.target.value})}
-                                                />
-                                            </div>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
                                 {/* Dining Preferences & Special Occasions - Auto Detected */}
                                 <AccordionItem value="ai-detected" className="border-b-0">
                                     <AccordionTrigger className="hover:no-underline py-3 px-3 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl mb-2">
@@ -1853,53 +1708,99 @@ export default function CustomersPage() {
                                     </AccordionContent>
                                 </AccordionItem>
 
-                                {/* Custom Fields & Notes */}
+                                {/* Contact Preferences - Coming Soon */}
+                                <AccordionItem value="contact" className="border-b-0">
+                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-blue-50 rounded-xl mb-2">
+                                        <span className="flex items-center gap-2 text-sm font-semibold text-blue-600">
+                                            <Phone className="w-4 h-4" /> Contact Preferences
+                                            <span className="ml-auto text-[10px] bg-blue-100 text-blue-500 px-2 py-0.5 rounded-full">Coming Soon</span>
+                                        </span>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-1">
+                                        <ComingSoonOverlay color="blue">
+                                            <div className="space-y-3 opacity-50">
+                                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                                    <Label className="text-sm">WhatsApp Opt-in</Label>
+                                                    <Switch disabled />
+                                                </div>
+                                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                                    <Label className="text-sm">Promo SMS Allowed</Label>
+                                                    <Switch disabled checked />
+                                                </div>
+                                            </div>
+                                        </ComingSoonOverlay>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                {/* Membership - Coming Soon */}
+                                <AccordionItem value="membership" className="border-b-0">
+                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-purple-50 rounded-xl mb-2">
+                                        <span className="flex items-center gap-2 text-sm font-semibold text-purple-600">
+                                            <Tag className="w-4 h-4" /> Membership
+                                            <span className="ml-auto text-[10px] bg-purple-100 text-purple-500 px-2 py-0.5 rounded-full">Coming Soon</span>
+                                        </span>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-1">
+                                        <ComingSoonOverlay color="purple">
+                                            <div className="space-y-4 opacity-50">
+                                                <div>
+                                                    <Label className="form-label">Membership ID</Label>
+                                                    <Input placeholder="External membership ID" className="h-11 rounded-xl" disabled />
+                                                </div>
+                                                <div>
+                                                    <Label className="form-label">Referral Code</Label>
+                                                    <Input placeholder="Referral code" className="h-11 rounded-xl" disabled />
+                                                </div>
+                                            </div>
+                                        </ComingSoonOverlay>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                {/* Source & Journey - Coming Soon */}
+                                <AccordionItem value="source" className="border-b-0">
+                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-amber-50 rounded-xl mb-2">
+                                        <span className="flex items-center gap-2 text-sm font-semibold text-amber-600">
+                                            <TrendingUp className="w-4 h-4" /> Source & Journey
+                                            <span className="ml-auto text-[10px] bg-amber-100 text-amber-500 px-2 py-0.5 rounded-full">Coming Soon</span>
+                                        </span>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-1">
+                                        <ComingSoonOverlay color="amber">
+                                            <div className="space-y-4 opacity-50">
+                                                <div>
+                                                    <Label className="form-label">Lead Source</Label>
+                                                    <Input placeholder="How did they find you?" className="h-11 rounded-xl" disabled />
+                                                </div>
+                                                <div>
+                                                    <Label className="form-label">Campaign Source</Label>
+                                                    <Input placeholder="UTM or campaign" className="h-11 rounded-xl" disabled />
+                                                </div>
+                                            </div>
+                                        </ComingSoonOverlay>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                {/* Custom Fields & Notes - Coming Soon */}
                                 <AccordionItem value="custom" className="border-b-0">
                                     <AccordionTrigger className="hover:no-underline py-3 px-3 bg-gray-100 rounded-xl mb-2">
                                         <span className="flex items-center gap-2 text-sm font-semibold text-gray-600">
                                             <Layers className="w-4 h-4" /> Custom Fields & Notes
+                                            <span className="ml-auto text-[10px] bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">Coming Soon</span>
                                         </span>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-1">
-                                        <div className="space-y-4">
-                                            <div>
-                                                <Label className="form-label">Custom Field 1</Label>
-                                                <Input 
-                                                    placeholder="Custom value..." 
-                                                    className="h-11 rounded-xl"
-                                                    value={newCustomer.custom_field_1 || ""}
-                                                    onChange={(e) => setNewCustomer({...newCustomer, custom_field_1: e.target.value})}
-                                                />
+                                        <ComingSoonOverlay color="gray">
+                                            <div className="space-y-4 opacity-50">
+                                                <div>
+                                                    <Label className="form-label">Custom Field 1</Label>
+                                                    <Input placeholder="Custom value..." className="h-11 rounded-xl" disabled />
+                                                </div>
+                                                <div>
+                                                    <Label className="form-label">Notes</Label>
+                                                    <Textarea placeholder="Special notes..." className="rounded-xl resize-none" rows={2} disabled />
+                                                </div>
                                             </div>
-                                            <div>
-                                                <Label className="form-label">Custom Field 2</Label>
-                                                <Input 
-                                                    placeholder="Custom value..." 
-                                                    className="h-11 rounded-xl"
-                                                    value={newCustomer.custom_field_2 || ""}
-                                                    onChange={(e) => setNewCustomer({...newCustomer, custom_field_2: e.target.value})}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label className="form-label">Custom Field 3</Label>
-                                                <Input 
-                                                    placeholder="Custom value..." 
-                                                    className="h-11 rounded-xl"
-                                                    value={newCustomer.custom_field_3 || ""}
-                                                    onChange={(e) => setNewCustomer({...newCustomer, custom_field_3: e.target.value})}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label className="form-label">Notes</Label>
-                                                <Textarea 
-                                                    placeholder="Any special notes about this customer..." 
-                                                    className="rounded-xl resize-none" 
-                                                    rows={3}
-                                                    value={newCustomer.notes || ""}
-                                                    onChange={(e) => setNewCustomer({...newCustomer, notes: e.target.value})}
-                                                />
-                                            </div>
-                                        </div>
+                                        </ComingSoonOverlay>
                                     </AccordionContent>
                                 </AccordionItem>
 
