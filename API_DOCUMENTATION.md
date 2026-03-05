@@ -243,55 +243,125 @@ Webhook for POS systems to send order data on every completed order. Automatical
 POST /api/pos/orders
 ```
 
-**Request Body:**
+**Request Body - Order Level Fields:**
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `pos_id` | string | **Yes** | POS system identifier |
-| `restaurant_id` | string | **Yes** | Restaurant ID |
+| `pos_id` | string | No | POS system identifier (default: "mygenie") |
+| `restaurant_id` | string | **Yes** | Restaurant ID in POS |
+| `restaurant_name` | string | No | Restaurant name |
 | `order_id` | string | **Yes** | Unique order ID from POS |
+| `user_id` | string | No | POS customer ID (maps to `pos_customer_id`) |
 | `cust_mobile` | string | **Yes** | Customer phone (10 digits) |
 | `cust_name` | string | No | Customer name (required for new customers) |
+| `cust_email` | string | No | Customer email |
 | `order_amount` | float | **Yes** | Total order amount |
-| `wallet_used` | float | No | Wallet amount used (default: 0) |
+| `order_sub_total_amount` | float | No | Subtotal before tax/discount |
+| `order_discount` | float | No | Order discount amount |
+| `self_discount` | float | No | Self discount amount |
 | `coupon_code` | string | No | Coupon code applied |
-| `coupon_discount` | float | No | Discount amount (default: 0) |
+| `coupon_discount` | float | No | Coupon discount amount |
+| `wallet_used` | float | No | Wallet amount used (default: 0) |
+| `tax_amount` | float | No | Total tax amount |
+| `gst_tax` | float | No | GST amount |
+| `vat_tax` | float | No | VAT amount |
+| `service_tax` | float | No | Service tax |
+| `service_gst_tax_amount` | float | No | GST on service |
+| `tip_amount` | float | No | Tip amount |
+| `tip_tax_amount` | float | No | Tax on tip |
+| `delivery_charge` | float | No | Delivery charge |
+| `round_up` | float | No | Rounding adjustment |
 | `payment_method` | string | No | "cash", "upi", "card", "TAB" |
 | `payment_status` | string | **Yes** | Must be "success" to process |
+| `payment_type` | string | No | "prepaid", "postpaid" |
+| `transaction_id` | string | No | Payment transaction ID |
 | `order_type` | string | No | "pos", "dine_in", "takeaway", "delivery" |
+| `table_id` | string | No | Table ID |
+| `waiter_id` | string | No | Waiter/server ID |
+| `print_kot` | string | No | "Yes" or "No" |
+| `paid_room` | string | No | Room billing (future) |
+| `room_id` | string | No | Room ID (future) |
+| `address_id` | string | No | Delivery address ID (future) |
 | `order_notes` | string | No | Order-level notes |
-| `items` | array | No | Line items (see below) |
+| `items` | array | No | Cart items (see below) |
 
-#### Items Array Schema
+#### Items Array Schema (Cart Items)
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `item_name` | string | **Yes** | Menu item name |
+| `pos_food_id` | integer | No | Food ID from POS system |
+| `item_category` | string | No | Food category (e.g., "North Indian") |
 | `item_qty` | integer | No | Quantity (default: 1) |
-| `item_price` | float | No | Price per unit (default: 0) |
+| `item_price` | float | No | Base price per unit (food_amount) |
+| `variant` | string | No | Size/variant selected |
+| `variations` | array | No | Full variation objects |
+| `add_on_ids` | array[int] | No | Add-on IDs |
+| `add_on_qtys` | array[int] | No | Add-on quantities |
+| `add_ons` | array | No | Full add-on objects |
+| `variation_amount` | float | No | Extra amount for variant |
+| `addon_amount` | float | No | Total add-on amount |
+| `discount_amount` | float | No | Item discount |
+| `service_charge` | float | No | Item service charge |
+| `gst_amount` | float | No | Item GST |
+| `vat_amount` | float | No | Item VAT |
+| `station` | string | No | Kitchen station ("OTHER", "BAR", "KITCHEN") |
 | `item_notes` | string | No | Food-level notes (e.g., "extra gravy") |
-| `item_category` | string | No | Food category (e.g., "North Indian", "Beverages") |
 
-**Example:**
+**Example (Full MyGenie Format):**
 ```bash
-curl -X POST "https://hybrid-pos-system-3.preview.emergentagent.com/api/pos/orders" \
-  -H "X-API-Key: dp_live_u-AFJd9rSTjej07ENWfbXT3XaK9OuoxdAJ70BWSylb4" \
+curl -X POST "https://content-manager-114.preview.emergentagent.com/api/pos/orders" \
+  -H "X-API-Key: your_api_key" \
   -H "Content-Type: application/json" \
   -d '{
     "pos_id": "mygenie",
     "restaurant_id": "478",
+    "restaurant_name": "18march",
     "order_id": "ORD-2026-001234",
+    "user_id": "12345",
     "cust_mobile": "9653078025",
     "cust_name": "Piyush",
-    "order_amount": 1850.0,
+    "cust_email": "piyush@example.com",
+    "order_amount": 987.0,
+    "order_sub_total_amount": 987.0,
+    "order_discount": 0.0,
+    "self_discount": 0.0,
+    "tax_amount": 0.0,
+    "gst_tax": 0.0,
+    "vat_tax": 0.0,
+    "service_tax": 0.0,
+    "tip_amount": 0.0,
+    "delivery_charge": 0.0,
+    "round_up": 0.0,
     "payment_method": "TAB",
     "payment_status": "success",
-    "order_type": "dine_in",
-    "order_notes": "Anniversary dinner, corner table",
+    "payment_type": "prepaid",
+    "order_type": "pos",
+    "table_id": "0",
+    "waiter_id": "1703",
+    "print_kot": "Yes",
+    "order_notes": "Anniversary dinner",
     "items": [
-      {"item_name": "Butter Chicken", "item_qty": 2, "item_price": 450.0, "item_notes": "Extra gravy, less spicy", "item_category": "North Indian"},
-      {"item_name": "Garlic Naan", "item_qty": 4, "item_price": 80.0, "item_category": "Breads"},
-      {"item_name": "Gulab Jamun", "item_qty": 1, "item_price": 180.0, "item_notes": "Warm", "item_category": "Desserts"}
+      {
+        "item_name": "Butter Chicken",
+        "pos_food_id": 62118,
+        "item_category": "North Indian",
+        "item_qty": 1,
+        "item_price": 987.0,
+        "variant": "",
+        "variations": [],
+        "add_on_ids": [],
+        "add_on_qtys": [],
+        "add_ons": [],
+        "variation_amount": 0.0,
+        "addon_amount": 0.0,
+        "discount_amount": 0.0,
+        "service_charge": 0.0,
+        "gst_amount": 0.0,
+        "vat_amount": 0.0,
+        "station": "OTHER",
+        "item_notes": "Less spicy"
+      }
     ]
   }'
 ```
@@ -301,6 +371,11 @@ curl -X POST "https://hybrid-pos-system-3.preview.emergentagent.com/api/pos/orde
 2. **Separate `order_items` collection** - indexed by `customer_id`, `item_name`, `order_id` for AI analytics
 
 Both `order_notes` and `item_notes` are persisted. Orders without items are backward compatible.
+
+**Customer Lookup Priority:**
+1. First by `user_id` → `pos_customer_id` (if provided)
+2. Then by `cust_mobile` → `phone`
+3. Auto-creates customer if not found
 
 **Success Response:**
 ```json
@@ -313,8 +388,8 @@ Both `order_notes` and `item_notes` are persisted. Orders without items are back
     "customer_id": "f95ce018-...",
     "customer_name": "Piyush",
     "is_new_customer": false,
-    "order_amount": 1850.0,
-    "points_earned": 185,
+    "order_amount": 987.0,
+    "points_earned": 98,
     "total_points": 1685,
     "tier": "Gold",
     "wallet_used": 0.0,
@@ -390,4 +465,4 @@ When syncing customers from MyGenie POS API, the following key fields are stored
 
 ---
 
-**Last Updated**: March 5, 2026
+**Last Updated**: March 5, 2026 (Order Webhook v2 - Full MyGenie Support)
