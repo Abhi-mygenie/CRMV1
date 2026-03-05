@@ -1505,35 +1505,44 @@ export default function CustomersPage() {
                                     <AccordionTrigger className="hover:no-underline py-3 px-3 bg-blue-50 rounded-xl mb-2">
                                         <span className="flex items-center gap-2 text-sm font-semibold text-blue-600">
                                             <Phone className="w-4 h-4" /> Contact Preferences
-                                            <span className="ml-auto text-[10px] bg-blue-100 text-blue-500 px-2 py-0.5 rounded-full">Coming Soon</span>
                                         </span>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-1">
-                                        <div className="relative">
-                                            {/* Coming Soon Overlay */}
-                                            <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center rounded-xl">
-                                                <div className="text-center p-6">
-                                                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                                        <Rocket className="w-6 h-6 text-blue-500" />
-                                                    </div>
-                                                    <p className="font-semibold text-gray-800">Coming Soon</p>
-                                                    <p className="text-xs text-gray-500 mt-1">This feature is being built.<br/>Check back soon!</p>
-                                                </div>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                                <Label className="text-sm">WhatsApp Opt-in</Label>
+                                                <Switch 
+                                                    checked={newCustomer.whatsapp_opt_in} 
+                                                    onCheckedChange={(v) => setNewCustomer({...newCustomer, whatsapp_opt_in: v})}
+                                                />
                                             </div>
-                                            {/* Actual content (blurred behind) */}
-                                            <div className="space-y-3 opacity-40 pointer-events-none">
-                                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                                    <Label className="text-sm">WhatsApp Opt-in</Label>
-                                                    <Switch checked={false} disabled />
-                                                </div>
-                                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                                    <Label className="text-sm">Promo WhatsApp Allowed</Label>
-                                                    <Switch checked={true} disabled />
-                                                </div>
-                                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                                    <Label className="text-sm">Promo SMS Allowed</Label>
-                                                    <Switch checked={true} disabled />
-                                                </div>
+                                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                                <Label className="text-sm">Promo WhatsApp Allowed</Label>
+                                                <Switch 
+                                                    checked={newCustomer.promo_whatsapp_allowed} 
+                                                    onCheckedChange={(v) => setNewCustomer({...newCustomer, promo_whatsapp_allowed: v})}
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                                <Label className="text-sm">Promo SMS Allowed</Label>
+                                                <Switch 
+                                                    checked={newCustomer.promo_sms_allowed} 
+                                                    onCheckedChange={(v) => setNewCustomer({...newCustomer, promo_sms_allowed: v})}
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                                <Label className="text-sm">Email Marketing Allowed</Label>
+                                                <Switch 
+                                                    checked={newCustomer.email_marketing_allowed} 
+                                                    onCheckedChange={(v) => setNewCustomer({...newCustomer, email_marketing_allowed: v})}
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                                <Label className="text-sm">Call Allowed</Label>
+                                                <Switch 
+                                                    checked={newCustomer.call_allowed} 
+                                                    onCheckedChange={(v) => setNewCustomer({...newCustomer, call_allowed: v})}
+                                                />
                                             </div>
                                         </div>
                                     </AccordionContent>
@@ -1544,22 +1553,47 @@ export default function CustomersPage() {
                                     <AccordionTrigger className="hover:no-underline py-3 px-3 bg-purple-50 rounded-xl mb-2">
                                         <span className="flex items-center gap-2 text-sm font-semibold text-purple-600">
                                             <Tag className="w-4 h-4" /> Membership
-                                            <span className="ml-auto text-[10px] bg-purple-100 text-purple-500 px-2 py-0.5 rounded-full">Coming Soon</span>
                                         </span>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-1">
-                                        <ComingSoonOverlay color="purple">
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <Label className="form-label">Membership ID</Label>
-                                                    <Input placeholder="External membership ID" className="h-11 rounded-xl" disabled />
-                                                </div>
-                                                <div>
-                                                    <Label className="form-label">Membership Expiry</Label>
-                                                    <Input type="date" className="h-11 rounded-xl" disabled />
-                                                </div>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <Label className="form-label">Membership ID</Label>
+                                                <Input 
+                                                    placeholder="External membership ID" 
+                                                    className="h-11 rounded-xl"
+                                                    value={newCustomer.membership_id}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, membership_id: e.target.value})}
+                                                />
                                             </div>
-                                        </ComingSoonOverlay>
+                                            <div>
+                                                <Label className="form-label">Membership Expiry</Label>
+                                                <Input 
+                                                    type="date" 
+                                                    className="h-11 rounded-xl"
+                                                    value={newCustomer.membership_expiry}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, membership_expiry: e.target.value})}
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label className="form-label">Referral Code</Label>
+                                                <Input 
+                                                    placeholder="Customer's referral code" 
+                                                    className="h-11 rounded-xl"
+                                                    value={newCustomer.referral_code}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, referral_code: e.target.value})}
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label className="form-label">Referred By</Label>
+                                                <Input 
+                                                    placeholder="Who referred this customer?" 
+                                                    className="h-11 rounded-xl"
+                                                    value={newCustomer.referred_by}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, referred_by: e.target.value})}
+                                                />
+                                            </div>
+                                        </div>
                                     </AccordionContent>
                                 </AccordionItem>
 
@@ -1568,28 +1602,80 @@ export default function CustomersPage() {
                                     <AccordionTrigger className="hover:no-underline py-3 px-3 bg-cyan-50 rounded-xl mb-2">
                                         <span className="flex items-center gap-2 text-sm font-semibold text-cyan-600">
                                             <MapPin className="w-4 h-4" /> Address
-                                            <span className="ml-auto text-[10px] bg-cyan-100 text-cyan-500 px-2 py-0.5 rounded-full">Coming Soon</span>
                                         </span>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-1">
-                                        <ComingSoonOverlay color="cyan">
-                                            <div className="space-y-4">
+                                        <div className="space-y-4">
+                                            <div>
+                                                <Label className="form-label">Address Line 1</Label>
+                                                <Textarea 
+                                                    placeholder="House/Flat No., Building..." 
+                                                    className="rounded-xl resize-none" 
+                                                    rows={2}
+                                                    value={newCustomer.address}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, address: e.target.value})}
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label className="form-label">Address Line 2</Label>
+                                                <Input 
+                                                    placeholder="Street, Area, Landmark" 
+                                                    className="h-11 rounded-xl"
+                                                    value={newCustomer.address_line_2}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, address_line_2: e.target.value})}
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3">
                                                 <div>
-                                                    <Label className="form-label">Address Line 1</Label>
-                                                    <Textarea placeholder="House/Flat No., Building..." className="rounded-xl resize-none" rows={2} disabled />
+                                                    <Label className="form-label">City</Label>
+                                                    <Input 
+                                                        placeholder="City" 
+                                                        className="h-11 rounded-xl"
+                                                        value={newCustomer.city}
+                                                        onChange={(e) => setNewCustomer({...newCustomer, city: e.target.value})}
+                                                    />
                                                 </div>
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    <div>
-                                                        <Label className="form-label">City</Label>
-                                                        <Input placeholder="City" className="h-11 rounded-xl" disabled />
-                                                    </div>
-                                                    <div>
-                                                        <Label className="form-label">Pincode</Label>
-                                                        <Input placeholder="400001" className="h-11 rounded-xl" disabled />
-                                                    </div>
+                                                <div>
+                                                    <Label className="form-label">State</Label>
+                                                    <Input 
+                                                        placeholder="State" 
+                                                        className="h-11 rounded-xl"
+                                                        value={newCustomer.state}
+                                                        onChange={(e) => setNewCustomer({...newCustomer, state: e.target.value})}
+                                                    />
                                                 </div>
                                             </div>
-                                        </ComingSoonOverlay>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <Label className="form-label">Pincode</Label>
+                                                    <Input 
+                                                        placeholder="400001" 
+                                                        className="h-11 rounded-xl"
+                                                        value={newCustomer.pincode}
+                                                        onChange={(e) => setNewCustomer({...newCustomer, pincode: e.target.value})}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label className="form-label">Country</Label>
+                                                    <Input 
+                                                        placeholder="India" 
+                                                        className="h-11 rounded-xl"
+                                                        value={newCustomer.country}
+                                                        onChange={(e) => setNewCustomer({...newCustomer, country: e.target.value})}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <Label className="form-label">Delivery Instructions</Label>
+                                                <Textarea 
+                                                    placeholder="Ring doorbell twice, leave at door..." 
+                                                    className="rounded-xl resize-none" 
+                                                    rows={2}
+                                                    value={newCustomer.delivery_instructions}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, delivery_instructions: e.target.value})}
+                                                />
+                                            </div>
+                                        </div>
                                     </AccordionContent>
                                 </AccordionItem>
 
@@ -1599,22 +1685,60 @@ export default function CustomersPage() {
                                         <AccordionTrigger className="hover:no-underline py-3 px-3 bg-[#F26B33]/10 rounded-xl mb-2">
                                             <span className="flex items-center gap-2 text-sm font-semibold text-[#F26B33]">
                                                 <Building2 className="w-4 h-4" /> Corporate Info
-                                                <span className="ml-auto text-[10px] bg-orange-100 text-orange-500 px-2 py-0.5 rounded-full">Coming Soon</span>
                                             </span>
                                         </AccordionTrigger>
                                         <AccordionContent className="px-1">
-                                            <ComingSoonOverlay color="orange">
-                                                <div className="space-y-4">
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <Label className="form-label">Company/GST Name</Label>
+                                                    <Input 
+                                                        placeholder="Company name" 
+                                                        className="h-11 rounded-xl"
+                                                        value={newCustomer.gst_name}
+                                                        onChange={(e) => setNewCustomer({...newCustomer, gst_name: e.target.value})}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label className="form-label">GST Number</Label>
+                                                    <Input 
+                                                        placeholder="22AAAAA0000A1Z5" 
+                                                        className="h-11 rounded-xl"
+                                                        value={newCustomer.gst_number}
+                                                        onChange={(e) => setNewCustomer({...newCustomer, gst_number: e.target.value})}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label className="form-label">Billing Address</Label>
+                                                    <Textarea 
+                                                        placeholder="Billing address for invoices" 
+                                                        className="rounded-xl resize-none" 
+                                                        rows={2}
+                                                        value={newCustomer.billing_address}
+                                                        onChange={(e) => setNewCustomer({...newCustomer, billing_address: e.target.value})}
+                                                    />
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-3">
                                                     <div>
-                                                        <Label className="form-label">Company/GST Name</Label>
-                                                        <Input placeholder="Company name" className="h-11 rounded-xl" disabled />
+                                                        <Label className="form-label">Credit Limit</Label>
+                                                        <Input 
+                                                            placeholder="50000" 
+                                                            type="number"
+                                                            className="h-11 rounded-xl"
+                                                            value={newCustomer.credit_limit}
+                                                            onChange={(e) => setNewCustomer({...newCustomer, credit_limit: e.target.value})}
+                                                        />
                                                     </div>
                                                     <div>
-                                                        <Label className="form-label">GST Number</Label>
-                                                        <Input placeholder="22AAAAA0000A1Z5" className="h-11 rounded-xl" disabled />
+                                                        <Label className="form-label">Payment Terms</Label>
+                                                        <Input 
+                                                            placeholder="Net 30" 
+                                                            className="h-11 rounded-xl"
+                                                            value={newCustomer.payment_terms}
+                                                            onChange={(e) => setNewCustomer({...newCustomer, payment_terms: e.target.value})}
+                                                        />
                                                     </div>
                                                 </div>
-                                            </ComingSoonOverlay>
+                                            </div>
                                         </AccordionContent>
                                     </AccordionItem>
                                 )}
@@ -1624,22 +1748,48 @@ export default function CustomersPage() {
                                     <AccordionTrigger className="hover:no-underline py-3 px-3 bg-amber-50 rounded-xl mb-2">
                                         <span className="flex items-center gap-2 text-sm font-semibold text-amber-600">
                                             <TrendingUp className="w-4 h-4" /> Source & Journey
-                                            <span className="ml-auto text-[10px] bg-amber-100 text-amber-500 px-2 py-0.5 rounded-full">Coming Soon</span>
                                         </span>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-1">
-                                        <ComingSoonOverlay color="amber">
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <Label className="form-label">Lead Source</Label>
-                                                    <Input placeholder="How did they find you?" className="h-11 rounded-xl" disabled />
-                                                </div>
-                                                <div>
-                                                    <Label className="form-label">Campaign Source</Label>
-                                                    <Input placeholder="UTM or campaign name" className="h-11 rounded-xl" disabled />
-                                                </div>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <Label className="form-label">Lead Source</Label>
+                                                <Select value={newCustomer.lead_source} onValueChange={(v) => setNewCustomer({...newCustomer, lead_source: v})}>
+                                                    <SelectTrigger className="h-11 rounded-xl">
+                                                        <SelectValue placeholder="How did they find you?" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Walk-in">Walk-in</SelectItem>
+                                                        <SelectItem value="Referral">Referral</SelectItem>
+                                                        <SelectItem value="Google">Google</SelectItem>
+                                                        <SelectItem value="Instagram">Instagram</SelectItem>
+                                                        <SelectItem value="Facebook">Facebook</SelectItem>
+                                                        <SelectItem value="Zomato">Zomato</SelectItem>
+                                                        <SelectItem value="Swiggy">Swiggy</SelectItem>
+                                                        <SelectItem value="WhatsApp">WhatsApp</SelectItem>
+                                                        <SelectItem value="Other">Other</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
                                             </div>
-                                        </ComingSoonOverlay>
+                                            <div>
+                                                <Label className="form-label">Campaign Source</Label>
+                                                <Input 
+                                                    placeholder="UTM or campaign name" 
+                                                    className="h-11 rounded-xl"
+                                                    value={newCustomer.campaign_source}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, campaign_source: e.target.value})}
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label className="form-label">Assigned Salesperson</Label>
+                                                <Input 
+                                                    placeholder="Staff member name" 
+                                                    className="h-11 rounded-xl"
+                                                    value={newCustomer.assigned_salesperson}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, assigned_salesperson: e.target.value})}
+                                                />
+                                            </div>
+                                        </div>
                                     </AccordionContent>
                                 </AccordionItem>
                                 {/* Dining Preferences */}
@@ -1647,26 +1797,111 @@ export default function CustomersPage() {
                                     <AccordionTrigger className="hover:no-underline py-3 px-3 bg-rose-50 rounded-xl mb-2">
                                         <span className="flex items-center gap-2 text-sm font-semibold text-rose-600">
                                             <Home className="w-4 h-4" /> Dining Preferences
-                                            <span className="ml-auto text-[10px] bg-rose-100 text-rose-500 px-2 py-0.5 rounded-full">Coming Soon</span>
                                         </span>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-1">
-                                        <ComingSoonOverlay color="rose">
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <Label className="form-label">Preferred Dining Type</Label>
-                                                    <div className="flex gap-2 mt-2">
-                                                        {["Dine-In", "Takeaway", "Delivery"].map(type => (
-                                                            <button key={type} type="button" disabled className="flex-1 py-2 px-3 rounded-xl text-xs font-medium border-2 bg-white text-gray-400 border-gray-200">{type}</button>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <Label className="form-label">Diet Preference</Label>
-                                                    <Input placeholder="Select diet..." className="h-11 rounded-xl" disabled />
+                                        <div className="space-y-4">
+                                            <div>
+                                                <Label className="form-label">Preferred Dining Type</Label>
+                                                <div className="flex gap-2 mt-2">
+                                                    {["Dine-In", "Takeaway", "Delivery"].map(type => (
+                                                        <button 
+                                                            key={type} 
+                                                            type="button" 
+                                                            onClick={() => setNewCustomer({...newCustomer, preferred_dining_type: type})}
+                                                            className={`flex-1 py-2 px-3 rounded-xl text-xs font-medium border-2 transition-all ${
+                                                                newCustomer.preferred_dining_type === type 
+                                                                    ? "bg-rose-500 text-white border-rose-500" 
+                                                                    : "bg-white text-gray-600 border-gray-200 hover:border-rose-300"
+                                                            }`}
+                                                        >
+                                                            {type}
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             </div>
-                                        </ComingSoonOverlay>
+                                            <div>
+                                                <Label className="form-label">Preferred Time Slot</Label>
+                                                <Select value={newCustomer.preferred_time_slot} onValueChange={(v) => setNewCustomer({...newCustomer, preferred_time_slot: v})}>
+                                                    <SelectTrigger className="h-11 rounded-xl">
+                                                        <SelectValue placeholder="Select time slot" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Breakfast">Breakfast (8-11 AM)</SelectItem>
+                                                        <SelectItem value="Lunch">Lunch (12-3 PM)</SelectItem>
+                                                        <SelectItem value="Evening">Evening (4-7 PM)</SelectItem>
+                                                        <SelectItem value="Dinner">Dinner (7-11 PM)</SelectItem>
+                                                        <SelectItem value="Late Night">Late Night (11 PM+)</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <Label className="form-label">Favorite Table</Label>
+                                                    <Input 
+                                                        placeholder="Table #5" 
+                                                        className="h-11 rounded-xl"
+                                                        value={newCustomer.favorite_table}
+                                                        onChange={(e) => setNewCustomer({...newCustomer, favorite_table: e.target.value})}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label className="form-label">Avg Party Size</Label>
+                                                    <Input 
+                                                        placeholder="4" 
+                                                        type="number"
+                                                        className="h-11 rounded-xl"
+                                                        value={newCustomer.avg_party_size}
+                                                        onChange={(e) => setNewCustomer({...newCustomer, avg_party_size: e.target.value})}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <Label className="form-label">Diet Preference</Label>
+                                                <Select value={newCustomer.diet_preference} onValueChange={(v) => setNewCustomer({...newCustomer, diet_preference: v})}>
+                                                    <SelectTrigger className="h-11 rounded-xl">
+                                                        <SelectValue placeholder="Select diet" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Vegetarian">Vegetarian</SelectItem>
+                                                        <SelectItem value="Non-Vegetarian">Non-Vegetarian</SelectItem>
+                                                        <SelectItem value="Vegan">Vegan</SelectItem>
+                                                        <SelectItem value="Eggetarian">Eggetarian</SelectItem>
+                                                        <SelectItem value="Jain">Jain</SelectItem>
+                                                        <SelectItem value="Halal">Halal</SelectItem>
+                                                        <SelectItem value="No Preference">No Preference</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div>
+                                                <Label className="form-label">Spice Level</Label>
+                                                <div className="flex gap-2 mt-2">
+                                                    {["Mild", "Medium", "Spicy", "Extra Spicy"].map(level => (
+                                                        <button 
+                                                            key={level} 
+                                                            type="button" 
+                                                            onClick={() => setNewCustomer({...newCustomer, spice_level: level})}
+                                                            className={`flex-1 py-2 px-2 rounded-xl text-xs font-medium border-2 transition-all ${
+                                                                newCustomer.spice_level === level 
+                                                                    ? "bg-rose-500 text-white border-rose-500" 
+                                                                    : "bg-white text-gray-600 border-gray-200 hover:border-rose-300"
+                                                            }`}
+                                                        >
+                                                            {level}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <Label className="form-label">Cuisine Preference</Label>
+                                                <Input 
+                                                    placeholder="North Indian, Chinese, Italian..." 
+                                                    className="h-11 rounded-xl"
+                                                    value={newCustomer.cuisine_preference}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, cuisine_preference: e.target.value})}
+                                                />
+                                            </div>
+                                        </div>
                                     </AccordionContent>
                                 </AccordionItem>
                                 {/* Special Occasions */}
@@ -1674,26 +1909,48 @@ export default function CustomersPage() {
                                     <AccordionTrigger className="hover:no-underline py-3 px-3 bg-pink-50 rounded-xl mb-2">
                                         <span className="flex items-center gap-2 text-sm font-semibold text-pink-600">
                                             <Gift className="w-4 h-4" /> Special Occasions
-                                            <span className="ml-auto text-[10px] bg-pink-100 text-pink-500 px-2 py-0.5 rounded-full">Coming Soon</span>
                                         </span>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-1">
-                                        <ComingSoonOverlay color="pink">
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <Label className="form-label">Spouse/Partner Name</Label>
-                                                    <Input placeholder="Partner's name" className="h-11 rounded-xl" disabled />
-                                                </div>
-                                                <div>
-                                                    <Label className="form-label">Festival Preferences</Label>
-                                                    <div className="flex flex-wrap gap-2 mt-2">
-                                                        {["Diwali", "Eid", "Christmas"].map(f => (
-                                                            <span key={f} className="px-3 py-1.5 rounded-full text-xs bg-gray-100 text-gray-400">{f}</span>
-                                                        ))}
-                                                    </div>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <Label className="form-label">Spouse/Partner Name</Label>
+                                                <Input 
+                                                    placeholder="Partner's name" 
+                                                    className="h-11 rounded-xl"
+                                                    value={newCustomer.spouse_name}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, spouse_name: e.target.value})}
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label className="form-label">Festival Preferences</Label>
+                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                    {["Diwali", "Eid", "Christmas", "Holi", "New Year", "Navratri"].map(f => {
+                                                        const selected = (newCustomer.festival_preference || []).includes(f);
+                                                        return (
+                                                            <button
+                                                                key={f}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const current = newCustomer.festival_preference || [];
+                                                                    const updated = selected 
+                                                                        ? current.filter(x => x !== f)
+                                                                        : [...current, f];
+                                                                    setNewCustomer({...newCustomer, festival_preference: updated});
+                                                                }}
+                                                                className={`px-3 py-1.5 rounded-full text-xs transition-all ${
+                                                                    selected 
+                                                                        ? "bg-pink-500 text-white" 
+                                                                        : "bg-gray-100 text-gray-600 hover:bg-pink-100"
+                                                                }`}
+                                                            >
+                                                                {f}
+                                                            </button>
+                                                        );
+                                                    })}
                                                 </div>
                                             </div>
-                                        </ComingSoonOverlay>
+                                        </div>
                                     </AccordionContent>
                                 </AccordionItem>
                                                 {/* Tags & Flags */}
@@ -1701,22 +1958,32 @@ export default function CustomersPage() {
                                     <AccordionTrigger className="hover:no-underline py-3 px-3 bg-indigo-50 rounded-xl mb-2">
                                         <span className="flex items-center gap-2 text-sm font-semibold text-indigo-600">
                                             <Star className="w-4 h-4" /> Tags & Flags
-                                            <span className="ml-auto text-[10px] bg-indigo-100 text-indigo-500 px-2 py-0.5 rounded-full">Coming Soon</span>
                                         </span>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-1">
-                                        <ComingSoonOverlay color="indigo">
-                                            <div className="space-y-3">
-                                                <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-xl">
-                                                    <Label className="text-sm text-yellow-700">⭐ VIP Customer</Label>
-                                                    <Switch checked={false} disabled />
-                                                </div>
-                                                <div className="flex items-center justify-between p-3 bg-red-50 rounded-xl">
-                                                    <Label className="text-sm text-red-700">🚫 Blacklisted</Label>
-                                                    <Switch checked={false} disabled />
-                                                </div>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-xl">
+                                                <Label className="text-sm text-yellow-700">VIP Customer</Label>
+                                                <Switch 
+                                                    checked={newCustomer.vip_flag} 
+                                                    onCheckedChange={(v) => setNewCustomer({...newCustomer, vip_flag: v})}
+                                                />
                                             </div>
-                                        </ComingSoonOverlay>
+                                            <div className="flex items-center justify-between p-3 bg-red-50 rounded-xl">
+                                                <Label className="text-sm text-red-700">Blacklisted</Label>
+                                                <Switch 
+                                                    checked={newCustomer.blacklist_flag} 
+                                                    onCheckedChange={(v) => setNewCustomer({...newCustomer, blacklist_flag: v})}
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 bg-orange-50 rounded-xl">
+                                                <Label className="text-sm text-orange-700">Complaint Flag</Label>
+                                                <Switch 
+                                                    checked={newCustomer.complaint_flag} 
+                                                    onCheckedChange={(v) => setNewCustomer({...newCustomer, complaint_flag: v})}
+                                                />
+                                            </div>
+                                        </div>
                                     </AccordionContent>
                                 </AccordionItem>
 
@@ -1725,22 +1992,48 @@ export default function CustomersPage() {
                                     <AccordionTrigger className="hover:no-underline py-3 px-3 bg-gray-100 rounded-xl mb-2">
                                         <span className="flex items-center gap-2 text-sm font-semibold text-gray-600">
                                             <Layers className="w-4 h-4" /> Custom Fields & Notes
-                                            <span className="ml-auto text-[10px] bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">Coming Soon</span>
                                         </span>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-1">
-                                        <ComingSoonOverlay color="gray">
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <Label className="form-label">Preference Type</Label>
-                                                    <Input placeholder="Select preference" className="h-11 rounded-xl" disabled />
-                                                </div>
-                                                <div>
-                                                    <Label className="form-label">Notes</Label>
-                                                    <Textarea placeholder="Any special notes..." className="rounded-xl resize-none" rows={2} disabled />
-                                                </div>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <Label className="form-label">Custom Field 1</Label>
+                                                <Input 
+                                                    placeholder="Custom value..." 
+                                                    className="h-11 rounded-xl"
+                                                    value={newCustomer.custom_field_1 || ""}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, custom_field_1: e.target.value})}
+                                                />
                                             </div>
-                                        </ComingSoonOverlay>
+                                            <div>
+                                                <Label className="form-label">Custom Field 2</Label>
+                                                <Input 
+                                                    placeholder="Custom value..." 
+                                                    className="h-11 rounded-xl"
+                                                    value={newCustomer.custom_field_2 || ""}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, custom_field_2: e.target.value})}
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label className="form-label">Custom Field 3</Label>
+                                                <Input 
+                                                    placeholder="Custom value..." 
+                                                    className="h-11 rounded-xl"
+                                                    value={newCustomer.custom_field_3 || ""}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, custom_field_3: e.target.value})}
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label className="form-label">Notes</Label>
+                                                <Textarea 
+                                                    placeholder="Any special notes about this customer..." 
+                                                    className="rounded-xl resize-none" 
+                                                    rows={3}
+                                                    value={newCustomer.notes || ""}
+                                                    onChange={(e) => setNewCustomer({...newCustomer, notes: e.target.value})}
+                                                />
+                                            </div>
+                                        </div>
                                     </AccordionContent>
                                 </AccordionItem>
 
