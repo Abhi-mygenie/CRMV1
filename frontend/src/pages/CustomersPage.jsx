@@ -1388,7 +1388,20 @@ export default function CustomersPage() {
                                                     />
                                                 </div>
                                             </div>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
 
+                                {/* Other Information - Address + Personal Details */}
+                                <AccordionItem value="other" className="border-b-0">
+                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-cyan-50 rounded-xl mb-2">
+                                        <span className="flex items-center gap-2 text-sm font-semibold text-cyan-600">
+                                            <Layers className="w-4 h-4" /> Other Information
+                                        </span>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-1">
+                                        <div className="space-y-4">
+                                            {/* Email */}
                                             <div>
                                                 <Label htmlFor="email" className="form-label">Email</Label>
                                                 <Input
@@ -1402,6 +1415,7 @@ export default function CustomersPage() {
                                                 />
                                             </div>
 
+                                            {/* Gender & Language */}
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div>
                                                     <Label className="form-label">Gender</Label>
@@ -1437,6 +1451,7 @@ export default function CustomersPage() {
                                                 </div>
                                             </div>
 
+                                            {/* DOB & Anniversary */}
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div>
                                                     <Label htmlFor="dob" className="form-label flex items-center gap-1">
@@ -1496,19 +1511,15 @@ export default function CustomersPage() {
                                                     </button>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
 
-                                {/* Address */}
-                                <AccordionItem value="address" className="border-b-0">
-                                    <AccordionTrigger className="hover:no-underline py-3 px-3 bg-cyan-50 rounded-xl mb-2">
-                                        <span className="flex items-center gap-2 text-sm font-semibold text-cyan-600">
-                                            <MapPin className="w-4 h-4" /> Address
-                                        </span>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="px-1">
-                                        <div className="space-y-4">
+                                            {/* Divider */}
+                                            <div className="border-t pt-4 mt-4">
+                                                <p className="text-xs text-gray-500 font-medium mb-3 flex items-center gap-1">
+                                                    <MapPin className="w-3.5 h-3.5" /> Address Details
+                                                </p>
+                                            </div>
+
+                                            {/* Address Line 1 */}
                                             <div>
                                                 <Label className="form-label">Address Line 1</Label>
                                                 <Textarea 
@@ -1519,6 +1530,8 @@ export default function CustomersPage() {
                                                     onChange={(e) => setNewCustomer({...newCustomer, address: e.target.value})}
                                                 />
                                             </div>
+                                            
+                                            {/* Address Line 2 */}
                                             <div>
                                                 <Label className="form-label">Address Line 2</Label>
                                                 <Input 
@@ -1528,6 +1541,8 @@ export default function CustomersPage() {
                                                     onChange={(e) => setNewCustomer({...newCustomer, address_line_2: e.target.value})}
                                                 />
                                             </div>
+                                            
+                                            {/* City & State */}
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div>
                                                     <Label className="form-label">City</Label>
@@ -1548,6 +1563,8 @@ export default function CustomersPage() {
                                                     />
                                                 </div>
                                             </div>
+                                            
+                                            {/* Pincode & Country */}
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div>
                                                     <Label className="form-label">Pincode</Label>
@@ -1568,6 +1585,8 @@ export default function CustomersPage() {
                                                     />
                                                 </div>
                                             </div>
+                                            
+                                            {/* Delivery Instructions */}
                                             <div>
                                                 <Label className="form-label">Delivery Instructions</Label>
                                                 <Textarea 
@@ -1581,7 +1600,6 @@ export default function CustomersPage() {
                                         </div>
                                     </AccordionContent>
                                 </AccordionItem>
-
                                 {/* Corporate Info - Only shows if customer_type is corporate */}
                                 {newCustomer.customer_type === "corporate" && (
                                     <AccordionItem value="corporate" className="border-b-0">
