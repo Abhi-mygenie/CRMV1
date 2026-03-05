@@ -55,7 +55,11 @@ export default function CustomersPage() {
         has_anniversary_this_month: false,
         total_visits: "all",
         blacklist_flag: "all",
-        complaint_flag: "all"
+        complaint_flag: "all",
+        // Phase 3 filters
+        gender: "all",
+        total_spent: "all",
+        is_blocked: "all"
     });
     const [expandedFilterGroups, setExpandedFilterGroups] = useState(["basic"]);
     const [newCustomer, setNewCustomer] = useState({ 
@@ -187,6 +191,10 @@ export default function CustomersPage() {
         if (filters.total_visits && filters.total_visits !== "all") params.append("total_visits", filters.total_visits);
         if (filters.blacklist_flag && filters.blacklist_flag !== "all") params.append("blacklist_flag", filters.blacklist_flag);
         if (filters.complaint_flag && filters.complaint_flag !== "all") params.append("complaint_flag", filters.complaint_flag);
+        // Phase 3 filters
+        if (filters.gender && filters.gender !== "all") params.append("gender", filters.gender);
+        if (filters.total_spent && filters.total_spent !== "all") params.append("total_spent", filters.total_spent);
+        if (filters.is_blocked && filters.is_blocked !== "all") params.append("is_blocked", filters.is_blocked);
         return params.toString();
     };
 
@@ -406,7 +414,10 @@ export default function CustomersPage() {
             has_anniversary_this_month: false,
             total_visits: "all",
             blacklist_flag: "all",
-            complaint_flag: "all"
+            complaint_flag: "all",
+            gender: "all",
+            total_spent: "all",
+            is_blocked: "all"
         });
     };
 
@@ -425,7 +436,10 @@ export default function CustomersPage() {
         filters.has_anniversary_this_month ? 1 : 0,
         filters.total_visits !== "all" ? 1 : 0,
         filters.blacklist_flag !== "all" ? 1 : 0,
-        filters.complaint_flag !== "all" ? 1 : 0
+        filters.complaint_flag !== "all" ? 1 : 0,
+        filters.gender !== "all" ? 1 : 0,
+        filters.total_spent !== "all" ? 1 : 0,
+        filters.is_blocked !== "all" ? 1 : 0
     ].reduce((a, b) => a + b, 0);
 
     const toggleFilterGroup = (group) => {
@@ -807,6 +821,20 @@ export default function CustomersPage() {
                                                     </SelectContent>
                                                 </Select>
                                             </div>
+                                            <div>
+                                                <Label className="text-xs text-[#52525B]">Gender</Label>
+                                                <Select value={filters.gender} onValueChange={(v) => setFilters({...filters, gender: v})}>
+                                                    <SelectTrigger className="h-10 mt-1" data-testid="filter-gender">
+                                                        <SelectValue placeholder="All" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="all">All</SelectItem>
+                                                        <SelectItem value="male">Male</SelectItem>
+                                                        <SelectItem value="female">Female</SelectItem>
+                                                        <SelectItem value="other">Other</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -857,6 +885,22 @@ export default function CustomersPage() {
                                                         <SelectItem value="1-5">1-5 visits</SelectItem>
                                                         <SelectItem value="6-10">6-10 visits</SelectItem>
                                                         <SelectItem value="10+">10+ visits</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div>
+                                                <Label className="text-xs text-[#52525B]">Total Spent</Label>
+                                                <Select value={filters.total_spent} onValueChange={(v) => setFilters({...filters, total_spent: v})}>
+                                                    <SelectTrigger className="h-10 mt-1" data-testid="filter-total-spent">
+                                                        <SelectValue placeholder="Any" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="all">Any</SelectItem>
+                                                        <SelectItem value="0-500">Under 500</SelectItem>
+                                                        <SelectItem value="500-2000">500 - 2,000</SelectItem>
+                                                        <SelectItem value="2000-5000">2,000 - 5,000</SelectItem>
+                                                        <SelectItem value="5000-10000">5,000 - 10,000</SelectItem>
+                                                        <SelectItem value="10000+">10,000+</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </div>
@@ -1066,6 +1110,19 @@ export default function CustomersPage() {
                                                     </SelectContent>
                                                 </Select>
                                             </div>
+                                            <div>
+                                                <Label className="text-xs text-[#52525B]">Blocked Status</Label>
+                                                <Select value={filters.is_blocked} onValueChange={(v) => setFilters({...filters, is_blocked: v})}>
+                                                    <SelectTrigger className="h-10 mt-1" data-testid="filter-is-blocked">
+                                                        <SelectValue placeholder="All" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="all">All</SelectItem>
+                                                        <SelectItem value="true">Blocked Only</SelectItem>
+                                                        <SelectItem value="false">Not Blocked</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -1203,6 +1260,9 @@ export default function CustomersPage() {
                                         {filters.has_anniversary_this_month && <p>• Anniversary this month</p>}
                                         {filters.total_visits !== "all" && <p>• Visits: {filters.total_visits}</p>}
                                         {filters.complaint_flag !== "all" && <p>• Complaints: {filters.complaint_flag === "true" ? "Yes" : "No"}</p>}
+                                        {filters.gender !== "all" && <p>• Gender: {filters.gender}</p>}
+                                        {filters.total_spent !== "all" && <p>• Spent: {filters.total_spent}</p>}
+                                        {filters.is_blocked !== "all" && <p>• Blocked: {filters.is_blocked === "true" ? "Yes" : "No"}</p>}
                                         {filters.blacklist_flag !== "all" && <p>• Blacklist: {filters.blacklist_flag === "true" ? "Yes" : "No"}</p>}
                                         {search && <p>• Search: {search}</p>}
                                     </div>

@@ -405,6 +405,10 @@ async def list_customers(
     total_visits: Optional[str] = None,
     blacklist_flag: Optional[str] = None,
     complaint_flag: Optional[str] = None,
+    # Phase 3 filters
+    gender: Optional[str] = None,
+    total_spent: Optional[str] = None,
+    is_blocked: Optional[str] = None,
     # Sort options
     sort_by: str = "created_at",
     sort_order: str = "desc",
@@ -498,6 +502,25 @@ async def list_customers(
             query["total_visits"] = {"$gte": 6, "$lte": 10}
         elif total_visits == "10+":
             query["total_visits"] = {"$gt": 10}
+    
+    # Phase 3 filters
+    if gender and gender != "all":
+        query["gender"] = gender
+    
+    if total_spent and total_spent != "all":
+        if total_spent == "0-500":
+            query["total_spent"] = {"$gte": 0, "$lte": 500}
+        elif total_spent == "500-2000":
+            query["total_spent"] = {"$gt": 500, "$lte": 2000}
+        elif total_spent == "2000-5000":
+            query["total_spent"] = {"$gt": 2000, "$lte": 5000}
+        elif total_spent == "5000-10000":
+            query["total_spent"] = {"$gt": 5000, "$lte": 10000}
+        elif total_spent == "10000+":
+            query["total_spent"] = {"$gt": 10000}
+    
+    if is_blocked and is_blocked != "all":
+        query["is_blocked"] = is_blocked == "true"
     
     if and_conditions:
         query["$and"] = and_conditions
