@@ -1,0 +1,83 @@
+{
+  "summary": "Frontend testing completed for Corporate Customer refactoring in Add Customer modal. All 10 test cases passed. Radio buttons replaced large toggle buttons, inline corporate fields with orange background appear within 'Other Information' accordion when Corporate is selected, and there is no separate Corporate Info accordion section.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/test_reports/iteration_4.json"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Customer Type field correctly uses radio buttons instead of large toggle buttons",
+    "Inline corporate fields correctly appear within 'Other Information' accordion with orange tinted background (rgba(242, 107, 51, 0.05))",
+    "Separate 'Corporate Info' accordion has been successfully removed",
+    "All corporate fields have proper data-testid attributes for testing",
+    "Form submission works correctly for both Normal and Corporate customer types"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A - frontend only testing",
+    "frontend": "100%"
+  },
+  "test_credentials": "Demo Mode (Try Demo Mode button)",
+  "seed_data_creation": "Created test customers: 'Test Normal 6017' and 'Corporate Test 9716' for form submission testing",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Corporate customer refactoring is complete. Customer Type uses radio buttons inside 'Other Information' accordion. When Corporate is selected, inline fields appear with orange background. No separate Corporate Info accordion exists. Both Normal and Corporate customer creation work correctly.",
+  "features_tested": [
+    {
+      "feature": "Add Customer modal opens correctly from Customers page",
+      "status": "PASSED",
+      "details": "Modal opens via '+Add' button, shows 'Add New Customer' title"
+    },
+    {
+      "feature": "Basic Information section shows Name and Phone fields",
+      "status": "PASSED",
+      "details": "Name and Phone fields visible and functional in expanded Basic Information accordion"
+    },
+    {
+      "feature": "Other Information section is collapsed by default and expands on click",
+      "status": "PASSED",
+      "details": "Other Information accordion starts collapsed, expands to show Email, Gender, Language, DOB, Anniversary, and Customer Type fields"
+    },
+    {
+      "feature": "Customer Type shows as radio buttons (Normal and Corporate), NOT as large toggle buttons",
+      "status": "PASSED",
+      "details": "Radio buttons implemented with proper styling - Normal with green accent, Corporate with orange accent"
+    },
+    {
+      "feature": "Normal radio is selected by default",
+      "status": "PASSED",
+      "details": "On modal open, Normal radio is checked by default (verified via DOM check)"
+    },
+    {
+      "feature": "When Corporate radio is selected, inline corporate fields appear with orange/peach background",
+      "status": "PASSED",
+      "details": "Inline fields appear with 'Corporate Details' header, background color rgba(242, 107, 51, 0.05), fields: GST Name, GST Number, Billing Address, Credit Limit, Payment Terms"
+    },
+    {
+      "feature": "When switching back to Normal, inline corporate fields disappear",
+      "status": "PASSED",
+      "details": "Selecting Normal radio hides the inline-corporate-fields container"
+    },
+    {
+      "feature": "No separate Corporate Info accordion section in the form",
+      "status": "PASSED",
+      "details": "Accordion sections verified: Basic Information, Other Information, Tags & Flags, AI-Detected Preferences, Contact Preferences, Membership, Source & Journey, Custom Fields & Notes - NO Corporate Info accordion"
+    },
+    {
+      "feature": "Form can successfully submit a Normal customer (name + phone)",
+      "status": "PASSED",
+      "details": "Created 'Test Normal 6017' with phone - success toast displayed, customer appeared in list with BRONZE tier"
+    },
+    {
+      "feature": "Form can successfully submit a Corporate customer with GST details",
+      "status": "PASSED",
+      "details": "Created 'Corporate Test 9716' with GST Name, GST Number, Billing Address, Credit Limit, Payment Terms - success toast displayed, customer appeared with building icon indicator"
+    }
+  ]
+}

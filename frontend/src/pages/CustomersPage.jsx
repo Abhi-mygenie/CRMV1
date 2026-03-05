@@ -1481,36 +1481,105 @@ export default function CustomersPage() {
                                                 </div>
                                             </div>
 
-                                            {/* Customer Type */}
+                                            {/* Customer Type - Radio Buttons */}
                                             <div>
                                                 <Label className="form-label">Customer Type</Label>
-                                                <div className="flex gap-2 mt-2">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setNewCustomer({...newCustomer, customer_type: "normal"})}
-                                                        className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-medium border-2 transition-all flex items-center justify-center gap-2 ${
-                                                            newCustomer.customer_type === "normal"
-                                                                ? "bg-[#329937] text-white border-[#329937]"
-                                                                : "bg-white text-[#52525B] border-gray-200 hover:border-[#329937]"
-                                                        }`}
+                                                <div className="flex items-center gap-6 mt-2">
+                                                    <label
+                                                        className="flex items-center gap-2 cursor-pointer"
                                                         data-testid="customer-type-normal"
                                                     >
-                                                        <User className="w-4 h-4" /> Normal
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setNewCustomer({...newCustomer, customer_type: "corporate"})}
-                                                        className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-medium border-2 transition-all flex items-center justify-center gap-2 ${
-                                                            newCustomer.customer_type === "corporate"
-                                                                ? "bg-[#F26B33] text-white border-[#F26B33]"
-                                                                : "bg-white text-[#52525B] border-gray-200 hover:border-[#F26B33]"
-                                                        }`}
+                                                        <input
+                                                            type="radio"
+                                                            name="customer_type"
+                                                            value="normal"
+                                                            checked={newCustomer.customer_type === "normal"}
+                                                            onChange={() => setNewCustomer({...newCustomer, customer_type: "normal"})}
+                                                            className="w-4 h-4 accent-[#329937]"
+                                                        />
+                                                        <User className="w-4 h-4 text-gray-600" />
+                                                        <span className="text-sm font-medium text-gray-700">Normal</span>
+                                                    </label>
+                                                    <label
+                                                        className="flex items-center gap-2 cursor-pointer"
                                                         data-testid="customer-type-corporate"
                                                     >
-                                                        <Building2 className="w-4 h-4" /> Corporate
-                                                    </button>
+                                                        <input
+                                                            type="radio"
+                                                            name="customer_type"
+                                                            value="corporate"
+                                                            checked={newCustomer.customer_type === "corporate"}
+                                                            onChange={() => setNewCustomer({...newCustomer, customer_type: "corporate"})}
+                                                            className="w-4 h-4 accent-[#F26B33]"
+                                                        />
+                                                        <Building2 className="w-4 h-4 text-gray-600" />
+                                                        <span className="text-sm font-medium text-gray-700">Corporate</span>
+                                                    </label>
                                                 </div>
                                             </div>
+
+                                            {/* Inline Corporate Fields */}
+                                            {newCustomer.customer_type === "corporate" && (
+                                                <div className="space-y-4 p-4 bg-[#F26B33]/5 border border-[#F26B33]/20 rounded-xl" data-testid="inline-corporate-fields">
+                                                    <p className="text-xs text-[#F26B33] font-semibold flex items-center gap-1">
+                                                        <Building2 className="w-3.5 h-3.5" /> Corporate Details
+                                                    </p>
+                                                    <div>
+                                                        <Label className="form-label">Company/GST Name</Label>
+                                                        <Input 
+                                                            placeholder="Company name" 
+                                                            className="h-11 rounded-xl"
+                                                            value={newCustomer.gst_name}
+                                                            onChange={(e) => setNewCustomer({...newCustomer, gst_name: e.target.value})}
+                                                            data-testid="new-customer-gst-name"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label className="form-label">GST Number</Label>
+                                                        <Input 
+                                                            placeholder="22AAAAA0000A1Z5" 
+                                                            className="h-11 rounded-xl"
+                                                            value={newCustomer.gst_number}
+                                                            onChange={(e) => setNewCustomer({...newCustomer, gst_number: e.target.value})}
+                                                            data-testid="new-customer-gst-number"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label className="form-label">Billing Address</Label>
+                                                        <Textarea 
+                                                            placeholder="Billing address for invoices" 
+                                                            className="rounded-xl resize-none" 
+                                                            rows={2}
+                                                            value={newCustomer.billing_address}
+                                                            onChange={(e) => setNewCustomer({...newCustomer, billing_address: e.target.value})}
+                                                            data-testid="new-customer-billing-address"
+                                                        />
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-3">
+                                                        <div>
+                                                            <Label className="form-label">Credit Limit</Label>
+                                                            <Input 
+                                                                placeholder="50000" 
+                                                                type="number"
+                                                                className="h-11 rounded-xl"
+                                                                value={newCustomer.credit_limit}
+                                                                onChange={(e) => setNewCustomer({...newCustomer, credit_limit: e.target.value})}
+                                                                data-testid="new-customer-credit-limit"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <Label className="form-label">Payment Terms</Label>
+                                                            <Input 
+                                                                placeholder="Net 30" 
+                                                                className="h-11 rounded-xl"
+                                                                value={newCustomer.payment_terms}
+                                                                onChange={(e) => setNewCustomer({...newCustomer, payment_terms: e.target.value})}
+                                                                data-testid="new-customer-payment-terms"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
 
                                             {/* Divider */}
                                             <div className="border-t pt-4 mt-4">
@@ -1600,69 +1669,6 @@ export default function CustomersPage() {
                                         </div>
                                     </AccordionContent>
                                 </AccordionItem>
-                                {/* Corporate Info - Only shows if customer_type is corporate */}
-                                {newCustomer.customer_type === "corporate" && (
-                                    <AccordionItem value="corporate" className="border-b-0">
-                                        <AccordionTrigger className="hover:no-underline py-3 px-3 bg-[#F26B33]/10 rounded-xl mb-2">
-                                            <span className="flex items-center gap-2 text-sm font-semibold text-[#F26B33]">
-                                                <Building2 className="w-4 h-4" /> Corporate Info
-                                            </span>
-                                        </AccordionTrigger>
-                                        <AccordionContent className="px-1">
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <Label className="form-label">Company/GST Name</Label>
-                                                    <Input 
-                                                        placeholder="Company name" 
-                                                        className="h-11 rounded-xl"
-                                                        value={newCustomer.gst_name}
-                                                        onChange={(e) => setNewCustomer({...newCustomer, gst_name: e.target.value})}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label className="form-label">GST Number</Label>
-                                                    <Input 
-                                                        placeholder="22AAAAA0000A1Z5" 
-                                                        className="h-11 rounded-xl"
-                                                        value={newCustomer.gst_number}
-                                                        onChange={(e) => setNewCustomer({...newCustomer, gst_number: e.target.value})}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label className="form-label">Billing Address</Label>
-                                                    <Textarea 
-                                                        placeholder="Billing address for invoices" 
-                                                        className="rounded-xl resize-none" 
-                                                        rows={2}
-                                                        value={newCustomer.billing_address}
-                                                        onChange={(e) => setNewCustomer({...newCustomer, billing_address: e.target.value})}
-                                                    />
-                                                </div>
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    <div>
-                                                        <Label className="form-label">Credit Limit</Label>
-                                                        <Input 
-                                                            placeholder="50000" 
-                                                            type="number"
-                                                            className="h-11 rounded-xl"
-                                                            value={newCustomer.credit_limit}
-                                                            onChange={(e) => setNewCustomer({...newCustomer, credit_limit: e.target.value})}
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <Label className="form-label">Payment Terms</Label>
-                                                        <Input 
-                                                            placeholder="Net 30" 
-                                                            className="h-11 rounded-xl"
-                                                            value={newCustomer.payment_terms}
-                                                            onChange={(e) => setNewCustomer({...newCustomer, payment_terms: e.target.value})}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                )}
 
                                 {/* Tags & Flags */}
                                 <AccordionItem value="flags" className="border-b-0">
