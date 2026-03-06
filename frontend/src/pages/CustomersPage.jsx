@@ -804,61 +804,6 @@ export default function CustomersPage() {
                                                 />
                                             </div>
                                             <div>
-                                                <Label className="text-xs text-[#52525B]">Lead Source</Label>
-                                                <Select value={filters.lead_source} onValueChange={(v) => setFilters({...filters, lead_source: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue placeholder="All sources" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All sources</SelectItem>
-                                                        <SelectItem value="Walk-in">Walk-in</SelectItem>
-                                                        <SelectItem value="Swiggy">Swiggy</SelectItem>
-                                                        <SelectItem value="Zomato">Zomato</SelectItem>
-                                                        <SelectItem value="Instagram">Instagram</SelectItem>
-                                                        <SelectItem value="Facebook">Facebook</SelectItem>
-                                                        <SelectItem value="Google">Google</SelectItem>
-                                                        <SelectItem value="Referral">Referral</SelectItem>
-                                                        <SelectItem value="WhatsApp">WhatsApp</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Gender</Label>
-                                                <Select value={filters.gender} onValueChange={(v) => setFilters({...filters, gender: v})}>
-                                                    <SelectTrigger className="h-10 mt-1" data-testid="filter-gender">
-                                                        <SelectValue placeholder="All" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All</SelectItem>
-                                                        <SelectItem value="male">Male</SelectItem>
-                                                        <SelectItem value="female">Female</SelectItem>
-                                                        <SelectItem value="other">Other</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Activity & Engagement Group */}
-                                <div className="border rounded-xl overflow-hidden">
-                                    <button 
-                                        onClick={() => toggleFilterGroup("activity")}
-                                        className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <Clock className="w-4 h-4 text-blue-500" />
-                                            <span className="font-medium text-sm">Activity & Engagement</span>
-                                        </div>
-                                        {expandedFilterGroups.includes("activity") ? (
-                                            <ChevronUp className="w-4 h-4 text-gray-400" />
-                                        ) : (
-                                            <ChevronDown className="w-4 h-4 text-gray-400" />
-                                        )}
-                                    </button>
-                                    {expandedFilterGroups.includes("activity") && (
-                                        <div className="p-4 space-y-4 bg-white">
-                                            <div>
                                                 <Label className="text-xs text-[#52525B]">Inactive For (Win-back)</Label>
                                                 <Select value={filters.last_visit_days} onValueChange={(v) => setFilters({...filters, last_visit_days: v})}>
                                                     <SelectTrigger className="h-10 mt-1">
