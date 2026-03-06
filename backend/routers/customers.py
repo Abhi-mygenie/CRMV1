@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 import uuid
@@ -15,25 +15,28 @@ from models.schemas import (
 
 router = APIRouter(prefix="/customers", tags=["Customers"])
 
-@router.post("/sync-from-mygenie")
-async def sync_customers_from_mygenie(user: dict = Depends(get_current_user)):
-    """
-    Fetch customers from MyGenie API and sync to local database
-    """
+# In-memory customer sync status tracking
+customer_sync_status = {}
+
+async def background_customer_sync(user_id: str, mygenie_token: str):
+    """Background task to sync customers"""
+    mygenie_api_url = os.getenv("MYGENIE_API_URL", "https://preprod.mygenie.online")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    synced_count = 0
+    updated_count = 0
+    total_customers = 0
+    
+    customer_sync_status[user_id] = {
+        "status": "running",
+        "synced": 0,
+        "updated": 0,
+        "total_customers": 0,
+        "started_at": now,
+        "error": None
+    }
+    
     try:
-        # Get MyGenie token from user record
-        user_record = await db.users.find_one({"id": user["id"]})
-        mygenie_token = user_record.get("mygenie_token")
-        
-        if not mygenie_token:
-            raise HTTPException(
-                status_code=400,
-                detail="MyGenie token not found. Please login again."
-            )
-        
-        # Fetch customers from MyGenie
-        mygenie_api_url = os.getenv("MYGENIE_API_URL", "https://preprod.mygenie.online")
-        
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 f"{mygenie_api_url}/api/v1/vendoremployee/whatsappcrm/customer-migration",
@@ -43,25 +46,22 @@ async def sync_customers_from_mygenie(user: dict = Depends(get_current_user)):
                     "X-localization": "en"
                 },
                 json={},
-                timeout=30.0
+                timeout=60.0
             )
             
             if response.status_code != 200:
-                raise HTTPException(
-                    status_code=response.status_code,
-                    detail="Failed to fetch customers from MyGenie"
-                )
+                customer_sync_status[user_id]["status"] = "failed"
+                customer_sync_status[user_id]["error"] = f"API error: {response.status_code}"
+                return
             
             data = response.json()
             customer_list = data.get("customers", [])
+            total_customers = len(customer_list)
+            customer_sync_status[user_id]["total_customers"] = total_customers
             
-            synced_count = 0
-            updated_count = 0
-            
-            for mygenie_customer in customer_list:
-                # Map MyGenie customer to our schema
+            for i, mygenie_customer in enumerate(customer_list):
                 customer_data = {
-                    "user_id": user["id"],
+                    "user_id": user_id,
                     "name": mygenie_customer.get("name") or "Unknown",
                     "phone": mygenie_customer.get("phone") or "",
                     "country_code": mygenie_customer.get("country_code") or "+91",
@@ -80,10 +80,10 @@ async def sync_customers_from_mygenie(user: dict = Depends(get_current_user)):
                     "pos_customer_id": mygenie_customer["id"],
                     "pos_id": mygenie_customer.get("pos_id"),
                     "mygenie_synced": True,
-                    "last_synced_at": datetime.now(timezone.utc).isoformat()
+                    "last_synced_at": now
                 }
                 
-                # Determine tier based on points
+                # Determine tier
                 points = customer_data["total_points"]
                 if points >= 5000:
                     tier = "Platinum"
@@ -95,23 +95,21 @@ async def sync_customers_from_mygenie(user: dict = Depends(get_current_user)):
                     tier = "Bronze"
                 customer_data["tier"] = tier
                 
-                # Check if customer already exists
+                # Check if exists
                 existing = await db.customers.find_one({
-                    "user_id": user["id"],
+                    "user_id": user_id,
                     "pos_customer_id": mygenie_customer["id"]
                 })
                 
                 if existing:
-                    # Update existing customer
                     await db.customers.update_one(
                         {"id": existing["id"]},
                         {"$set": customer_data}
                     )
                     updated_count += 1
                 else:
-                    # Create new customer
                     customer_data["id"] = str(uuid.uuid4())
-                    customer_data["created_at"] = mygenie_customer.get("created_time") or datetime.now(timezone.utc).isoformat()
+                    customer_data["created_at"] = mygenie_customer.get("created_time") or now
                     customer_data["customer_type"] = mygenie_customer.get("customer_type") or "normal"
                     customer_data["notes"] = None
                     customer_data["address"] = mygenie_customer.get("address")
@@ -128,27 +126,77 @@ async def sync_customers_from_mygenie(user: dict = Depends(get_current_user)):
                     
                     await db.customers.insert_one(customer_data)
                     synced_count += 1
+                
+                # Update progress every 10 customers
+                if (i + 1) % 10 == 0:
+                    customer_sync_status[user_id]["synced"] = synced_count
+                    customer_sync_status[user_id]["updated"] = updated_count
             
-            # Update last sync timestamp
+            # Final update
             await db.users.update_one(
-                {"id": user["id"]},
-                {"$set": {"last_customer_sync_at": datetime.now(timezone.utc).isoformat()}}
+                {"id": user_id},
+                {"$set": {"last_customer_sync_at": now}}
             )
             
-            return {
-                "success": True,
-                "synced": synced_count,
-                "updated": updated_count,
-                "total": len(customer_list),
-                "message": f"Successfully synced {synced_count} new and updated {updated_count} existing customers from MyGenie"
-            }
+            customer_sync_status[user_id]["status"] = "completed"
+            customer_sync_status[user_id]["synced"] = synced_count
+            customer_sync_status[user_id]["updated"] = updated_count
+            customer_sync_status[user_id]["completed_at"] = datetime.now(timezone.utc).isoformat()
             
-    except httpx.TimeoutException:
-        raise HTTPException(status_code=504, detail="MyGenie API timeout")
-    except httpx.RequestError as e:
-        raise HTTPException(status_code=503, detail=f"MyGenie API error: {str(e)}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
+        customer_sync_status[user_id]["status"] = "failed"
+        customer_sync_status[user_id]["error"] = str(e)
+
+
+@router.post("/sync-from-mygenie")
+async def sync_customers_from_mygenie(background_tasks: BackgroundTasks, user: dict = Depends(get_current_user)):
+    """
+    Start background customer sync from MyGenie API.
+    Returns immediately and syncs in background.
+    Use /customers/sync-status to check progress.
+    """
+    user_id = user["id"]
+    
+    # Check if sync is already running
+    if user_id in customer_sync_status and customer_sync_status[user_id].get("status") == "running":
+        return {
+            "success": False,
+            "message": "Sync already in progress",
+            "status": customer_sync_status[user_id]
+        }
+    
+    # Get MyGenie token
+    user_record = await db.users.find_one({"id": user_id})
+    mygenie_token = user_record.get("mygenie_token") if user_record else None
+    
+    if not mygenie_token:
+        return {
+            "success": False,
+            "message": "MyGenie token not found. Please login again."
+        }
+    
+    # Start background sync
+    background_tasks.add_task(background_customer_sync, user_id, mygenie_token)
+    
+    return {
+        "success": True,
+        "message": "Customer sync started in background.",
+        "status": "started"
+    }
+
+
+@router.get("/sync-status")
+async def get_customer_sync_status(user: dict = Depends(get_current_user)):
+    """Get current customer sync progress"""
+    user_id = user["id"]
+    
+    if user_id not in customer_sync_status:
+        return {
+            "status": "idle",
+            "message": "No sync in progress"
+        }
+    
+    return customer_sync_status[user_id]
 
 
 @router.post("", response_model=Customer)
