@@ -575,7 +575,7 @@ async def list_customers(
         query["$and"] = and_conditions
     
     sort_direction = -1 if sort_order == "desc" else 1
-    sort_field = sort_by if sort_by in ["created_at", "last_visit", "total_spent", "total_points", "name"] else "created_at"
+    sort_field = sort_by if sort_by in ["created_at", "last_visit", "total_spent", "total_points", "total_visits", "name"] else "created_at"
     
     customers = await db.customers.find(query, {"_id": 0}).sort(sort_field, sort_direction).skip(skip).limit(limit).to_list(limit)
     return [Customer(**c) for c in customers]
