@@ -327,11 +327,20 @@ export default function DashboardPage() {
                                             {customer.total_visits || 0} visits · {formatSpent(customer.total_spent)} · {formatLastVisit(customer.last_visit)}
                                         </p>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="font-semibold text-[#329937] points-display text-sm">{customer.total_points} pts</p>
-                                        <Badge variant="outline" className={`tier-badge ${customer.tier.toLowerCase()}`}>
-                                            {customer.tier}
-                                        </Badge>
+                                    <div className="text-right flex items-center gap-3">
+                                        <div className="text-right">
+                                            <p className="font-semibold text-[#329937] points-display text-sm">{customer.total_points} pts</p>
+                                            <Badge variant="outline" className={`tier-badge ${customer.tier.toLowerCase()}`}>
+                                                {customer.tier}
+                                            </Badge>
+                                        </div>
+                                        {customer.wallet_balance > 0 && (
+                                            <div className="text-right border-l pl-3 border-gray-200">
+                                                <p className="font-semibold text-[#F26B33]">₹{customer.wallet_balance.toLocaleString()}</p>
+                                                <p className="text-[10px] text-[#A1A1AA]">Wallet</p>
+                                            </div>
+                                        )}
+                                        <ChevronRight className="w-5 h-5 text-[#A1A1AA]" />
                                     </div>
                                 </button>
                             );
