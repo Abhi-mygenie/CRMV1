@@ -118,12 +118,52 @@ export default function SettingsPage() {
     const handleSyncCustomers = async () => {
         setSyncingCustomers(true);
         try {
+            // Start background sync
             const res = await api.post("/customers/sync-from-mygenie");
-            toast.success(res.data.message || `Synced ${res.data.synced} customers`);
-            fetchMigrationStatus();
+            
+            if (res.data.status === "started") {
+                toast.info("Customer sync started...");
+                
+                // Poll for status
+                const pollStatus = async () => {
+                    try {
+                        const statusRes = await api.get("/customers/sync-status");
+                        const status = statusRes.data;
+                        
+                        if (status.status === "running") {
+                            const processed = status.synced + status.updated;
+                            const total = status.total_customers || 0;
+                            // Round to nearest 100 for large numbers, 10 for small
+                            const roundTo = total > 500 ? 100 : 10;
+                            const displayProcessed = Math.floor(processed / roundTo) * roundTo;
+                            toast.loading(`Syncing customers... ${displayProcessed}/${total}`, { id: "customer-sync-progress" });
+                            setTimeout(pollStatus, 1000); // Poll every 1 second (customers are faster)
+                        } else if (status.status === "completed") {
+                            toast.dismiss("customer-sync-progress");
+                            toast.success(`Synced ${status.synced} new, updated ${status.updated} customers`);
+                            setSyncingCustomers(false);
+                            fetchMigrationStatus();
+                        } else if (status.status === "failed") {
+                            toast.dismiss("customer-sync-progress");
+                            toast.error(status.error || "Sync failed");
+                            setSyncingCustomers(false);
+                            fetchMigrationStatus();
+                        } else {
+                            setSyncingCustomers(false);
+                        }
+                    } catch (err) {
+                        toast.dismiss("customer-sync-progress");
+                        setSyncingCustomers(false);
+                    }
+                };
+                
+                setTimeout(pollStatus, 500); // Start polling after 0.5 second
+            } else {
+                toast.error(res.data.message || "Failed to start sync");
+                setSyncingCustomers(false);
+            }
         } catch (err) {
             toast.error(err.response?.data?.detail || "Failed to sync customers");
-        } finally {
             setSyncingCustomers(false);
         }
     };
