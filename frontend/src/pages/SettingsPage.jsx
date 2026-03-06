@@ -85,6 +85,14 @@ export default function SettingsPage() {
         }
     }, [activeSection]);
 
+    // Redirect to profile if migration tab is hidden but currently selected
+    useEffect(() => {
+        if (activeSection === "migration" && migrationStatus && 
+            (migrationStatus.migration_confirmed || migrationStatus.migration_skipped_permanently)) {
+            setActiveSection("profile");
+        }
+    }, [migrationStatus, activeSection]);
+
     useEffect(() => {
         if (activeSection === "migration" && !migrationStatus) {
             fetchMigrationStatus();
