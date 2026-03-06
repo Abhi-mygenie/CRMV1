@@ -176,7 +176,7 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Quick Actions - Collapsible */}
+                {/* Quick Actions - Hidden for now
                 <Collapsible open={quickActionsOpen} onOpenChange={setQuickActionsOpen} className="mb-5">
                     <CollapsibleTrigger asChild>
                         <button className="flex items-center justify-between w-full text-left py-2 px-1">
@@ -213,6 +213,7 @@ export default function DashboardPage() {
                         </div>
                     </CollapsibleContent>
                 </Collapsible>
+                */}
 
                 {/* Recent Customers */}
                 <div className="flex items-center justify-between mb-3">
