@@ -62,8 +62,9 @@
 }
 
 .tier-badge.platinum {
-    background-color: #E0F4FF;
-    color: #62B5E5;
+    background-color: #F5F5F5;
+    color: #2B2B2B;
+    border: 1px solid #2B2B2B;
 }
 
 /* Rating stars */
