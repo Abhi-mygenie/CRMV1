@@ -655,95 +655,51 @@ export default function CustomersPage() {
                     </Button>
                 </div>
 
-                {/* Quick Filter Chips */}
+                {/* Sorting Tabs */}
                 <div className="flex gap-2 overflow-x-auto pb-3 mb-3 -mx-4 px-4 scrollbar-hide">
-                    {/* Sort Chip Dropdown */}
-                    <Select 
-                        value={`${filters.sort_by}-${filters.sort_order}`} 
-                        onValueChange={(v) => {
-                            const [sortBy, sortOrder] = v.split('-');
-                            setFilters({...filters, sort_by: sortBy, sort_order: sortOrder});
-                        }}
-                    >
-                        <SelectTrigger 
-                            className="h-7 px-3 rounded-full text-xs font-medium whitespace-nowrap bg-[#F26B33] text-white border-0 gap-1 w-auto min-w-[110px]"
-                            data-testid="sort-chip"
-                        >
-                            <TrendingUp className="w-3 h-3" />
-                            <SelectValue placeholder="Sort" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="created_at-desc">Recent</SelectItem>
-                            <SelectItem value="total_visits-desc">Most Visited</SelectItem>
-                            <SelectItem value="total_spent-desc">Most Spent</SelectItem>
-                            <SelectItem value="total_points-desc">Highest Points</SelectItem>
-                        </SelectContent>
-                    </Select>
                     <button
-                        onClick={() => setFilters({...filters, vip_flag: filters.vip_flag === "true" ? "all" : "true"})}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-                            filters.vip_flag === "true" 
-                                ? 'bg-amber-500 text-white' 
+                        onClick={() => setFilters({...filters, sort_by: "created_at", sort_order: "desc"})}
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                            filters.sort_by === "created_at" 
+                                ? 'bg-[#329937] text-white' 
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
-                        data-testid="quick-filter-vip"
+                        data-testid="sort-tab-recent"
                     >
-                        <Crown className="w-3 h-3" /> VIP
+                        Recent {filters.sort_by === "created_at" && <Check className="w-4 h-4" />}
                     </button>
                     <button
-                        onClick={() => setFilters({...filters, whatsapp_opt_in: filters.whatsapp_opt_in === "true" ? "all" : "true"})}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-                            filters.whatsapp_opt_in === "true" 
-                                ? 'bg-green-500 text-white' 
+                        onClick={() => setFilters({...filters, sort_by: "total_visits", sort_order: "desc"})}
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                            filters.sort_by === "total_visits" 
+                                ? 'bg-[#329937] text-white' 
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
-                        data-testid="quick-filter-whatsapp"
+                        data-testid="sort-tab-most-visited"
                     >
-                        <MessageCircle className="w-3 h-3" /> WhatsApp
+                        Most Visited {filters.sort_by === "total_visits" && <Check className="w-4 h-4" />}
                     </button>
                     <button
-                        onClick={() => setFilters({...filters, has_birthday_this_month: !filters.has_birthday_this_month})}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-                            filters.has_birthday_this_month 
-                                ? 'bg-pink-500 text-white' 
+                        onClick={() => setFilters({...filters, sort_by: "total_spent", sort_order: "desc"})}
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                            filters.sort_by === "total_spent" 
+                                ? 'bg-[#329937] text-white' 
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
-                        data-testid="quick-filter-birthday"
+                        data-testid="sort-tab-most-spent"
                     >
-                        <Cake className="w-3 h-3" /> Birthday
+                        Most Spent {filters.sort_by === "total_spent" && <Check className="w-4 h-4" />}
                     </button>
                     <button
-                        onClick={() => setFilters({...filters, diet_preference: filters.diet_preference === "veg" ? "all" : "veg"})}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-                            filters.diet_preference === "veg" 
-                                ? 'bg-green-600 text-white' 
+                        onClick={() => setFilters({...filters, sort_by: "total_points", sort_order: "desc"})}
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                            filters.sort_by === "total_points" 
+                                ? 'bg-[#329937] text-white' 
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
-                        data-testid="quick-filter-veg"
+                        data-testid="sort-tab-highest-points"
                     >
-                        <Leaf className="w-3 h-3" /> Veg
-                    </button>
-                    <button
-                        onClick={() => setFilters({...filters, last_visit_days: filters.last_visit_days === "30" ? "all" : "30"})}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-                            filters.last_visit_days === "30" 
-                                ? 'bg-orange-500 text-white' 
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                        data-testid="quick-filter-inactive"
-                    >
-                        <Clock className="w-3 h-3" /> Inactive 30d
-                    </button>
-                    <button
-                        onClick={() => setFilters({...filters, customer_type: filters.customer_type === "corporate" ? "all" : "corporate"})}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-                            filters.customer_type === "corporate" 
-                                ? 'bg-blue-500 text-white' 
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                        data-testid="quick-filter-corporate"
-                    >
-                        <Building2 className="w-3 h-3" /> Corporate
+                        Highest Points {filters.sort_by === "total_points" && <Check className="w-4 h-4" />}
                     </button>
                 </div>
 
