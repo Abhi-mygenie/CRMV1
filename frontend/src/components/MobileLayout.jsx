@@ -15,7 +15,7 @@ export const MobileLayout = ({ children }) => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#F9F9F7] pb-20">
+        <div className="min-h-screen bg-[#F5F5F5] pb-20">
             <DemoModeBanner />
             {children}
             
@@ -29,11 +29,15 @@ export const MobileLayout = ({ children }) => {
                             <button
                                 key={item.path}
                                 onClick={() => navigate(item.path)}
-                                className={`mobile-bottom-nav-item ${isActive ? "active" : ""}`}
+                                className={`mobile-bottom-nav-item flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
+                                    isActive 
+                                        ? "text-[#329937]" 
+                                        : "text-[#F26B33] hover:text-[#D85A2A]"
+                                }`}
                                 data-testid={`nav-${item.label.toLowerCase()}`}
                             >
-                                <Icon className="w-5 h-5" strokeWidth={1.5} />
-                                <span>{item.label}</span>
+                                <Icon className="w-5 h-5" strokeWidth={isActive ? 2 : 1.5} />
+                                <span className="text-xs font-body">{item.label}</span>
                             </button>
                         );
                     })}
