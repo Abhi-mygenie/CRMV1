@@ -102,16 +102,16 @@ async def daily_loyalty_jobs():
 
 def start_scheduler():
     """Start the APScheduler with daily cron triggers."""
-    # Run daily at 00:30 UTC (after midnight to avoid date boundary issues)
+    # Run daily at 00:00 UTC (midnight) for birthday/anniversary/expiry
     scheduler.add_job(
         daily_loyalty_jobs,
-        CronTrigger(hour=0, minute=30),
+        CronTrigger(hour=0, minute=0),
         id="daily_loyalty_jobs",
         name="Daily Loyalty Jobs (Birthday, Anniversary, Expiry)",
         replace_existing=True,
     )
     scheduler.start()
-    logger.info("Loyalty cron scheduler started — daily jobs at 00:30 UTC")
+    logger.info("Loyalty cron scheduler started — daily jobs at 00:00 UTC (midnight)")
 
 
 def stop_scheduler():
