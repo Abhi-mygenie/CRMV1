@@ -319,13 +319,13 @@ export default function DashboardPage() {
                                     data-testid={`customer-item-${customer.id}`}
                                 >
                                     <Avatar className="w-10 h-10 mr-3">
-                                        <AvatarFallback className="bg-[#329937]/10 text-[#329937] font-semibold">
+                                        <AvatarFallback className="bg-[#329937]/10 text-[#329937] font-semibold font-body">
                                             {customerName.charAt(0)}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-[#1A1A1A] truncate">{customerName}</p>
-                                        <p className="text-sm text-[#52525B]">
+                                        <p className="font-medium text-[#2B2B2B] truncate font-body">{customerName}</p>
+                                        <p className="text-sm text-[#52525B] font-body">
                                             {customer.total_visits || 0} visits · {formatSpent(customer.total_spent)} · {formatLastVisit(customer.last_visit)}
                                         </p>
                                     </div>
@@ -339,7 +339,7 @@ export default function DashboardPage() {
                                         {customer.wallet_balance > 0 && (
                                             <div className="text-right border-l pl-3 border-gray-200">
                                                 <p className="font-semibold text-[#F26B33]">₹{customer.wallet_balance.toLocaleString()}</p>
-                                                <p className="text-[10px] text-[#A1A1AA]">Wallet</p>
+                                                <p className="text-[10px] text-[#A1A1AA] font-body">Wallet</p>
                                             </div>
                                         )}
                                         <ChevronRight className="w-5 h-5 text-[#A1A1AA]" />
