@@ -1748,8 +1748,13 @@ export function WhatsAppAutomationContent({ embedded = false }) {
                 </Dialog>
 
                 {/* Test Template Modal */}
-                <Dialog open={showTestModal} onOpenChange={setShowTestModal}>
-                    <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+                <Dialog open={showTestModal} onOpenChange={(open) => {
+                    if (!open) {
+                        setShowTestModal(false);
+                        setTestResult(null);
+                    }
+                }}>
+                    <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
                         <DialogHeader>
                             <DialogTitle className="flex items-center gap-2">
                                 <FlaskConical className="w-5 h-5 text-blue-600" />
@@ -1783,14 +1788,14 @@ export function WhatsAppAutomationContent({ embedded = false }) {
                                                 <SelectItem value="971">+971</SelectItem>
                                             </SelectContent>
                                         </Select>
-                                        <input
-                                            type="text"
+                                        <Input
                                             value={testPhone}
-                                            onChange={(e) => setTestPhone(e.target.value.replace(/\D/g, "").substring(0, 10))}
+                                            onChange={(e) => {
+                                                const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
+                                                setTestPhone(digits);
+                                            }}
                                             placeholder="9876543210"
-                                            className="flex-1 h-10 px-3 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                                            inputMode="numeric"
-                                            autoComplete="off"
+                                            className="flex-1"
                                             data-testid="test-phone-input"
                                         />
                                     </div>
@@ -1831,7 +1836,6 @@ export function WhatsAppAutomationContent({ embedded = false }) {
                                                                         ...prev,
                                                                         [varKey]: "mapped"
                                                                     }));
-                                                                    // Set sample value from mapped field
                                                                     if (fieldInfo) {
                                                                         setTestVariables(prev => ({
                                                                             ...prev,
