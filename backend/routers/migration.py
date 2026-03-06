@@ -363,6 +363,22 @@ async def sync_orders_from_mygenie(user: dict = Depends(get_current_user)):
                         await db.orders.insert_one(order_doc)
                         synced_count += 1
                         
+                        # Update customer visit stats if customer is linked
+                        if customer:
+                            order_date = mygenie_order.get("created_at")
+                            order_amount = float(mygenie_order.get("order_amount") or 0)
+                            
+                            await db.customers.update_one(
+                                {"id": customer["id"]},
+                                {
+                                    "$inc": {
+                                        "total_visits": 1,
+                                        "total_spent": order_amount
+                                    },
+                                    "$max": {"last_visit": order_date}
+                                }
+                            )
+                        
                         # Also insert into order_items collection for AI analytics
                         if order_doc["items"] and customer:
                             order_items_docs = []
