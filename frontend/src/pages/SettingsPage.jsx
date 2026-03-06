@@ -348,37 +348,34 @@ export default function SettingsPage() {
             <div className="p-4 max-w-lg mx-auto">
                 <h1 className="text-2xl font-bold text-[#2B2B2B] mb-6 font-heading" data-testid="settings-title">Settings</h1>
 
-                {/* Tab Cards - Non-selected: Light green bg + Orange ring + Green icon (outlined)
-                               Selected: Filled green bg + Orange ring + White icon (filled) */}
+                {/* Tab Cards - All have green border, orange ring around icon
+                    Non-selected: outlined icon, Selected: filled icon */}
                 <div className="grid grid-cols-5 gap-2 mb-4">
                     {tabs.map(({ key, icon: Icon, label }) => {
                         const isSelected = activeSection === key;
+                        // Use WhatsApp green for WhatsApp tab
+                        const isWhatsApp = key === "whatsapp";
                         return (
                             <button
                                 key={key}
                                 onClick={() => setActiveSection(key)}
-                                className={`flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all ${
-                                    isSelected 
-                                        ? "bg-white shadow-md border-2 border-[#329937]" 
-                                        : "bg-[#F5F5F5] hover:bg-white hover:shadow-sm border-2 border-transparent"
-                                }`}
+                                className="flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all bg-white shadow-sm border-2 border-[#329937]"
                                 data-testid={`tab-${key}`}
                             >
                                 <div 
-                                    className={`w-10 h-10 rounded-full flex items-center justify-center border-2 border-[#F26B33] ${
+                                    className={`w-10 h-10 rounded-full flex items-center justify-center border-[3px] border-[#F26B33] ${
                                         isSelected 
-                                            ? "bg-[#329937]" 
-                                            : "bg-[#329937]/15"
+                                            ? isWhatsApp ? "bg-[#25D366]" : "bg-[#329937]"
+                                            : isWhatsApp ? "bg-[#25D366]/15" : "bg-[#329937]/15"
                                     }`}
                                 >
                                     <Icon 
                                         className="w-5 h-5" 
-                                        style={{ color: isSelected ? "#FFFFFF" : "#329937" }} 
+                                        style={{ color: isSelected ? "#FFFFFF" : isWhatsApp ? "#25D366" : "#329937" }} 
                                         strokeWidth={isSelected ? 2.5 : 1.5}
-                                        fill={isSelected ? "#FFFFFF" : "none"}
                                     />
                                 </div>
-                                <p className={`text-[10px] font-medium font-body ${isSelected ? "text-[#329937]" : "text-[#329937]"}`}>
+                                <p className={`text-[10px] font-medium font-body ${isWhatsApp ? "text-[#25D366]" : "text-[#329937]"}`}>
                                     {label}
                                 </p>
                             </button>
