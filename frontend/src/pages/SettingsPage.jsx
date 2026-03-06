@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { MessageSquare, Plus, TrendingUp, Gift, User, LogOut, Edit2, Trash2, Tag, KeyRound, RefreshCw, Check, RotateCcw, Users, ShoppingCart } from "lucide-react";
+import { MessageSquare, Plus, TrendingUp, Gift, User, LogOut, Edit2, Trash2, Tag, KeyRound, RefreshCw, Check, RotateCcw, Users, ShoppingCart, Wallet } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
