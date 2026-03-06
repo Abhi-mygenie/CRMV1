@@ -521,16 +521,33 @@ export default function SettingsPage() {
                                                 {syncingOrders ? "Syncing..." : migrationStatus?.orders_synced > 0 ? "Sync Again" : "Sync Orders"}
                                             </Button>
                                             {migrationStatus?.orders_synced > 0 && (
-                                                <Button 
-                                                    onClick={handleRevertOrders}
-                                                    disabled={revertingOrders}
-                                                    variant="outline"
-                                                    className="flex-1 h-11 rounded-xl border-red-300 text-red-600 hover:bg-red-50"
-                                                    data-testid="revert-orders-btn"
-                                                >
-                                                    <RotateCcw className="w-4 h-4 mr-2" />
-                                                    {revertingOrders ? "Reverting..." : "Revert"}
-                                                </Button>
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button 
+                                                            disabled={revertingOrders}
+                                                            variant="outline"
+                                                            className="flex-1 h-11 rounded-xl border-red-300 text-red-600 hover:bg-red-50"
+                                                            data-testid="revert-orders-btn"
+                                                        >
+                                                            <RotateCcw className="w-4 h-4 mr-2" />
+                                                            {revertingOrders ? "Reverting..." : "Revert"}
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Revert Orders?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                This will delete all {migrationStatus?.orders_synced} synced orders. This action cannot be undone.
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction onClick={handleRevertOrders} className="bg-red-600 hover:bg-red-700">
+                                                                Delete Orders
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
                                             )}
                                         </div>
                                         <p className="text-xs text-amber-600 mt-2 text-center">
