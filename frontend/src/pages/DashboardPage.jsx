@@ -247,10 +247,10 @@ export default function DashboardPage() {
 
                 {/* Recent Customers */}
                 <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-base font-semibold text-[#1A1A1A] font-['Montserrat']">Recent Customers</h2>
+                    <h2 className="text-base font-semibold text-[#2B2B2B] font-heading">Recent Customers</h2>
                     <div className="flex items-center gap-2">
                         <Select value={sortBy} onValueChange={setSortBy}>
-                            <SelectTrigger className="h-8 text-xs w-[120px] border-gray-200" data-testid="sort-dropdown">
+                            <SelectTrigger className="h-8 text-xs w-[120px] border-gray-200 font-body" data-testid="sort-dropdown">
                                 <SelectValue placeholder="Sort by" />
                             </SelectTrigger>
                             <SelectContent>
@@ -262,7 +262,7 @@ export default function DashboardPage() {
                         </Select>
                         <button 
                             onClick={() => navigate("/customers")}
-                            className="text-xs text-[#F26B33] font-medium whitespace-nowrap"
+                            className="text-xs text-[#62B5E5] font-medium whitespace-nowrap font-body hover:text-[#4A9FD0]"
                             data-testid="view-all-customers"
                         >
                             View all
