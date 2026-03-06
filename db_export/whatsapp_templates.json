@@ -1,0 +1,360 @@
+[
+  {
+    "id": "template-demo-1",
+    "user_id": "demo-user-restaurant",
+    "name": "Welcome Message",
+    "content": "Welcome to {{restaurant_name}}, {{customer_name}}! Thank you for joining our loyalty program.",
+    "variables": [
+      "restaurant_name",
+      "customer_name"
+    ],
+    "created_at": "2026-01-05T05:11:04.778437+00:00"
+  },
+  {
+    "id": "template-demo-2",
+    "user_id": "demo-user-restaurant",
+    "name": "Points Earned",
+    "content": "Hi {{customer_name}}! You've earned {{points_earned}} points. Your balance: {{points_balance}} points.",
+    "variables": [
+      "customer_name",
+      "points_earned",
+      "points_balance"
+    ],
+    "created_at": "2026-01-10T05:11:04.778437+00:00"
+  },
+  {
+    "id": "template-demo-3",
+    "user_id": "demo-user-restaurant",
+    "name": "Birthday Wishes",
+    "content": "Happy Birthday {{customer_name}}! We've added {{points_earned}} bonus points to your account!",
+    "variables": [
+      "customer_name",
+      "points_earned"
+    ],
+    "created_at": "2026-01-15T05:11:04.778437+00:00"
+  },
+  {
+    "id": "d5d16736-b711-4394-b201-93fe7501df7f",
+    "user_id": "pos_0001_restaurant_478",
+    "name": "Welcome Message",
+    "message": "Welcome to {restaurant_name}, {customer_name}! \ud83c\udf89\n\nThank you for joining our loyalty program. You've received {points_balance} bonus points as a welcome gift!\n\nEnjoy exclusive rewards and offers.",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "restaurant_name",
+      "customer_name",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "0cbf78f9-10a9-41a2-b639-dc654fc2809d",
+    "user_id": "pos_0001_restaurant_478",
+    "name": "Order Confirmation",
+    "message": "Hi {customer_name}! \ud83e\uddfe\n\nThank you for your order of \u20b9{amount}.\n\nYou've earned {points_earned} points!\nTotal Points: {points_balance}\n\nSee you again soon!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "amount",
+      "points_earned",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "3ef7fae1-6b58-4fad-b2e7-6b30a5f92099",
+    "user_id": "pos_0001_restaurant_478",
+    "name": "Birthday Wishes",
+    "message": "Happy Birthday {customer_name}! \ud83c\udf82\ud83c\udf88\n\nWishing you a fantastic day! We've added {points_earned} bonus points to your account.\n\nTotal Points: {points_balance}\n\nCelebrate with us!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "points_earned",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "1b54ebe1-0c05-4095-9ef2-48f75c4169c9",
+    "user_id": "pos_0001_restaurant_478",
+    "name": "Anniversary Wishes",
+    "message": "Happy Anniversary {customer_name}! \ud83d\udc9d\n\nWishing you a wonderful celebration! We've added {points_earned} bonus points to your account.\n\nTotal Points: {points_balance}\n\nEnjoy your special day!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "points_earned",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "41afb0b3-faf5-4cbb-9a77-6775ae0c8d7d",
+    "user_id": "pos_0001_restaurant_478",
+    "name": "Points Redeemed",
+    "message": "Hi {customer_name}! \u2705\n\nYou've successfully redeemed {points_redeemed} points worth \u20b9{amount}.\n\nRemaining Points: {points_balance}\n\nKeep earning and saving!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "points_redeemed",
+      "amount",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "9ad202fc-d94a-4cf2-b566-41371ecb5b88",
+    "user_id": "pos_0001_restaurant_478",
+    "name": "Bonus Points Received",
+    "message": "Great news {customer_name}! \ud83c\udf1f\n\nYou've received {points_earned} bonus points!\n\nTotal Points: {points_balance}\n\nThank you for being a valued customer!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "points_earned",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "6a14f78d-0fe8-45a6-93f7-79219681aafd",
+    "user_id": "pos_0001_restaurant_478",
+    "name": "Tier Upgrade",
+    "message": "Congratulations {customer_name}! \ud83c\udfc6\n\nYou've been upgraded to {tier} tier!\n\nEnjoy enhanced benefits and earn more points on every visit.\n\nTotal Points: {points_balance}",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "tier",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "a5d87be8-1d44-43db-84b5-4ed1ac2ed4dc",
+    "user_id": "pos_0001_restaurant_478",
+    "name": "Points Expiring Reminder",
+    "message": "Hi {customer_name}! \u23f0\n\nReminder: You have {points_balance} points expiring on {expiry_date}.\n\nVisit us soon to use your points before they expire!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "points_balance",
+      "expiry_date"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "59c5363e-482a-473d-bcce-5d170e3b5fc2",
+    "user_id": "pos_0001_restaurant_478",
+    "name": "Feedback Thank You",
+    "message": "Thank you {customer_name}! \ud83d\ude4f\n\nWe appreciate your feedback! As a token of thanks, we've added {points_earned} bonus points to your account.\n\nTotal Points: {points_balance}",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "points_earned",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "97701b77-f433-4469-a9f1-ef80df0711c5",
+    "user_id": "pos_0001_restaurant_478",
+    "name": "Wallet Top-up Confirmation",
+    "message": "Hi {customer_name}! \ud83d\udcb0\n\nYour wallet has been topped up with \u20b9{amount}.\n\nWallet Balance: \u20b9{wallet_balance}\n\nUse it on your next visit!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "amount",
+      "wallet_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "d367790f-c5b4-48fd-82ca-3d9a41ab6ede",
+    "user_id": "pos_0001_restaurant_709",
+    "name": "Welcome Message",
+    "message": "Welcome to {restaurant_name}, {customer_name}! \ud83c\udf89\n\nThank you for joining our loyalty program. You've received {points_balance} bonus points as a welcome gift!\n\nEnjoy exclusive rewards and offers.",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "restaurant_name",
+      "customer_name",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "20eff65b-c032-4eb1-bf7c-a6ca87a082f7",
+    "user_id": "pos_0001_restaurant_709",
+    "name": "Order Confirmation",
+    "message": "Hi {customer_name}! \ud83e\uddfe\n\nThank you for your order of \u20b9{amount}.\n\nYou've earned {points_earned} points!\nTotal Points: {points_balance}\n\nSee you again soon!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "amount",
+      "points_earned",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "4600195b-933e-4143-9e3c-ca5a5d5fbbbb",
+    "user_id": "pos_0001_restaurant_709",
+    "name": "Birthday Wishes",
+    "message": "Happy Birthday {customer_name}! \ud83c\udf82\ud83c\udf88\n\nWishing you a fantastic day! We've added {points_earned} bonus points to your account.\n\nTotal Points: {points_balance}\n\nCelebrate with us!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "points_earned",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "9bc98e20-c39e-4d33-a8e2-b4ba05ee106f",
+    "user_id": "pos_0001_restaurant_709",
+    "name": "Anniversary Wishes",
+    "message": "Happy Anniversary {customer_name}! \ud83d\udc9d\n\nWishing you a wonderful celebration! We've added {points_earned} bonus points to your account.\n\nTotal Points: {points_balance}\n\nEnjoy your special day!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "points_earned",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "212a9416-dc64-4f77-89cd-def21dc2b34e",
+    "user_id": "pos_0001_restaurant_709",
+    "name": "Points Redeemed",
+    "message": "Hi {customer_name}! \u2705\n\nYou've successfully redeemed {points_redeemed} points worth \u20b9{amount}.\n\nRemaining Points: {points_balance}\n\nKeep earning and saving!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "points_redeemed",
+      "amount",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "7aff4416-c40a-4dc5-9aad-e455621c7fbb",
+    "user_id": "pos_0001_restaurant_709",
+    "name": "Bonus Points Received",
+    "message": "Great news {customer_name}! \ud83c\udf1f\n\nYou've received {points_earned} bonus points!\n\nTotal Points: {points_balance}\n\nThank you for being a valued customer!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "points_earned",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "5e822b4e-46ed-42a8-94c4-c0af2103c8f7",
+    "user_id": "pos_0001_restaurant_709",
+    "name": "Tier Upgrade",
+    "message": "Congratulations {customer_name}! \ud83c\udfc6\n\nYou've been upgraded to {tier} tier!\n\nEnjoy enhanced benefits and earn more points on every visit.\n\nTotal Points: {points_balance}",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "tier",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "5ccdb649-3282-474a-8e7d-3f4f542b54f9",
+    "user_id": "pos_0001_restaurant_709",
+    "name": "Points Expiring Reminder",
+    "message": "Hi {customer_name}! \u23f0\n\nReminder: You have {points_balance} points expiring on {expiry_date}.\n\nVisit us soon to use your points before they expire!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "points_balance",
+      "expiry_date"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "46a576e8-ea85-46ae-a1d4-6fdc0765c896",
+    "user_id": "pos_0001_restaurant_709",
+    "name": "Feedback Thank You",
+    "message": "Thank you {customer_name}! \ud83d\ude4f\n\nWe appreciate your feedback! As a token of thanks, we've added {points_earned} bonus points to your account.\n\nTotal Points: {points_balance}",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "points_earned",
+      "points_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "798db5ab-a5c2-4017-8657-ef548786d894",
+    "user_id": "pos_0001_restaurant_709",
+    "name": "Wallet Top-up Confirmation",
+    "message": "Hi {customer_name}! \ud83d\udcb0\n\nYour wallet has been topped up with \u20b9{amount}.\n\nWallet Balance: \u20b9{wallet_balance}\n\nUse it on your next visit!",
+    "media_type": null,
+    "media_url": null,
+    "variables": [
+      "customer_name",
+      "amount",
+      "wallet_balance"
+    ],
+    "is_active": true,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  }
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "8e1c2946-51a0-40e5-b544-e1a0f5241810",
+    "user_id": "pos_0001_restaurant_478",
+    "customer_id": null,
+    "phone": "7505242126",
+    "event_type": "test",
+    "template_id": "25140",
+    "status": "sent",
+    "message_id": null,
+    "error": null,
+    "body_values": {
+      "1": "John",
+      "2": "\u20b91,000",
+      "3": "Demo Restaurant",
+      "4": "1,250",
+      "5": "SAVE20",
+      "6": "\u20b9500",
+      "7": "1,250"
+    },
+    "is_test": true,
+    "created_at": "2026-03-06T08:28:27.243948+00:00"
+  },
+  {
+    "id": "64ccb2ca-e2e3-4f5d-9328-b7ca24bfad4e",
+    "user_id": "pos_0001_restaurant_478",
+    "customer_id": null,
+    "phone": "7505242126",
+    "event_type": "test",
+    "template_id": "25140",
+    "status": "sent",
+    "message_id": null,
+    "error": null,
+    "body_values": {
+      "1": "John",
+      "2": "\u20b91,000",
+      "3": "Demo Restaurant",
+      "4": "1,250",
+      "5": "SAVE20",
+      "6": "\u20b9500",
+      "7": "1,250"
+    },
+    "is_test": true,
+    "created_at": "2026-03-06T08:31:03.151978+00:00"
+  },
+  {
+    "id": "399d17b4-b0ab-463b-937f-65e0e4f976b4",
+    "user_id": "pos_0001_restaurant_478",
+    "customer_id": null,
+    "phone": "7505242126",
+    "event_type": "test",
+    "template_id": "25140",
+    "status": "sent",
+    "message_id": null,
+    "error": null,
+    "body_values": {
+      "1": "John",
+      "2": "\u20b91,000",
+      "3": "Demo Restaurant",
+      "4": "1,250",
+      "5": "SAVE20",
+      "6": "\u20b9500",
+      "7": "1,250"
+    },
+    "is_test": true,
+    "created_at": "2026-03-06T08:32:27.702541+00:00"
+  }
+]
