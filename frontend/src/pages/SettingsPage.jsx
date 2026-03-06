@@ -671,43 +671,19 @@ export default function SettingsPage() {
                                     <CardContent className="p-4 space-y-4">
                                         <div className="flex items-center gap-2">
                                             <Gift className="w-5 h-5 text-[#329937]" />
-                                            <p className="font-semibold text-[#1A1A1A]">Feature Toggles</p>
+                                            <p className="font-semibold text-[#1A1A1A]">Loyalty Points</p>
                                         </div>
-                                        <p className="text-xs text-[#52525B]">Enable or disable features. When disabled, no calculations will happen during migration.</p>
-                                        <div className="space-y-3">
-                                            <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
-                                                <div>
-                                                    <p className="text-sm font-medium">Loyalty Points</p>
-                                                    <p className="text-xs text-[#52525B]">Enable points earning & redemption</p>
-                                                </div>
-                                                <Switch 
-                                                    checked={loyaltySettings.loyalty_enabled ?? false} 
-                                                    onCheckedChange={(c) => setLoyaltySettings({...loyaltySettings, loyalty_enabled: c})} 
-                                                    data-testid="toggle-loyalty"
-                                                />
+                                        <p className="text-xs text-[#52525B]">Enable or disable loyalty points. When disabled, no points calculations will happen during migration.</p>
+                                        <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                                            <div>
+                                                <p className="text-sm font-medium">Enable Loyalty Points</p>
+                                                <p className="text-xs text-[#52525B]">Points earning & redemption</p>
                                             </div>
-                                            <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
-                                                <div>
-                                                    <p className="text-sm font-medium">Coupons</p>
-                                                    <p className="text-xs text-[#52525B]">Enable coupon creation & usage</p>
-                                                </div>
-                                                <Switch 
-                                                    checked={loyaltySettings.coupon_enabled ?? false} 
-                                                    onCheckedChange={(c) => setLoyaltySettings({...loyaltySettings, coupon_enabled: c})} 
-                                                    data-testid="toggle-coupon"
-                                                />
-                                            </div>
-                                            <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
-                                                <div>
-                                                    <p className="text-sm font-medium">Wallet</p>
-                                                    <p className="text-xs text-[#52525B]">Enable wallet deposits & usage</p>
-                                                </div>
-                                                <Switch 
-                                                    checked={loyaltySettings.wallet_enabled ?? false} 
-                                                    onCheckedChange={(c) => setLoyaltySettings({...loyaltySettings, wallet_enabled: c})} 
-                                                    data-testid="toggle-wallet"
-                                                />
-                                            </div>
+                                            <Switch 
+                                                checked={loyaltySettings.loyalty_enabled ?? false} 
+                                                onCheckedChange={(c) => setLoyaltySettings({...loyaltySettings, loyalty_enabled: c})} 
+                                                data-testid="toggle-loyalty"
+                                            />
                                         </div>
                                     </CardContent>
                                 </Card>
