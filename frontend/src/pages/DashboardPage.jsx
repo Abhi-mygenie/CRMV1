@@ -1,13 +1,25 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Users, QrCode, Plus, Star, TrendingUp, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Users, QrCode, Plus, Star, TrendingUp, ArrowUpRight, ArrowDownRight, ChevronDown, ChevronUp, RotateCcw } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MobileLayout } from "@/components/MobileLayout";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 export default function DashboardPage() {
     const { user, api } = useAuth();
@@ -15,6 +27,25 @@ export default function DashboardPage() {
     const [stats, setStats] = useState(null);
     const [recentCustomers, setRecentCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [sortBy, setSortBy] = useState("recent");
+    const [quickActionsOpen, setQuickActionsOpen] = useState(false);
+
+    const fetchCustomers = async (sort) => {
+        try {
+            let endpoint = "/customers?limit=5";
+            if (sort === "most_visited") {
+                endpoint = "/customers?limit=5&sort_by=total_visits&sort_order=desc";
+            } else if (sort === "most_spent") {
+                endpoint = "/customers?limit=5&sort_by=total_spent&sort_order=desc";
+            } else if (sort === "highest_points") {
+                endpoint = "/customers?limit=5&sort_by=total_points&sort_order=desc";
+            }
+            const res = await api.get(endpoint);
+            setRecentCustomers(res.data);
+        } catch (err) {
+            console.error("Failed to fetch customers", err);
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -34,15 +65,26 @@ export default function DashboardPage() {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        if (!loading) {
+            fetchCustomers(sortBy);
+        }
+    }, [sortBy]);
+
     if (loading) {
         return (
             <MobileLayout>
                 <div className="p-4 animate-pulse">
                     <div className="h-8 bg-gray-200 rounded w-48 mb-4"></div>
-                    <div className="h-32 bg-gray-200 rounded-xl mb-4"></div>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="h-24 bg-gray-200 rounded-xl"></div>
-                        <div className="h-24 bg-gray-200 rounded-xl"></div>
+                    <div className="grid grid-cols-3 gap-2 mb-3">
+                        <div className="h-20 bg-gray-200 rounded-xl"></div>
+                        <div className="h-20 bg-gray-200 rounded-xl"></div>
+                        <div className="h-20 bg-gray-200 rounded-xl"></div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                        <div className="h-20 bg-gray-200 rounded-xl"></div>
+                        <div className="h-20 bg-gray-200 rounded-xl"></div>
+                        <div className="h-20 bg-gray-200 rounded-xl"></div>
                     </div>
                 </div>
             </MobileLayout>
@@ -53,9 +95,9 @@ export default function DashboardPage() {
         <MobileLayout>
             <div className="p-4 max-w-lg mx-auto">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-5">
                     <div>
-                        <p className="text-[#52525B] text-sm">Welcome back</p>
+                        <p className="text-[#52525B] text-sm">Welcome</p>
                         <h1 className="text-2xl font-bold text-[#1A1A1A] font-['Montserrat']" data-testid="restaurant-name">
                             {user?.restaurant_name}
                         </h1>
@@ -67,100 +109,132 @@ export default function DashboardPage() {
                     </Avatar>
                 </div>
 
-                {/* Hero Stats Card */}
-                <Card className="loyalty-card-gradient text-white rounded-2xl mb-4 border-0 shadow-lg" data-testid="hero-stats-card">
-                    <CardContent className="p-5">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-white/80 text-sm">Total Customers</p>
-                                <p className="text-4xl font-bold font-['Montserrat'] mt-1">{stats?.total_customers || 0}</p>
-                            </div>
-                            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-                                <Users className="w-8 h-8 text-white" />
-                            </div>
+                {/* Stats Grid - 3 columns */}
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                    <div className="stats-card-compact" data-testid="total-customers-card">
+                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
+                            <Users className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider">Customers</span>
                         </div>
-                        <div className="flex items-center mt-4 text-sm">
-                            <TrendingUp className="w-4 h-4 mr-1" />
-                            <span className="font-medium">+{stats?.new_customers_7d || 0} this week</span>
+                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat']">
+                            {stats?.total_customers || 0}
+                        </p>
+                        <p className="text-[10px] text-[#52525B] flex items-center gap-0.5">
+                            <TrendingUp className="w-3 h-3" />
+                            +{stats?.new_customers_7d || 0} this week
+                        </p>
+                    </div>
+                    <div className="stats-card-compact" data-testid="points-issued-card">
+                        <div className="flex items-center gap-1 text-[#329937] mb-1">
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider">Issued</span>
                         </div>
-                    </CardContent>
-                </Card>
-
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                    <div className="stats-card" data-testid="points-issued-card">
-                        <div className="flex items-center gap-2 text-[#329937] mb-2">
-                            <ArrowUpRight className="w-4 h-4" />
-                            <span className="text-xs font-medium uppercase tracking-wider">Points Issued</span>
-                        </div>
-                        <p className="text-2xl font-bold text-[#1A1A1A] font-['Montserrat'] points-display">
+                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat'] points-display">
                             {stats?.total_points_issued?.toLocaleString() || 0}
                         </p>
                     </div>
-                    <div className="stats-card" data-testid="points-redeemed-card">
-                        <div className="flex items-center gap-2 text-[#329937] mb-2">
-                            <ArrowDownRight className="w-4 h-4" />
-                            <span className="text-xs font-medium uppercase tracking-wider">Redeemed</span>
+                    <div className="stats-card-compact" data-testid="points-redeemed-card">
+                        <div className="flex items-center gap-1 text-[#329937] mb-1">
+                            <ArrowDownRight className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider">Redeemed</span>
                         </div>
-                        <p className="text-2xl font-bold text-[#1A1A1A] font-['Montserrat'] points-display">
+                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat'] points-display">
                             {stats?.total_points_redeemed?.toLocaleString() || 0}
                         </p>
                     </div>
-                    <div className="stats-card" data-testid="active-customers-card">
-                        <div className="flex items-center gap-2 text-[#F26B33] mb-2">
-                            <Users className="w-4 h-4" />
-                            <span className="text-xs font-medium uppercase tracking-wider">Active (30d)</span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 mb-5">
+                    <div className="stats-card-compact" data-testid="active-customers-card">
+                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
+                            <Users className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider">Active(30d)</span>
                         </div>
-                        <p className="text-2xl font-bold text-[#1A1A1A] font-['Montserrat']">
+                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat']">
                             {stats?.active_customers_30d || 0}
                         </p>
                     </div>
-                    <div className="stats-card" data-testid="avg-rating-card">
-                        <div className="flex items-center gap-2 text-[#329937] mb-2">
-                            <Star className="w-4 h-4 fill-current" />
-                            <span className="text-xs font-medium uppercase tracking-wider">Avg Rating</span>
+                    <div className="stats-card-compact" data-testid="avg-rating-card">
+                        <div className="flex items-center gap-1 text-[#329937] mb-1">
+                            <Star className="w-3.5 h-3.5 fill-current" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider">Rating</span>
                         </div>
-                        <p className="text-2xl font-bold text-[#1A1A1A] font-['Montserrat']">
+                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat']">
                             {stats?.avg_rating || "N/A"}
+                        </p>
+                    </div>
+                    <div className="stats-card-compact" data-testid="avg-visits-card">
+                        <div className="flex items-center gap-1 text-[#6366F1] mb-1">
+                            <RotateCcw className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider">Avg Visits</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat']">
+                            {stats?.avg_visits_per_customer || 0}
                         </p>
                     </div>
                 </div>
 
-                {/* Quick Actions */}
-                <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 font-['Montserrat']">Quick Actions</h2>
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                    <button 
-                        onClick={() => navigate("/customers", { state: { openAddModal: true }})}
-                        className="quick-action-btn"
-                        data-testid="quick-add-customer"
-                    >
-                        <div className="w-12 h-12 rounded-full bg-[#F26B33]/10 flex items-center justify-center mb-2">
-                            <Plus className="w-6 h-6 text-[#F26B33]" />
+                {/* Quick Actions - Collapsible */}
+                <Collapsible open={quickActionsOpen} onOpenChange={setQuickActionsOpen} className="mb-5">
+                    <CollapsibleTrigger asChild>
+                        <button className="flex items-center justify-between w-full text-left py-2 px-1">
+                            <h2 className="text-sm font-semibold text-[#52525B] font-['Montserrat']">Quick Actions</h2>
+                            {quickActionsOpen ? (
+                                <ChevronUp className="w-4 h-4 text-[#52525B]" />
+                            ) : (
+                                <ChevronDown className="w-4 h-4 text-[#52525B]" />
+                            )}
+                        </button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <div className="grid grid-cols-2 gap-3 pt-2">
+                            <button 
+                                onClick={() => navigate("/customers", { state: { openAddModal: true }})}
+                                className="quick-action-btn-compact"
+                                data-testid="quick-add-customer"
+                            >
+                                <div className="w-9 h-9 rounded-full bg-[#F26B33]/10 flex items-center justify-center mr-3">
+                                    <Plus className="w-4 h-4 text-[#F26B33]" />
+                                </div>
+                                <span className="text-sm font-medium text-[#1A1A1A]">Add Customer</span>
+                            </button>
+                            <button 
+                                onClick={() => navigate("/qr")}
+                                className="quick-action-btn-compact"
+                                data-testid="quick-qr-code"
+                            >
+                                <div className="w-9 h-9 rounded-full bg-[#329937]/10 flex items-center justify-center mr-3">
+                                    <QrCode className="w-4 h-4 text-[#329937]" />
+                                </div>
+                                <span className="text-sm font-medium text-[#1A1A1A]">Show QR</span>
+                            </button>
                         </div>
-                        <span className="text-sm font-medium text-[#1A1A1A]">Add Customer</span>
-                    </button>
-                    <button 
-                        onClick={() => navigate("/qr")}
-                        className="quick-action-btn"
-                        data-testid="quick-qr-code"
-                    >
-                        <div className="w-12 h-12 rounded-full bg-[#329937]/10 flex items-center justify-center mb-2">
-                            <QrCode className="w-6 h-6 text-[#329937]" />
-                        </div>
-                        <span className="text-sm font-medium text-[#1A1A1A]">Show QR</span>
-                    </button>
-                </div>
+                    </CollapsibleContent>
+                </Collapsible>
 
                 {/* Recent Customers */}
                 <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-lg font-semibold text-[#1A1A1A] font-['Montserrat']">Recent Customers</h2>
-                    <button 
-                        onClick={() => navigate("/customers")}
-                        className="text-sm text-[#F26B33] font-medium"
-                        data-testid="view-all-customers"
-                    >
-                        View all
-                    </button>
+                    <h2 className="text-base font-semibold text-[#1A1A1A] font-['Montserrat']">Recent Customers</h2>
+                    <div className="flex items-center gap-2">
+                        <Select value={sortBy} onValueChange={setSortBy}>
+                            <SelectTrigger className="h-8 text-xs w-[120px] border-gray-200" data-testid="sort-dropdown">
+                                <SelectValue placeholder="Sort by" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="recent">Recent</SelectItem>
+                                <SelectItem value="most_visited">Most Visited</SelectItem>
+                                <SelectItem value="most_spent">Most Spent</SelectItem>
+                                <SelectItem value="highest_points">Highest Points</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <button 
+                            onClick={() => navigate("/customers")}
+                            className="text-xs text-[#F26B33] font-medium whitespace-nowrap"
+                            data-testid="view-all-customers"
+                        >
+                            View all
+                        </button>
+                    </div>
                 </div>
 
                 {recentCustomers.length === 0 ? (
