@@ -36,14 +36,14 @@ async def sync_customers_from_mygenie(user: dict = Depends(get_current_user)):
         
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                f"{mygenie_api_url}/api/v2/vendoremployee/restaurant-customer-list",
+                f"{mygenie_api_url}/api/v1/vendoremployee/whatsappcrm/customer-migration",
                 headers={
                     "Authorization": f"Bearer {mygenie_token}",
                     "Content-Type": "application/json; charset=UTF-8",
                     "X-localization": "en"
                 },
                 json={},
-                timeout=15.0
+                timeout=30.0
             )
             
             if response.status_code != 200:
@@ -53,7 +53,7 @@ async def sync_customers_from_mygenie(user: dict = Depends(get_current_user)):
                 )
             
             data = response.json()
-            customer_list = data.get("customer_list", [])
+            customer_list = data.get("customers", [])
             
             synced_count = 0
             updated_count = 0
@@ -62,12 +62,12 @@ async def sync_customers_from_mygenie(user: dict = Depends(get_current_user)):
                 # Map MyGenie customer to our schema
                 customer_data = {
                     "user_id": user["id"],
-                    "name": mygenie_customer.get("customer_name") or "Unknown",
+                    "name": mygenie_customer.get("name") or "Unknown",
                     "phone": mygenie_customer.get("phone") or "",
-                    "country_code": "+91",
-                    "email": f"customer{mygenie_customer['id']}@mygenie.local",
-                    "dob": mygenie_customer.get("date_of_birth"),
-                    "anniversary": mygenie_customer.get("date_of_anniversary"),
+                    "country_code": mygenie_customer.get("country_code") or "+91",
+                    "email": mygenie_customer.get("email") or f"customer{mygenie_customer['id']}@mygenie.local",
+                    "dob": mygenie_customer.get("dob"),
+                    "anniversary": mygenie_customer.get("anniversary"),
                     "gst_name": mygenie_customer.get("gst_name"),
                     "gst_number": mygenie_customer.get("gst_number"),
                     "total_points": mygenie_customer.get("loyalty_point", 0),
@@ -78,6 +78,7 @@ async def sync_customers_from_mygenie(user: dict = Depends(get_current_user)):
                     "total_wallet_deposit": float(mygenie_customer.get("total_wallet_deposit") or 0),
                     "wallet_used": float(mygenie_customer.get("wallet_used") or 0),
                     "pos_customer_id": mygenie_customer["id"],
+                    "pos_id": mygenie_customer.get("pos_id"),
                     "mygenie_synced": True,
                     "last_synced_at": datetime.now(timezone.utc).isoformat()
                 }
@@ -110,12 +111,12 @@ async def sync_customers_from_mygenie(user: dict = Depends(get_current_user)):
                 else:
                     # Create new customer
                     customer_data["id"] = str(uuid.uuid4())
-                    customer_data["created_at"] = datetime.now(timezone.utc).isoformat()
-                    customer_data["customer_type"] = "normal"
+                    customer_data["created_at"] = mygenie_customer.get("created_time") or datetime.now(timezone.utc).isoformat()
+                    customer_data["customer_type"] = mygenie_customer.get("customer_type") or "normal"
                     customer_data["notes"] = None
-                    customer_data["address"] = None
-                    customer_data["city"] = None
-                    customer_data["pincode"] = None
+                    customer_data["address"] = mygenie_customer.get("address")
+                    customer_data["city"] = mygenie_customer.get("city")
+                    customer_data["pincode"] = mygenie_customer.get("pincode")
                     customer_data["allergies"] = []
                     customer_data["custom_field_1"] = None
                     customer_data["custom_field_2"] = None
