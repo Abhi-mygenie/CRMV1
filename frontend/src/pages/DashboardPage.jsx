@@ -165,7 +165,7 @@ export default function DashboardPage() {
                         </p>
                     </div>
                     <div className="stats-card-compact" data-testid="avg-visits-card">
-                        <div className="flex items-center gap-1 text-[#62B5E5] mb-1">
+                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
                             <RotateCcw className="w-3.5 h-3.5" />
                             <span className="text-[10px] font-medium uppercase tracking-wider font-body">Avg Visits</span>
                         </div>
