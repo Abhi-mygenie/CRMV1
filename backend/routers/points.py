@@ -233,6 +233,9 @@ async def get_loyalty_settings(user: dict = Depends(get_current_user)):
         settings = {
             "id": str(uuid.uuid4()),
             "user_id": user["id"],
+            "loyalty_enabled": False,
+            "coupon_enabled": False,
+            "wallet_enabled": False,
             "min_order_value": 100.0,
             "bronze_earn_percent": 5.0,
             "silver_earn_percent": 7.0,
