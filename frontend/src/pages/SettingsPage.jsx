@@ -384,18 +384,18 @@ export default function SettingsPage() {
                         <Card className="rounded-xl border-0 shadow-sm" data-testid="whatsapp-api-key-card">
                             <CardContent className="p-4 space-y-4">
                                 <div className="flex items-start gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-[#25D366]/10 flex items-center justify-center flex-shrink-0"><KeyRound className="w-5 h-5 text-[#25D366]" /></div>
-                                    <div><p className="font-medium text-[#1A1A1A]">WhatsApp API Key</p><p className="text-xs text-[#52525B] mt-1">Enter your AuthKey.io API key</p></div>
+                                    <div className="w-10 h-10 rounded-full bg-[#F26B33]/10 flex items-center justify-center flex-shrink-0"><KeyRound className="w-5 h-5 text-[#F26B33]" /></div>
+                                    <div><p className="font-medium text-[#2B2B2B] font-body">WhatsApp API Key</p><p className="text-xs text-[#52525B] mt-1 font-body">Enter your AuthKey.io API key</p></div>
                                 </div>
-                                <div><Label className="form-label">API Key</Label><Input type="password" value={whatsappApiKey} onChange={(e) => setWhatsappApiKey(e.target.value)} placeholder="Enter your AuthKey.io API key" className="h-12 rounded-xl font-mono" data-testid="whatsapp-api-key-input" /></div>
-                                <Button onClick={handleSaveApiKey} disabled={savingApiKey} className="w-full h-12 rounded-xl bg-[#25D366] hover:bg-[#1da851] text-white" data-testid="save-whatsapp-api-key-btn">{savingApiKey ? "Saving..." : "Save API Key"}</Button>
+                                <div><Label className="form-label font-body">API Key</Label><Input type="password" value={whatsappApiKey} onChange={(e) => setWhatsappApiKey(e.target.value)} placeholder="Enter your AuthKey.io API key" className="h-12 rounded-xl font-mono" data-testid="whatsapp-api-key-input" /></div>
+                                <Button onClick={handleSaveApiKey} disabled={savingApiKey} className="w-full h-12 rounded-xl bg-[#329937] hover:bg-[#287A2D] text-white font-body" data-testid="save-whatsapp-api-key-btn">{savingApiKey ? "Saving..." : "Save API Key"}</Button>
                             </CardContent>
                         </Card>
                         <Card className="rounded-xl border-0 shadow-sm" data-testid="profile-card">
                             <CardContent className="p-4 space-y-4">
                                 <div className="flex items-start gap-3">
                                     <div className="w-10 h-10 rounded-full bg-[#F26B33]/10 flex items-center justify-center flex-shrink-0"><User className="w-5 h-5 text-[#F26B33]" /></div>
-                                    <div><p className="font-medium text-[#1A1A1A]">Business Profile</p><p className="text-xs text-[#52525B] mt-1">Manage your business details</p></div>
+                                    <div><p className="font-medium text-[#2B2B2B] font-body">Business Profile</p><p className="text-xs text-[#52525B] mt-1 font-body">Manage your business details</p></div>
                                 </div>
                                 <div className="space-y-3">
                                     <div><Label className="form-label">Business Name</Label><Input value={user?.restaurant_name || ""} disabled className="h-12 rounded-xl bg-gray-50 text-gray-500" /></div>
