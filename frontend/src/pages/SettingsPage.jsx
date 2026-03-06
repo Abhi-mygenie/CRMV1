@@ -507,6 +507,55 @@ export default function SettingsPage() {
                     </div>
                 )}
 
+                {/* Wallet Tab Content */}
+                {activeSection === "wallet" && (
+                    <div className="space-y-4">
+                        {/* Wallet Toggle Card */}
+                        <Card className="rounded-xl border-2 border-purple-500/20 shadow-sm bg-purple-500/5">
+                            <CardContent className="p-4 space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <Wallet className="w-5 h-5 text-purple-500" />
+                                    <p className="font-semibold text-[#1A1A1A]">Wallet</p>
+                                </div>
+                                <p className="text-xs text-[#52525B]">Enable or disable wallet feature. When disabled, wallet deposits and usage will be hidden.</p>
+                                <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                                    <div>
+                                        <p className="text-sm font-medium">Enable Wallet</p>
+                                        <p className="text-xs text-[#52525B]">Allow customer wallet deposits & usage</p>
+                                    </div>
+                                    <Switch 
+                                        checked={loyaltySettings?.wallet_enabled ?? false} 
+                                        onCheckedChange={async (c) => {
+                                            try {
+                                                await api.put("/loyalty/settings", { wallet_enabled: c });
+                                                setLoyaltySettings({...loyaltySettings, wallet_enabled: c});
+                                                toast.success(c ? "Wallet enabled" : "Wallet disabled");
+                                            } catch (_) { toast.error("Failed to update"); }
+                                        }} 
+                                        data-testid="toggle-wallet"
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
+                        
+                        {loyaltySettings?.wallet_enabled ? (
+                            <Card className="rounded-xl border-0 shadow-sm">
+                                <CardContent className="p-6 text-center">
+                                    <Wallet className="w-16 h-16 mx-auto text-purple-300 mb-4" />
+                                    <p className="font-semibold text-[#1A1A1A]">Wallet Features Coming Soon</p>
+                                    <p className="text-sm text-[#52525B] mt-2">Manage customer wallet deposits, balance tracking, and usage history.</p>
+                                </CardContent>
+                            </Card>
+                        ) : (
+                            <div className="text-center py-12">
+                                <Wallet className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                                <p className="text-[#52525B] mb-2">Wallet is disabled</p>
+                                <p className="text-xs text-[#A1A1AA]">Enable wallet to allow customer deposits and payments</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {/* WhatsApp Tab Content - Full Inline */}
                 {activeSection === "whatsapp" && (
                     <WhatsAppAutomationContent embedded />
