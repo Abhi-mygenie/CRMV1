@@ -679,13 +679,13 @@ class AutomationRule(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str
     user_id: str
-    event_type: str
+    event_type: Optional[str] = None
     template_id: str
     is_enabled: bool = True
     delay_minutes: int = 0
     conditions: Optional[dict] = None
     created_at: str
-    updated_at: str
+    updated_at: Optional[str] = None
 
 # Automation Events
 AUTOMATION_EVENTS = [
