@@ -1347,52 +1347,80 @@ export default function CustomersPage() {
                     </div>
                 ) : (
                     <div className="space-y-2">
-                        {customers.map((customer) => (
-                            <div
-                                key={customer.id}
-                                className="customer-list-item w-full cursor-pointer"
-                                data-testid={`customer-row-${customer.id}`}
-                                onClick={() => navigate(`/customers/${customer.id}`)}
-                            >
-                                <Avatar className="w-10 h-10 mr-3">
-                                    <AvatarFallback className={`font-semibold ${
-                                        customer.customer_type === "corporate" 
-                                            ? "bg-[#F26B33]/10 text-[#F26B33]" 
-                                            : "bg-[#329937]/10 text-[#329937]"
-                                    }`}>
-                                        {customer.customer_type === "corporate" ? <Building2 className="w-5 h-5" /> : customer.name.charAt(0)}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <p className="font-medium text-[#1A1A1A] truncate">{customer.name} <span className="text-[#52525B] font-normal">({customer.total_visits || 0})</span></p>
-                                        <button
-                                            onClick={(e) => openEditModal(customer, e)}
-                                            className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center hover:bg-[#F26B33]/10 transition-colors"
-                                            data-testid={`edit-customer-list-${customer.id}`}
-                                        >
-                                            <Edit2 className="w-3 h-3 text-[#52525B]" />
-                                        </button>
-                                    </div>
-                                    <p className="text-sm text-[#52525B]">{customer.country_code || '+91'} {customer.phone}</p>
-                                </div>
-                                <div className="text-right flex items-center gap-3">
-                                    <div className="text-right">
-                                        <p className="font-semibold text-[#329937] points-display">{customer.total_points}</p>
-                                        <Badge variant="outline" className={`tier-badge ${customer.tier.toLowerCase()}`}>
-                                            {customer.tier}
-                                        </Badge>
-                                    </div>
-                                    {customer.wallet_balance > 0 && (
-                                        <div className="text-right border-l pl-3 border-gray-200">
-                                            <p className="font-semibold text-[#F26B33]">₹{customer.wallet_balance.toLocaleString()}</p>
-                                            <p className="text-[10px] text-[#A1A1AA]">Wallet</p>
+                        {customers.map((customer) => {
+                            // Format total_spent as ₹23K or ₹1.2L
+                            const formatSpent = (amount) => {
+                                if (!amount || amount === 0) return '₹0';
+                                if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)}L`;
+                                if (amount >= 1000) return `₹${(amount / 1000).toFixed(0)}K`;
+                                return `₹${amount}`;
+                            };
+                            
+                            // Format last visit as relative time
+                            const formatLastVisit = (dateStr) => {
+                                if (!dateStr) return 'Never';
+                                const date = new Date(dateStr);
+                                const now = new Date();
+                                const diffMs = now - date;
+                                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                                
+                                if (diffDays === 0) return 'Today';
+                                if (diffDays === 1) return '1d ago';
+                                if (diffDays < 7) return `${diffDays}d ago`;
+                                if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+                                if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
+                                return `${Math.floor(diffDays / 365)}y ago`;
+                            };
+                            
+                            return (
+                                <div
+                                    key={customer.id}
+                                    className="customer-list-item w-full cursor-pointer"
+                                    data-testid={`customer-row-${customer.id}`}
+                                    onClick={() => navigate(`/customers/${customer.id}`)}
+                                >
+                                    <Avatar className="w-10 h-10 mr-3">
+                                        <AvatarFallback className={`font-semibold ${
+                                            customer.customer_type === "corporate" 
+                                                ? "bg-[#F26B33]/10 text-[#F26B33]" 
+                                                : "bg-[#329937]/10 text-[#329937]"
+                                        }`}>
+                                            {customer.customer_type === "corporate" ? <Building2 className="w-5 h-5" /> : customer.name.charAt(0)}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                            <p className="font-medium text-[#1A1A1A] truncate">{customer.name}</p>
+                                            <button
+                                                onClick={(e) => openEditModal(customer, e)}
+                                                className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center hover:bg-[#F26B33]/10 transition-colors"
+                                                data-testid={`edit-customer-list-${customer.id}`}
+                                            >
+                                                <Edit2 className="w-3 h-3 text-[#52525B]" />
+                                            </button>
                                         </div>
-                                    )}
-                                    <ChevronRight className="w-5 h-5 text-[#A1A1AA]" />
+                                        <p className="text-sm text-[#52525B]">
+                                            {customer.total_visits || 0} visits · {formatSpent(customer.total_spent)} · {formatLastVisit(customer.last_visit)}
+                                        </p>
+                                    </div>
+                                    <div className="text-right flex items-center gap-3">
+                                        <div className="text-right">
+                                            <p className="font-semibold text-[#329937] points-display text-sm">{customer.total_points} pts</p>
+                                            <Badge variant="outline" className={`tier-badge ${customer.tier.toLowerCase()}`}>
+                                                {customer.tier}
+                                            </Badge>
+                                        </div>
+                                        {customer.wallet_balance > 0 && (
+                                            <div className="text-right border-l pl-3 border-gray-200">
+                                                <p className="font-semibold text-[#F26B33]">₹{customer.wallet_balance.toLocaleString()}</p>
+                                                <p className="text-[10px] text-[#A1A1AA]">Wallet</p>
+                                            </div>
+                                        )}
+                                        <ChevronRight className="w-5 h-5 text-[#A1A1AA]" />
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </>
