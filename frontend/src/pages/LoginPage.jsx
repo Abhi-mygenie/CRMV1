@@ -64,7 +64,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#F9F9F7] flex flex-col justify-center p-6">
+        <div className="min-h-screen bg-[#F5F5F5] flex flex-col justify-center p-6">
             <div className="max-w-sm mx-auto w-full">
                 <div className="text-center mb-8">
                     <img 
@@ -76,7 +76,7 @@ export default function LoginPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <Label htmlFor="email" className="form-label">Email</Label>
+                        <Label htmlFor="email" className="form-label font-body">Email</Label>
                         <Input
                             id="email"
                             type="email"
@@ -89,7 +89,7 @@ export default function LoginPage() {
                         />
                     </div>
                     <div>
-                        <Label htmlFor="password" className="form-label">Password</Label>
+                        <Label htmlFor="password" className="form-label font-body">Password</Label>
                         <div className="relative">
                             <Input
                                 id="password"
@@ -121,12 +121,12 @@ export default function LoginPage() {
                                 className="w-4 h-4 rounded border-gray-300 text-[#F26B33] focus:ring-[#F26B33]"
                                 data-testid="remember-me-checkbox"
                             />
-                            <span className="text-sm text-[#52525B]">Remember me</span>
+                            <span className="text-sm text-[#52525B] font-body">Remember me</span>
                         </label>
                         <button 
                             type="button"
                             onClick={() => toast.info("Please contact admin to reset your password")}
-                            className="text-sm text-[#F26B33] font-medium hover:underline"
+                            className="text-sm text-[#F26B33] font-medium hover:underline font-body"
                             data-testid="forgot-password-btn"
                         >
                             Forgot password?
@@ -135,7 +135,7 @@ export default function LoginPage() {
 
                     <Button 
                         type="submit" 
-                        className="w-full h-12 rounded-full bg-[#F26B33] hover:bg-[#D85A2A] text-white font-semibold active-scale"
+                        className="w-full h-12 rounded-full bg-[#F26B33] hover:bg-[#D85A2A] text-white font-semibold active-scale font-body"
                         disabled={isLoading}
                         data-testid="login-submit-btn"
                     >
@@ -148,7 +148,7 @@ export default function LoginPage() {
                             <div className="w-full border-t border-gray-300"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-4 bg-[#F9F9F7] text-[#52525B] font-medium">or</span>
+                            <span className="px-4 bg-[#F5F5F5] text-[#52525B] font-medium font-body">or</span>
                         </div>
                     </div>
 
@@ -156,22 +156,22 @@ export default function LoginPage() {
                     <Button 
                         type="button"
                         onClick={handleDemoLogin}
-                        className="w-full h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold active-scale shadow-lg"
+                        className="w-full h-12 rounded-full bg-[#329937] hover:bg-[#287A2D] text-white font-semibold active-scale shadow-lg font-body"
                         disabled={isDemoLoading}
                         data-testid="demo-login-btn"
                     >
-                        {isDemoLoading ? "Loading Demo..." : "🎭 Try Demo Mode"}
+                        {isDemoLoading ? "Loading Demo..." : "Try Demo Mode"}
                     </Button>
-                    <p className="text-xs text-center text-[#A1A1AA] mt-2">
+                    <p className="text-xs text-center text-[#A1A1AA] mt-2 font-body">
                         Explore all features with pre-loaded demo data
                     </p>
                     
                     <div className="text-center mt-4">
-                        <span className="text-sm text-[#52525B]">Don't have an account? </span>
+                        <span className="text-sm text-[#52525B] font-body">Don't have an account? </span>
                         <button 
                             type="button"
                             onClick={() => navigate("/register")}
-                            className="text-sm text-[#F26B33] font-medium hover:underline"
+                            className="text-sm text-[#F26B33] font-medium hover:underline font-body"
                             data-testid="signup-link"
                         >
                             Sign up
