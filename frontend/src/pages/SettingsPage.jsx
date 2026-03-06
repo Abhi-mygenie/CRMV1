@@ -68,6 +68,8 @@ export default function SettingsPage() {
             setProfile({ restaurant_name: user?.restaurant_name || "", phone: user?.phone || "", address: user?.address || "" });
         };
         fetchProfileData();
+        // Fetch migration status on load to determine if tab should be shown
+        fetchMigrationStatus();
     }, []);
 
     useEffect(() => {
