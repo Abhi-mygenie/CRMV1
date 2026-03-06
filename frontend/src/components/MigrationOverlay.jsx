@@ -168,7 +168,7 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
                 {/* Header */}
-                <div className="p-6 border-b bg-gradient-to-r from-[#F26B33] to-[#62B5E5] rounded-t-2xl">
+                <div className="p-6 border-b bg-gradient-to-r from-[#F26B33] to-[#329937] rounded-t-2xl">
                     <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                             <RefreshCw className="w-6 h-6 text-white" />
@@ -186,7 +186,7 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                     <div className="border rounded-xl p-4 bg-[#F5F5F5]">
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-[#62B5E5]/20 flex items-center justify-center text-[#62B5E5] font-semibold text-sm">1</div>
+                                <div className="w-8 h-8 rounded-full bg-[#F26B33]/20 flex items-center justify-center text-[#F26B33] font-semibold text-sm">1</div>
                                 <div>
                                     <h3 className="font-semibold text-[#2B2B2B] font-body">Sync Customers</h3>
                                     {migrationStatus?.customers_synced > 0 && (
