@@ -144,10 +144,11 @@ export default function SettingsPage() {
                         const status = statusRes.data;
                         
                         if (status.status === "running") {
-                            const progress = status.total_pages > 0 
-                                ? Math.round((status.current_page / status.total_pages) * 100) 
-                                : 0;
-                            toast.loading(`Syncing orders... ${progress}% (Page ${status.current_page}/${status.total_pages})`, { id: "sync-progress" });
+                            const processed = status.synced + status.updated;
+                            const total = status.total_orders || 0;
+                            // Round to nearest 100
+                            const displayProcessed = Math.floor(processed / 100) * 100;
+                            toast.loading(`Syncing orders... ${displayProcessed}/${total}`, { id: "sync-progress" });
                             setTimeout(pollStatus, 2000); // Poll every 2 seconds
                         } else if (status.status === "completed") {
                             toast.dismiss("sync-progress");
