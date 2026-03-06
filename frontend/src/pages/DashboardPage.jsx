@@ -110,6 +110,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Stats Grid - 3 columns */}
+                {/* Row 1: Customers, Active, Avg Visits */}
                 <div className="grid grid-cols-3 gap-2 mb-2">
                     <div className="stats-card-compact" data-testid="total-customers-card">
                         <div className="flex items-center gap-1 text-[#F26B33] mb-1">
@@ -124,6 +125,28 @@ export default function DashboardPage() {
                             +{stats?.new_customers_7d || 0} this week
                         </p>
                     </div>
+                    <div className="stats-card-compact" data-testid="active-customers-card">
+                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
+                            <Users className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider">Active(30d)</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat']">
+                            {stats?.active_customers_30d || 0}
+                        </p>
+                    </div>
+                    <div className="stats-card-compact" data-testid="avg-visits-card">
+                        <div className="flex items-center gap-1 text-[#6366F1] mb-1">
+                            <RotateCcw className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider">Avg Visits</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat']">
+                            {stats?.avg_visits_per_customer || 0}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Row 2: Points Issued, Points Redeemed, Rating */}
+                <div className="grid grid-cols-3 gap-2 mb-5">
                     <div className="stats-card-compact" data-testid="points-issued-card">
                         <div className="flex items-center gap-1 text-[#329937] mb-1">
                             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -142,18 +165,6 @@ export default function DashboardPage() {
                             {stats?.total_points_redeemed?.toLocaleString() || 0}
                         </p>
                     </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 mb-5">
-                    <div className="stats-card-compact" data-testid="active-customers-card">
-                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
-                            <Users className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider">Active(30d)</span>
-                        </div>
-                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat']">
-                            {stats?.active_customers_30d || 0}
-                        </p>
-                    </div>
                     <div className="stats-card-compact" data-testid="avg-rating-card">
                         <div className="flex items-center gap-1 text-[#329937] mb-1">
                             <Star className="w-3.5 h-3.5 fill-current" />
@@ -161,15 +172,6 @@ export default function DashboardPage() {
                         </div>
                         <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat']">
                             {stats?.avg_rating || "N/A"}
-                        </p>
-                    </div>
-                    <div className="stats-card-compact" data-testid="avg-visits-card">
-                        <div className="flex items-center gap-1 text-[#6366F1] mb-1">
-                            <RotateCcw className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider">Avg Visits</span>
-                        </div>
-                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat']">
-                            {stats?.avg_visits_per_customer || 0}
                         </p>
                     </div>
                 </div>
