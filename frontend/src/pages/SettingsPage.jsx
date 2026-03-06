@@ -331,13 +331,14 @@ export default function SettingsPage() {
     // Hide Migration tab if migration is completed or skipped permanently
     const shouldShowMigration = !migrationStatus?.migration_confirmed && !migrationStatus?.migration_skipped_permanently;
     
+    // All tabs use Orange for non-selected, Green for selected
     const allTabs = [
-        { key: "migration", icon: RefreshCw, label: "Migration", color: "#3B82F6" },
-        { key: "profile", icon: User, label: "Profile", color: "#F26B33" },
-        { key: "whatsapp", icon: MessageSquare, label: "WhatsApp", color: "#25D366" },
-        { key: "loyalty", icon: Gift, label: "Loyalty", color: "#329937" },
-        { key: "coupons", icon: Tag, label: "Coupons", color: "#F26B33" },
-        { key: "wallet", icon: Wallet, label: "Wallet", color: "#8B5CF6" }
+        { key: "migration", icon: RefreshCw, label: "Migration" },
+        { key: "profile", icon: User, label: "Profile" },
+        { key: "whatsapp", icon: MessageSquare, label: "WhatsApp" },
+        { key: "loyalty", icon: Gift, label: "Loyalty" },
+        { key: "coupons", icon: Tag, label: "Coupons" },
+        { key: "wallet", icon: Wallet, label: "Wallet" }
     ];
     
     const tabs = shouldShowMigration ? allTabs : allTabs.filter(t => t.key !== "migration");
@@ -345,33 +346,36 @@ export default function SettingsPage() {
     return (
         <MobileLayout>
             <div className="p-4 max-w-lg mx-auto">
-                <h1 className="text-2xl font-bold text-[#1A1A1A] mb-6 font-['Montserrat']" data-testid="settings-title">Settings</h1>
+                <h1 className="text-2xl font-bold text-[#2B2B2B] mb-6 font-heading" data-testid="settings-title">Settings</h1>
 
-                {/* 5 Tab Cards */}
+                {/* Tab Cards - Orange non-selected, Green selected */}
                 <div className="grid grid-cols-5 gap-2 mb-4">
-                    {tabs.map(({ key, icon: Icon, label, color }) => (
-                        <button
-                            key={key}
-                            onClick={() => setActiveSection(key)}
-                            className={`flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all ${
-                                activeSection === key 
-                                    ? "bg-white shadow-md border-2" 
-                                    : "bg-gray-50 hover:bg-white hover:shadow-sm border-2 border-transparent"
-                            }`}
-                            style={{ borderColor: activeSection === key ? color : "transparent" }}
-                            data-testid={`tab-${key}`}
-                        >
-                            <div 
-                                className="w-9 h-9 rounded-full flex items-center justify-center"
-                                style={{ backgroundColor: `${color}15` }}
+                    {tabs.map(({ key, icon: Icon, label }) => {
+                        const isSelected = activeSection === key;
+                        const iconColor = isSelected ? "#329937" : "#F26B33";
+                        return (
+                            <button
+                                key={key}
+                                onClick={() => setActiveSection(key)}
+                                className={`flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all ${
+                                    isSelected 
+                                        ? "bg-white shadow-md border-2 border-[#329937]" 
+                                        : "bg-[#F5F5F5] hover:bg-white hover:shadow-sm border-2 border-transparent"
+                                }`}
+                                data-testid={`tab-${key}`}
                             >
-                                <Icon className="w-4 h-4" style={{ color }} />
-                            </div>
-                            <p className={`text-[10px] font-medium ${activeSection === key ? "" : "text-[#52525B]"}`} style={{ color: activeSection === key ? color : undefined }}>
-                                {label}
-                            </p>
-                        </button>
-                    ))}
+                                <div 
+                                    className="w-9 h-9 rounded-full flex items-center justify-center"
+                                    style={{ backgroundColor: isSelected ? "#32993715" : "#F26B3315" }}
+                                >
+                                    <Icon className="w-4 h-4" style={{ color: iconColor }} />
+                                </div>
+                                <p className={`text-[10px] font-medium font-body ${isSelected ? "text-[#329937]" : "text-[#F26B33]"}`}>
+                                    {label}
+                                </p>
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* Profile Tab Content */}
