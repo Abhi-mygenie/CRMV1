@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
-from typing import List
+from pydantic import BaseModel
+from typing import List, Optional, Dict
 from datetime import datetime, timezone
 import uuid
 import httpx
@@ -7,11 +8,21 @@ import httpx
 from core.database import db
 from core.auth import get_current_user
 from core.helpers import get_default_templates_and_automation
+from core.whatsapp import send_single_message, WhatsAppMessage
 from models.schemas import (
     WhatsAppTemplate, WhatsAppTemplateCreate, WhatsAppTemplateUpdate,
     AutomationRule, AutomationRuleCreate, AutomationRuleUpdate,
     AUTOMATION_EVENTS
 )
+
+
+class TestTemplateRequest(BaseModel):
+    template_id: str
+    phone: str
+    country_code: str = "91"
+    body_values: Dict[str, str] = {}
+    media_url: Optional[str] = None
+    media_filename: Optional[str] = None
 
 router = APIRouter(prefix="/whatsapp", tags=["WhatsApp"])
 
@@ -488,3 +499,70 @@ async def get_automation_with_templates(user: dict = Depends(get_current_user)):
         "available_events": AUTOMATION_EVENTS,
         "templates": templates
     }
+
+
+@router.post("/test-template")
+async def test_template(request: TestTemplateRequest, user: dict = Depends(get_current_user)):
+    """
+    Send a test WhatsApp message using the specified template.
+    Used to verify template configuration before enabling automation.
+    """
+    # Get user's AuthKey API key
+    user_doc = await db.users.find_one({"id": user["id"]}, {"authkey_api_key": 1})
+    api_key = user_doc.get("authkey_api_key") if user_doc else None
+    
+    if not api_key:
+        raise HTTPException(
+            status_code=400,
+            detail="AuthKey API key not configured. Please add your API key in Settings."
+        )
+    
+    # Validate phone number
+    phone = request.phone.replace(" ", "").replace("-", "")
+    if not phone or len(phone) < 10:
+        raise HTTPException(status_code=400, detail="Invalid phone number")
+    
+    # Build message
+    message = WhatsAppMessage(
+        phone=phone,
+        country_code=request.country_code.replace("+", ""),
+        template_id=request.template_id,
+        body_values=request.body_values,
+        media_url=request.media_url,
+        media_filename=request.media_filename,
+        customer_id=None
+    )
+    
+    # Send test message
+    result = await send_single_message(api_key, message)
+    
+    # Log the test attempt
+    log_entry = {
+        "id": str(uuid.uuid4()),
+        "user_id": user["id"],
+        "customer_id": None,
+        "phone": phone,
+        "event_type": "test",
+        "template_id": request.template_id,
+        "status": "sent" if result.success else "failed",
+        "message_id": result.message_id,
+        "error": result.error,
+        "body_values": request.body_values,
+        "is_test": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.whatsapp_message_logs.insert_one(log_entry)
+    
+    if result.success:
+        return {
+            "success": True,
+            "message_id": result.message_id,
+            "message": f"Test message sent successfully to +{request.country_code} {phone}",
+            "response_data": result.response_data
+        }
+    else:
+        return {
+            "success": False,
+            "error": result.error,
+            "message": f"Failed to send test message: {result.error}"
+        }

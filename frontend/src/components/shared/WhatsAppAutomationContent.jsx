@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { MessageSquare, Settings, Plus, Check, X, Trash2, Eye, Tag, ChevronLeft, KeyRound, Pause, Play, Send } from "lucide-react";
+import { MessageSquare, Settings, Plus, Check, X, Trash2, Eye, Tag, ChevronLeft, KeyRound, Pause, Play, Send, FlaskConical } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -92,6 +92,17 @@ export function WhatsAppAutomationContent({ embedded = false }) {
     // Template preview state for Automation dropdown
     const [showTemplatePreview, setShowTemplatePreview] = useState(false);
     const [previewTemplate, setPreviewTemplate] = useState(null);
+
+    // Test Template state
+    const [showTestModal, setShowTestModal] = useState(false);
+    const [testingTemplate, setTestingTemplate] = useState(null);
+    const [testingEventKey, setTestingEventKey] = useState(null);
+    const [testPhone, setTestPhone] = useState("");
+    const [testCountryCode, setTestCountryCode] = useState("91");
+    const [testVariables, setTestVariables] = useState({});
+    const [testVariableModes, setTestVariableModes] = useState({});
+    const [sendingTest, setSendingTest] = useState(false);
+    const [testResult, setTestResult] = useState(null);
 
     // Available template variables
     const availableVariables = [
@@ -600,6 +611,96 @@ export function WhatsAppAutomationContent({ embedded = false }) {
         });
     };
 
+    // Open Test Template Modal
+    const openTestModal = (eventKey, template) => {
+        setTestingEventKey(eventKey);
+        setTestingTemplate(template);
+        setTestPhone("");
+        setTestCountryCode("91");
+        setTestResult(null);
+        
+        // Initialize test variables from saved mappings
+        const savedMapping = templateVariableMappings[template.wid] || {};
+        const savedModes = templateVariableModes[template.wid] || {};
+        
+        // Extract variables from template body
+        const vars = {};
+        const modes = {};
+        const varRegex = /\{\{(\d+)\}\}/g;
+        let match;
+        while ((match = varRegex.exec(template.temp_body || "")) !== null) {
+            const varKey = `{{${match[1]}}}`;
+            const mappedField = savedMapping[varKey];
+            const mode = savedModes[varKey] || "map";
+            
+            if (mode === "text" && mappedField) {
+                vars[varKey] = mappedField; // Custom text value
+            } else if (mappedField && mappedField !== "none") {
+                // Get sample value from availableVariables
+                const varInfo = availableVariables.find(v => v.key === mappedField);
+                vars[varKey] = varInfo?.example || "";
+            } else {
+                vars[varKey] = "";
+            }
+            modes[varKey] = mode;
+        }
+        
+        setTestVariables(vars);
+        setTestVariableModes(modes);
+        setShowTestModal(true);
+    };
+
+    // Send Test Message
+    const handleSendTest = async () => {
+        if (!testPhone || testPhone.length < 10) {
+            toast.error("Please enter a valid phone number");
+            return;
+        }
+        
+        setSendingTest(true);
+        setTestResult(null);
+        
+        try {
+            // Build body_values: { "1": "John", "2": "500" }
+            const bodyValues = {};
+            Object.entries(testVariables).forEach(([key, value]) => {
+                const num = key.replace(/[{}]/g, ""); // "{{1}}" → "1"
+                bodyValues[num] = value || "";
+            });
+            
+            const response = await api.post("/whatsapp/test-template", {
+                template_id: testingTemplate.wid,
+                phone: testPhone.replace(/\s/g, ""),
+                country_code: testCountryCode.replace("+", ""),
+                body_values: bodyValues
+            });
+            
+            setTestResult(response.data);
+            
+            if (response.data.success) {
+                toast.success("Test message sent successfully!");
+            } else {
+                toast.error(response.data.error || "Failed to send test message");
+            }
+        } catch (err) {
+            const error = err.response?.data?.detail || "Failed to send test message";
+            setTestResult({ success: false, error });
+            toast.error(error);
+        } finally {
+            setSendingTest(false);
+        }
+    };
+
+    // Get preview text for test modal
+    const getTestPreviewText = () => {
+        if (!testingTemplate?.temp_body) return "";
+        let preview = testingTemplate.temp_body;
+        Object.entries(testVariables).forEach(([key, value]) => {
+            preview = preview.replace(key, value || `[${key}]`);
+        });
+        return preview;
+    };
+
     if (loading) {
         const loadingUI = (
             <div className={embedded ? "" : "p-4 max-w-lg mx-auto"}>
@@ -829,6 +930,23 @@ export function WhatsAppAutomationContent({ embedded = false }) {
                                                                             >
                                                                                 <Eye className="w-4 h-4" />
                                                                             </button>
+                                                                            {/* Test Button - Only for Active templates */}
+                                                                            {isEnabled && (
+                                                                                <button
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation();
+                                                                                        const tpl = authkeyTemplates.find(t => t.wid === mapped.template_id);
+                                                                                        if (tpl) {
+                                                                                            openTestModal(eventKey, tpl);
+                                                                                        }
+                                                                                    }}
+                                                                                    className="text-gray-500 hover:text-blue-600 p-1.5 rounded transition-colors hover:bg-blue-50"
+                                                                                    title="Send test message"
+                                                                                    data-testid={`test-event-${eventKey}`}
+                                                                                >
+                                                                                    <FlaskConical className="w-4 h-4" />
+                                                                                </button>
+                                                                            )}
                                                                             {/* Pause/Resume Button */}
                                                                             <button
                                                                                 onClick={(e) => {
@@ -1613,6 +1731,213 @@ export function WhatsAppAutomationContent({ embedded = false }) {
                                     <Check className="w-4 h-4 mr-2" />
                                     Select This Template
                                 </Button>
+                            </div>
+                        )}
+                    </DialogContent>
+                </Dialog>
+
+                {/* Test Template Modal */}
+                <Dialog open={showTestModal} onOpenChange={setShowTestModal}>
+                    <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                                <FlaskConical className="w-5 h-5 text-blue-600" />
+                                Test Template
+                            </DialogTitle>
+                            <DialogDescription>
+                                Send a test message to verify your template configuration
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        {testingTemplate && (
+                            <div className="space-y-4">
+                                {/* Template Info */}
+                                <div className="bg-gray-50 rounded-lg p-3">
+                                    <p className="text-sm font-medium text-[#1A1A1A]">{testingTemplate.temp_name}</p>
+                                    <p className="text-xs text-gray-500">Event: {eventLabels[testingEventKey] || testingEventKey}</p>
+                                </div>
+
+                                {/* Phone Number Input */}
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium">Send Test To</Label>
+                                    <div className="flex gap-2">
+                                        <Select value={testCountryCode} onValueChange={setTestCountryCode}>
+                                            <SelectTrigger className="w-24">
+                                                <SelectValue placeholder="+91" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="91">+91</SelectItem>
+                                                <SelectItem value="1">+1</SelectItem>
+                                                <SelectItem value="44">+44</SelectItem>
+                                                <SelectItem value="971">+971</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <Input
+                                            type="tel"
+                                            value={testPhone}
+                                            onChange={(e) => setTestPhone(e.target.value.replace(/\D/g, ""))}
+                                            placeholder="9876543210"
+                                            className="flex-1"
+                                            maxLength={10}
+                                            data-testid="test-phone-input"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Variables Input */}
+                                {Object.keys(testVariables).length > 0 && (
+                                    <div className="space-y-3">
+                                        <Label className="text-sm font-medium">Template Variables</Label>
+                                        {Object.entries(testVariables).map(([varKey, value]) => {
+                                            const mode = testVariableModes[varKey] || "manual";
+                                            const savedMapping = templateVariableMappings[testingTemplate?.wid]?.[varKey];
+                                            const fieldInfo = availableVariables.find(v => v.key === savedMapping);
+                                            
+                                            return (
+                                                <div key={varKey} className="border rounded-lg p-3 bg-gray-50">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                            {varKey}
+                                                        </Badge>
+                                                        <div className="flex items-center gap-2">
+                                                            <button
+                                                                onClick={() => setTestVariableModes(prev => ({
+                                                                    ...prev,
+                                                                    [varKey]: "manual"
+                                                                }))}
+                                                                className={`text-xs px-2 py-1 rounded ${
+                                                                    mode === "manual" 
+                                                                        ? "bg-blue-600 text-white" 
+                                                                        : "bg-gray-200 text-gray-600"
+                                                                }`}
+                                                            >
+                                                                Manual
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setTestVariableModes(prev => ({
+                                                                        ...prev,
+                                                                        [varKey]: "mapped"
+                                                                    }));
+                                                                    // Set sample value from mapped field
+                                                                    if (fieldInfo) {
+                                                                        setTestVariables(prev => ({
+                                                                            ...prev,
+                                                                            [varKey]: fieldInfo.example
+                                                                        }));
+                                                                    }
+                                                                }}
+                                                                className={`text-xs px-2 py-1 rounded ${
+                                                                    mode === "mapped" 
+                                                                        ? "bg-[#25D366] text-white" 
+                                                                        : "bg-gray-200 text-gray-600"
+                                                                }`}
+                                                                disabled={!fieldInfo}
+                                                            >
+                                                                Mapped
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {mode === "manual" ? (
+                                                        <Input
+                                                            value={value}
+                                                            onChange={(e) => setTestVariables(prev => ({
+                                                                ...prev,
+                                                                [varKey]: e.target.value
+                                                            }))}
+                                                            placeholder={`Enter value for ${varKey}`}
+                                                            className="bg-white"
+                                                            data-testid={`test-var-${varKey}`}
+                                                        />
+                                                    ) : (
+                                                        <div className="flex items-center gap-2 text-sm">
+                                                            <span className="text-gray-500">{fieldInfo?.label || savedMapping}:</span>
+                                                            <span className="font-medium text-[#25D366]">{value}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+
+                                {/* Preview */}
+                                <div className="space-y-2">
+                                    <Label className="text-xs text-gray-500">Preview</Label>
+                                    <div className="bg-[#E5DDD5] p-3 rounded-lg">
+                                        <div className="bg-[#DCF8C6] rounded-lg p-3 shadow-sm">
+                                            <p className="text-sm text-[#1A1A1A] whitespace-pre-wrap">
+                                                {getTestPreviewText()}
+                                            </p>
+                                            <div className="flex items-center justify-end gap-1 mt-1">
+                                                <span className="text-[10px] text-gray-500">
+                                                    {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                                                </span>
+                                                <svg className="w-4 h-4 text-[#53BDEB]" viewBox="0 0 16 15" fill="currentColor">
+                                                    <path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.51zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.89 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Result Display */}
+                                {testResult && (
+                                    <div className={`rounded-lg p-3 ${
+                                        testResult.success 
+                                            ? "bg-green-50 border border-green-200" 
+                                            : "bg-red-50 border border-red-200"
+                                    }`}>
+                                        {testResult.success ? (
+                                            <div className="flex items-center gap-2">
+                                                <Check className="w-5 h-5 text-green-600" />
+                                                <div>
+                                                    <p className="text-sm font-medium text-green-700">Test sent successfully!</p>
+                                                    {testResult.message_id && (
+                                                        <p className="text-xs text-green-600">Message ID: {testResult.message_id}</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2">
+                                                <X className="w-5 h-5 text-red-600" />
+                                                <div>
+                                                    <p className="text-sm font-medium text-red-700">Failed to send</p>
+                                                    <p className="text-xs text-red-600">{testResult.error}</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Action Buttons */}
+                                <DialogFooter className="gap-2">
+                                    <Button 
+                                        variant="outline" 
+                                        onClick={() => setShowTestModal(false)}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        onClick={handleSendTest}
+                                        disabled={sendingTest || !testPhone}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                                        data-testid="send-test-btn"
+                                    >
+                                        {sendingTest ? (
+                                            <>
+                                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                                                Sending...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Send className="w-4 h-4 mr-2" />
+                                                Send Test Message
+                                            </>
+                                        )}
+                                    </Button>
+                                </DialogFooter>
                             </div>
                         )}
                     </DialogContent>
