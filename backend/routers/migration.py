@@ -234,10 +234,27 @@ async def get_migration_status(user: dict = Depends(get_current_user)):
     return {
         "migration_confirmed": user_record.get("migration_confirmed", False),
         "migration_confirmed_at": user_record.get("migration_confirmed_at"),
+        "migration_skipped_permanently": user_record.get("migration_skipped_permanently", False),
         "customers_synced": customers_count,
         "orders_synced": orders_count,
         "last_customer_sync": user_record.get("last_customer_sync_at"),
         "last_order_sync": user_record.get("last_order_sync_at")
+    }
+
+
+@router.post("/skip-permanently")
+async def skip_migration_permanently(user: dict = Depends(get_current_user)):
+    """
+    User chooses to never show migration overlay again
+    """
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"migration_skipped_permanently": True}}
+    )
+    
+    return {
+        "success": True,
+        "message": "Migration skipped permanently"
     }
 
 
