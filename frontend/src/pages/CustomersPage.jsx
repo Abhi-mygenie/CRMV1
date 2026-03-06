@@ -23,6 +23,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { MobileLayout } from "@/components/MobileLayout";
 import { ComingSoonOverlay } from "@/components/shared/ComingSoonOverlay";
 import { COUNTRY_CODES, GENDER_OPTIONS, LANGUAGE_OPTIONS } from "@/lib/constants";
+import { SegmentsPageContent } from "@/pages/SegmentsPage";
 
 export default function CustomersPage() {
     const { api, isDemoMode } = useAuth();
