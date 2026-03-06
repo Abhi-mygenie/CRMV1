@@ -669,9 +669,9 @@ export function WhatsAppAutomationContent({ embedded = false }) {
             });
             
             const response = await api.post("/whatsapp/test-template", {
-                template_id: testingTemplate.wid,
+                template_id: String(testingTemplate.wid),
                 phone: testPhone.replace(/\s/g, ""),
-                country_code: testCountryCode.replace("+", ""),
+                country_code: String(testCountryCode).replace("+", ""),
                 body_values: bodyValues
             });
             
@@ -1783,15 +1783,19 @@ export function WhatsAppAutomationContent({ embedded = false }) {
                                                 <SelectItem value="971">+971</SelectItem>
                                             </SelectContent>
                                         </Select>
-                                        <Input
+                                        <input
+                                            type="text"
                                             value={testPhone}
                                             onChange={(e) => {
-                                                const digitsOnly = e.target.value.replace(/[^0-9]/g, "").slice(0, 10);
-                                                setTestPhone(digitsOnly);
+                                                const val = e.target.value.replace(/[^0-9]/g, "");
+                                                if (val.length <= 10) {
+                                                    setTestPhone(val);
+                                                }
                                             }}
                                             placeholder="9876543210"
-                                            className="flex-1"
+                                            className="flex-1 h-10 px-3 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                             inputMode="numeric"
+                                            autoComplete="off"
                                             data-testid="test-phone-input"
                                         />
                                     </div>
