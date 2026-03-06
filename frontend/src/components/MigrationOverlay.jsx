@@ -347,7 +347,7 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                         <Button
                             variant="outline"
                             onClick={onClose}
-                            className="flex-1 h-11 rounded-xl font-body"
+                            className="flex-1 h-11 rounded-xl font-body border-[#F26B33] text-[#F26B33] hover:bg-[#F26B33] hover:text-white"
                             data-testid="migration-skip"
                         >
                             Skip for Now
