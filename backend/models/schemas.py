@@ -479,11 +479,21 @@ class PointsTransaction(BaseModel):
     user_id: str
     customer_id: str
     points: int
-    transaction_type: str
-    description: str
+    transaction_type: Optional[str] = None  # Also check 'type' field
+    type: Optional[str] = None  # Alias for transaction_type
+    description: Optional[str] = None  # Also check 'reason' field
+    reason: Optional[str] = None  # Alias for description
     bill_amount: Optional[float] = None
-    balance_after: int
+    balance_after: Optional[int] = None
     created_at: str
+    
+    @property
+    def tx_type(self) -> str:
+        return self.transaction_type or self.type or "unknown"
+    
+    @property
+    def tx_description(self) -> str:
+        return self.description or self.reason or ""
 
 # Loyalty Settings Models
 class LoyaltySettings(BaseModel):

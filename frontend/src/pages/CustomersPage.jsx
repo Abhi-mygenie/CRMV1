@@ -1349,8 +1349,9 @@ export default function CustomersPage() {
                         {customers.map((customer) => (
                             <div
                                 key={customer.id}
-                                className="customer-list-item w-full"
+                                className="customer-list-item w-full cursor-pointer"
                                 data-testid={`customer-row-${customer.id}`}
+                                onClick={() => navigate(`/customers/${customer.id}`)}
                             >
                                 <Avatar className="w-10 h-10 mr-3">
                                     <AvatarFallback className={`font-semibold ${
@@ -1374,10 +1375,7 @@ export default function CustomersPage() {
                                     </div>
                                     <p className="text-sm text-[#52525B]">{customer.country_code || '+91'} {customer.phone}</p>
                                 </div>
-                                <button 
-                                    onClick={() => navigate(`/customers/${customer.id}`)}
-                                    className="text-right flex items-center gap-3"
-                                >
+                                <div className="text-right flex items-center gap-3">
                                     <div className="text-right">
                                         <p className="font-semibold text-[#329937] points-display">{customer.total_points}</p>
                                         <Badge variant="outline" className={`tier-badge ${customer.tier.toLowerCase()}`}>
@@ -1391,7 +1389,7 @@ export default function CustomersPage() {
                                         </div>
                                     )}
                                     <ChevronRight className="w-5 h-5 text-[#A1A1AA]" />
-                                </button>
+                                </div>
                             </div>
                         ))}
                     </div>
