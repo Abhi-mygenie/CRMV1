@@ -131,12 +131,50 @@ export default function SettingsPage() {
     const handleSyncOrders = async () => {
         setSyncingOrders(true);
         try {
+            // Start background sync
             const res = await api.post("/migration/sync-orders");
-            toast.success(res.data.message || `Synced ${res.data.synced} orders`);
-            fetchMigrationStatus();
+            
+            if (res.data.status === "started") {
+                toast.info("Order sync started. This may take a few minutes...");
+                
+                // Poll for status
+                const pollStatus = async () => {
+                    try {
+                        const statusRes = await api.get("/migration/sync-orders/status");
+                        const status = statusRes.data;
+                        
+                        if (status.status === "running") {
+                            const progress = status.total_pages > 0 
+                                ? Math.round((status.current_page / status.total_pages) * 100) 
+                                : 0;
+                            toast.loading(`Syncing orders... ${progress}% (Page ${status.current_page}/${status.total_pages})`, { id: "sync-progress" });
+                            setTimeout(pollStatus, 2000); // Poll every 2 seconds
+                        } else if (status.status === "completed") {
+                            toast.dismiss("sync-progress");
+                            toast.success(`Synced ${status.synced} new, updated ${status.updated} orders`);
+                            setSyncingOrders(false);
+                            fetchMigrationStatus();
+                        } else if (status.status === "failed") {
+                            toast.dismiss("sync-progress");
+                            toast.error(status.error || "Sync failed");
+                            setSyncingOrders(false);
+                            fetchMigrationStatus();
+                        } else {
+                            setSyncingOrders(false);
+                        }
+                    } catch (err) {
+                        toast.dismiss("sync-progress");
+                        setSyncingOrders(false);
+                    }
+                };
+                
+                setTimeout(pollStatus, 1000); // Start polling after 1 second
+            } else {
+                toast.error(res.data.message || "Failed to start sync");
+                setSyncingOrders(false);
+            }
         } catch (err) {
             toast.error(err.response?.data?.detail || "Failed to sync orders");
-        } finally {
             setSyncingOrders(false);
         }
     };
