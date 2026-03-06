@@ -1,14 +1,215 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from datetime import datetime, timezone
 from typing import Optional, List
 import httpx
 import os
 import uuid
+import asyncio
 
 from core.database import db
 from core.auth import get_current_user
 
 router = APIRouter(prefix="/migration", tags=["Migration"])
+
+# In-memory sync status tracking
+sync_status = {}
+
+async def background_order_sync(user_id: str, mygenie_token: str):
+    """Background task to sync orders with pagination"""
+    mygenie_api_url = os.getenv("MYGENIE_API_URL", "https://preprod.mygenie.online")
+    order_list_endpoint = f"{mygenie_api_url}/api/v1/vendoremployee/whatsappcrm/customer-order-migration"
+    
+    now = datetime.now(timezone.utc).isoformat()
+    synced_count = 0
+    updated_count = 0
+    total_orders = 0
+    
+    sync_status[user_id] = {
+        "status": "running",
+        "current_page": 0,
+        "total_pages": 0,
+        "synced": 0,
+        "updated": 0,
+        "total_orders": 0,
+        "started_at": now,
+        "error": None
+    }
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            page = 1
+            last_page = 1
+            
+            while page <= last_page:
+                resp = await client.post(
+                    f"{order_list_endpoint}?page={page}",
+                    headers={
+                        "Authorization": f"Bearer {mygenie_token}",
+                        "Content-Type": "application/json; charset=UTF-8",
+                        "X-localization": "en"
+                    },
+                    json={},
+                    timeout=60.0
+                )
+                
+                if resp.status_code != 200:
+                    sync_status[user_id]["status"] = "failed"
+                    sync_status[user_id]["error"] = f"API error on page {page}: {resp.status_code}"
+                    return
+                
+                data = resp.json()
+                last_page = data.get("last_page", 1)
+                total_orders = data.get("total_orders", 0)
+                order_list = data.get("orders", [])
+                
+                # Update progress
+                sync_status[user_id]["current_page"] = page
+                sync_status[user_id]["total_pages"] = last_page
+                sync_status[user_id]["total_orders"] = total_orders
+                
+                for mygenie_order in order_list:
+                    user_obj = mygenie_order.get("user") or {}
+                    pos_customer_id = mygenie_order.get("user_id")
+                    cust_mobile = user_obj.get("phone", "")
+                    cust_name = f"{user_obj.get('f_name', '')} {user_obj.get('l_name', '')}".strip()
+                    cust_email = user_obj.get("email", "")
+                    
+                    employee_obj = mygenie_order.get("vendorEmployee") or {}
+                    employee_name = f"{employee_obj.get('f_name', '')} {employee_obj.get('l_name', '')}".strip()
+                    
+                    pos_order_id = mygenie_order.get("id")
+                    existing_order = await db.orders.find_one({
+                        "user_id": user_id,
+                        "pos_order_id": pos_order_id
+                    })
+                    
+                    customer = None
+                    if pos_customer_id:
+                        customer = await db.customers.find_one({
+                            "user_id": user_id,
+                            "pos_customer_id": pos_customer_id
+                        })
+                    
+                    if not customer and cust_mobile:
+                        customer = await db.customers.find_one({
+                            "user_id": user_id,
+                            "phone": cust_mobile
+                        })
+                    
+                    order_doc = {
+                        "user_id": user_id,
+                        "customer_id": customer["id"] if customer else None,
+                        "pos_id": "mygenie",
+                        "pos_restaurant_id": mygenie_order.get("restaurant_id"),
+                        "pos_order_id": pos_order_id,
+                        "restaurant_order_id": mygenie_order.get("restaurant_order_id"),
+                        "pos_customer_id": pos_customer_id,
+                        "cust_mobile": cust_mobile,
+                        "cust_name": cust_name,
+                        "cust_email": cust_email,
+                        "order_amount": float(mygenie_order.get("order_amount") or 0),
+                        "delivery_charge": float(mygenie_order.get("delivery_charge") or 0),
+                        "payment_method": mygenie_order.get("payment_method"),
+                        "payment_status": mygenie_order.get("payment_status"),
+                        "order_status": mygenie_order.get("order_status"),
+                        "order_type": mygenie_order.get("order_type"),
+                        "table_id": mygenie_order.get("table_id"),
+                        "waiter_id": mygenie_order.get("waiter_id"),
+                        "employee_id": mygenie_order.get("employee_id"),
+                        "employee_name": employee_name,
+                        "print_kot": mygenie_order.get("print_kot"),
+                        "print_bill_status": mygenie_order.get("print_bill_status"),
+                        "order_notes": mygenie_order.get("order_note"),
+                        "order_created_at": mygenie_order.get("created_at"),
+                        "order_updated_at": mygenie_order.get("updated_at"),
+                        "items": [],
+                        "mygenie_synced": True,
+                        "last_synced_at": now,
+                        "points_earned": 0,
+                        "off_peak_bonus": 0,
+                    }
+                    
+                    order_details = mygenie_order.get("orderDetails", [])
+                    for item in order_details:
+                        food_details = item.get("food_details") or {}
+                        order_doc["items"].append({
+                            "item_name": food_details.get("name", f"Item {food_details.get('id')}"),
+                            "pos_food_id": food_details.get("id"),
+                            "item_category": food_details.get("category_id"),
+                            "item_qty": item.get("quantity", 1),
+                            "item_price": float(item.get("price") or item.get("unit_price") or 0),
+                            "variation": item.get("variation", []),
+                            "add_ons": item.get("add_ons", []),
+                            "station": item.get("station"),
+                            "item_type": item.get("item_type"),
+                            "item_notes": item.get("food_level_notes"),
+                            "is_veg": food_details.get("veg"),
+                            "tax": food_details.get("tax"),
+                            "tax_type": food_details.get("tax_type"),
+                            "food_status": item.get("food_status"),
+                            "ready_at": item.get("ready_at"),
+                            "serve_at": item.get("serve_at"),
+                            "cancel_at": item.get("cancel_at"),
+                        })
+                        
+                        if not order_doc.get("restaurant_name") and food_details.get("restaurant_name"):
+                            order_doc["restaurant_name"] = food_details.get("restaurant_name")
+                    
+                    if existing_order:
+                        await db.orders.update_one(
+                            {"id": existing_order["id"]},
+                            {"$set": order_doc}
+                        )
+                        updated_count += 1
+                    else:
+                        order_doc["id"] = str(uuid.uuid4())
+                        order_doc["created_at"] = mygenie_order.get("created_at", now)
+                        await db.orders.insert_one(order_doc)
+                        synced_count += 1
+                        
+                        if customer:
+                            order_date = mygenie_order.get("created_at")
+                            order_amount = float(mygenie_order.get("order_amount") or 0)
+                            await db.customers.update_one(
+                                {"id": customer["id"]},
+                                {
+                                    "$inc": {"total_visits": 1, "total_spent": order_amount},
+                                    "$max": {"last_visit": order_date}
+                                }
+                            )
+                        
+                        if order_doc["items"] and customer:
+                            order_items_docs = []
+                            for item in order_doc["items"]:
+                                order_items_docs.append({
+                                    "id": str(uuid.uuid4()),
+                                    "order_id": order_doc["id"],
+                                    "customer_id": customer["id"],
+                                    "user_id": user_id,
+                                    **item,
+                                    "created_at": now,
+                                })
+                            if order_items_docs:
+                                await db.order_items.insert_many(order_items_docs)
+                
+                # Update progress after each page
+                sync_status[user_id]["synced"] = synced_count
+                sync_status[user_id]["updated"] = updated_count
+                
+                page += 1
+            
+            # Update last sync timestamp
+            await db.users.update_one(
+                {"id": user_id},
+                {"$set": {"last_order_sync_at": now}}
+            )
+            
+            sync_status[user_id]["status"] = "completed"
+            sync_status[user_id]["completed_at"] = datetime.now(timezone.utc).isoformat()
+            
+    except Exception as e:
+        sync_status[user_id]["status"] = "failed"
+        sync_status[user_id]["error"] = str(e)
 
 
 @router.get("/status")
