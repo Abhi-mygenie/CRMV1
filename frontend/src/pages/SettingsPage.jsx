@@ -318,7 +318,10 @@ export default function SettingsPage() {
 
     const isCouponActive = (coupon) => { const now = new Date(); return coupon.is_active && now >= new Date(coupon.start_date) && now <= new Date(coupon.end_date); };
 
-    const tabs = [
+    // Hide Migration tab if migration is completed or skipped permanently
+    const shouldShowMigration = !migrationStatus?.migration_confirmed && !migrationStatus?.migration_skipped_permanently;
+    
+    const allTabs = [
         { key: "migration", icon: RefreshCw, label: "Migration", color: "#3B82F6" },
         { key: "profile", icon: User, label: "Profile", color: "#F26B33" },
         { key: "whatsapp", icon: MessageSquare, label: "WhatsApp", color: "#25D366" },
@@ -326,6 +329,8 @@ export default function SettingsPage() {
         { key: "coupons", icon: Tag, label: "Coupons", color: "#F26B33" },
         { key: "wallet", icon: Wallet, label: "Wallet", color: "#8B5CF6" }
     ];
+    
+    const tabs = shouldShowMigration ? allTabs : allTabs.filter(t => t.key !== "migration");
 
     return (
         <MobileLayout>
