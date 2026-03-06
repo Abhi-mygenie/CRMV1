@@ -1773,12 +1773,14 @@ export function WhatsAppAutomationContent({ embedded = false }) {
                                             </SelectContent>
                                         </Select>
                                         <Input
-                                            type="tel"
                                             value={testPhone}
-                                            onChange={(e) => setTestPhone(e.target.value.replace(/\D/g, ""))}
+                                            onChange={(e) => {
+                                                const digitsOnly = e.target.value.replace(/[^0-9]/g, "").slice(0, 10);
+                                                setTestPhone(digitsOnly);
+                                            }}
                                             placeholder="9876543210"
                                             className="flex-1"
-                                            maxLength={10}
+                                            inputMode="numeric"
                                             data-testid="test-phone-input"
                                         />
                                     </div>
