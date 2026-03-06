@@ -366,266 +366,53 @@ async def revert_orders(user: dict = Depends(get_current_user)):
 
 
 @router.post("/sync-orders")
-async def sync_orders_from_mygenie(user: dict = Depends(get_current_user)):
+async def sync_orders_from_mygenie(background_tasks: BackgroundTasks, user: dict = Depends(get_current_user)):
     """
-    Sync orders from MyGenie POS API with pagination support.
-    
-    API Endpoint: POST /api/v1/vendoremployee/whatsappcrm/customer-order-migration?page=N
-    
-    Response structure:
-    {
-        "current_page": 1,
-        "last_page": 80,
-        "per_page": 25,
-        "total_orders": 1979,
-        "orders": [...]
-    }
+    Start background order sync from MyGenie POS API.
+    Returns immediately and syncs in background.
+    Use /migration/sync-orders/status to check progress.
     """
+    user_id = user["id"]
+    
+    # Check if sync is already running
+    if user_id in sync_status and sync_status[user_id].get("status") == "running":
+        return {
+            "success": False,
+            "message": "Sync already in progress",
+            "status": sync_status[user_id]
+        }
+    
     # Get user's MyGenie token
-    user_record = await db.users.find_one({"id": user["id"]})
+    user_record = await db.users.find_one({"id": user_id})
     mygenie_token = user_record.get("mygenie_token") if user_record else None
     
     if not mygenie_token:
         return {
             "success": False,
-            "synced": 0,
-            "updated": 0,
-            "total": 0,
             "message": "MyGenie token not found. Please login with MyGenie credentials first."
         }
     
-    mygenie_api_url = os.getenv("MYGENIE_API_URL", "https://preprod.mygenie.online")
-    order_list_endpoint = f"{mygenie_api_url}/api/v1/vendoremployee/whatsappcrm/customer-order-migration"
+    # Start background sync
+    background_tasks.add_task(background_order_sync, user_id, mygenie_token)
     
-    now = datetime.now(timezone.utc).isoformat()
-    synced_count = 0
-    updated_count = 0
-    total_orders = 0
+    return {
+        "success": True,
+        "message": "Order sync started in background. Check /migration/sync-orders/status for progress.",
+        "status": "started"
+    }
+
+
+@router.get("/sync-orders/status")
+async def get_order_sync_status(user: dict = Depends(get_current_user)):
+    """Get current order sync progress"""
+    user_id = user["id"]
     
-    try:
-        async with httpx.AsyncClient() as client:
-            # Pagination loop
-            page = 1
-            last_page = 1
-            
-            while page <= last_page:
-                resp = await client.post(
-                    f"{order_list_endpoint}?page={page}",
-                    headers={
-                        "Authorization": f"Bearer {mygenie_token}",
-                        "Content-Type": "application/json; charset=UTF-8",
-                        "X-localization": "en"
-                    },
-                    json={},
-                    timeout=60.0
-                )
-                
-                if resp.status_code != 200:
-                    return {
-                        "success": False,
-                        "synced": synced_count,
-                        "updated": updated_count,
-                        "total": total_orders,
-                        "message": f"MyGenie API error on page {page}: {resp.status_code}"
-                    }
-                
-                data = resp.json()
-                last_page = data.get("last_page", 1)
-                total_orders = data.get("total_orders", 0)
-                order_list = data.get("orders", [])
-                
-                for mygenie_order in order_list:
-                    # Extract customer info from nested user object
-                    user_obj = mygenie_order.get("user") or {}
-                    pos_customer_id = mygenie_order.get("user_id")
-                    cust_mobile = user_obj.get("phone", "")
-                    cust_name = f"{user_obj.get('f_name', '')} {user_obj.get('l_name', '')}".strip()
-                    cust_email = user_obj.get("email", "")
-                    
-                    # Extract employee info
-                    employee_obj = mygenie_order.get("vendorEmployee") or {}
-                    employee_name = f"{employee_obj.get('f_name', '')} {employee_obj.get('l_name', '')}".strip()
-                    
-                    # Check if order already exists (using 'id' field from API)
-                    pos_order_id = mygenie_order.get("id")
-                    existing_order = await db.orders.find_one({
-                        "user_id": user["id"],
-                        "pos_order_id": pos_order_id
-                    })
-                    
-                    # Find customer by pos_customer_id or phone
-                    customer = None
-                    if pos_customer_id:
-                        customer = await db.customers.find_one({
-                            "user_id": user["id"],
-                            "pos_customer_id": pos_customer_id
-                        })
-                    
-                    if not customer and cust_mobile:
-                        customer = await db.customers.find_one({
-                            "user_id": user["id"],
-                            "phone": cust_mobile
-                        })
-                    
-                    # Build order document with corrected field mappings
-                    order_doc = {
-                        "user_id": user["id"],
-                        "customer_id": customer["id"] if customer else None,
-                        
-                        # POS Identification
-                        "pos_id": "mygenie",
-                        "pos_restaurant_id": mygenie_order.get("restaurant_id"),
-                        "pos_order_id": pos_order_id,
-                        "restaurant_order_id": mygenie_order.get("restaurant_order_id"),
-                        "pos_customer_id": pos_customer_id,
-                        
-                        # Customer Info (from nested user object)
-                        "cust_mobile": cust_mobile,
-                        "cust_name": cust_name,
-                        "cust_email": cust_email,
-                        
-                        # Amounts
-                        "order_amount": float(mygenie_order.get("order_amount") or 0),
-                        "delivery_charge": float(mygenie_order.get("delivery_charge") or 0),
-                        
-                        # Payment Info
-                        "payment_method": mygenie_order.get("payment_method"),
-                        "payment_status": mygenie_order.get("payment_status"),
-                        
-                        # Order Status
-                        "order_status": mygenie_order.get("order_status"),
-                        "order_type": mygenie_order.get("order_type"),
-                        
-                        # Order Meta
-                        "table_id": mygenie_order.get("table_id"),
-                        "waiter_id": mygenie_order.get("waiter_id"),
-                        "employee_id": mygenie_order.get("employee_id"),
-                        "employee_name": employee_name,
-                        "print_kot": mygenie_order.get("print_kot"),
-                        "print_bill_status": mygenie_order.get("print_bill_status"),
-                        
-                        # Notes
-                        "order_notes": mygenie_order.get("order_note"),
-                        
-                        # Timestamps
-                        "order_created_at": mygenie_order.get("created_at"),
-                        "order_updated_at": mygenie_order.get("updated_at"),
-                        
-                        # Items
-                        "items": [],
-                        
-                        # Sync flags
-                        "mygenie_synced": True,
-                        "last_synced_at": now,
-                        "points_earned": 0,
-                        "off_peak_bonus": 0,
-                    }
-                    
-                    # Process orderDetails (cart items) with corrected field mappings
-                    order_details = mygenie_order.get("orderDetails", [])
-                    for item in order_details:
-                        food_details = item.get("food_details") or {}
-                        
-                        order_doc["items"].append({
-                            "item_name": food_details.get("name", f"Item {food_details.get('id')}"),
-                            "pos_food_id": food_details.get("id"),
-                            "item_category": food_details.get("category_id"),
-                            "item_qty": item.get("quantity", 1),
-                            "item_price": float(item.get("price") or item.get("unit_price") or 0),
-                            "variation": item.get("variation", []),
-                            "add_ons": item.get("add_ons", []),
-                            "station": item.get("station"),
-                            "item_type": item.get("item_type"),
-                            "item_notes": item.get("food_level_notes"),
-                            "is_veg": food_details.get("veg"),
-                            "tax": food_details.get("tax"),
-                            "tax_type": food_details.get("tax_type"),
-                            "food_status": item.get("food_status"),
-                            "ready_at": item.get("ready_at"),
-                            "serve_at": item.get("serve_at"),
-                            "cancel_at": item.get("cancel_at"),
-                        })
-                        
-                        # Get restaurant name from first item if available
-                        if not order_doc.get("restaurant_name") and food_details.get("restaurant_name"):
-                            order_doc["restaurant_name"] = food_details.get("restaurant_name")
-                    
-                    if existing_order:
-                        # Update existing order
-                        await db.orders.update_one(
-                            {"id": existing_order["id"]},
-                            {"$set": order_doc}
-                        )
-                        updated_count += 1
-                    else:
-                        # Insert new order
-                        order_doc["id"] = str(uuid.uuid4())
-                        order_doc["created_at"] = mygenie_order.get("created_at", now)
-                        await db.orders.insert_one(order_doc)
-                        synced_count += 1
-                        
-                        # Update customer visit stats if customer is linked
-                        if customer:
-                            order_date = mygenie_order.get("created_at")
-                            order_amount = float(mygenie_order.get("order_amount") or 0)
-                            
-                            await db.customers.update_one(
-                                {"id": customer["id"]},
-                                {
-                                    "$inc": {
-                                        "total_visits": 1,
-                                        "total_spent": order_amount
-                                    },
-                                    "$max": {"last_visit": order_date}
-                                }
-                            )
-                        
-                        # Also insert into order_items collection for AI analytics
-                        if order_doc["items"] and customer:
-                            order_items_docs = []
-                            for item in order_doc["items"]:
-                                order_items_docs.append({
-                                    "id": str(uuid.uuid4()),
-                                    "order_id": order_doc["id"],
-                                    "customer_id": customer["id"],
-                                    "user_id": user["id"],
-                                    **item,
-                                    "created_at": now,
-                                })
-                            if order_items_docs:
-                                await db.order_items.insert_many(order_items_docs)
-                
-                # Move to next page
-                page += 1
-            
-            # Update last sync timestamp
-            await db.users.update_one(
-                {"id": user["id"]},
-                {"$set": {"last_order_sync_at": now}}
-            )
-            
-            return {
-                "success": True,
-                "synced": synced_count,
-                "updated": updated_count,
-                "total": total_orders,
-                "message": f"Successfully synced {synced_count} new and updated {updated_count} existing orders from MyGenie"
-            }
-            
-    except httpx.TimeoutException:
+    if user_id not in sync_status:
         return {
-            "success": False,
-            "synced": synced_count,
-            "updated": updated_count,
-            "total": total_orders,
-            "message": "MyGenie API timeout - please try again"
+            "status": "idle",
+            "message": "No sync in progress"
         }
-    except Exception as e:
-        return {
-            "success": False,
-            "synced": synced_count,
-            "updated": updated_count,
-            "total": total_orders,
-            "message": f"Error syncing orders: {str(e)}"
-        }
+    
+    return sync_status[user_id]
+
 
