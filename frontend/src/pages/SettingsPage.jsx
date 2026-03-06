@@ -550,9 +550,6 @@ export default function SettingsPage() {
                                                 </AlertDialog>
                                             )}
                                         </div>
-                                        <p className="text-xs text-amber-600 mt-2 text-center">
-                                            Coming soon - awaiting MyGenie API integration
-                                        </p>
                                     </CardContent>
                                 </Card>
 
