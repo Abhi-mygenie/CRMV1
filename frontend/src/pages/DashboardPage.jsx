@@ -309,6 +309,8 @@ export default function DashboardPage() {
                                 return `${Math.floor(diffDays / 365)}y ago`;
                             };
                             
+                            const customerName = customer.name && customer.name.trim() ? customer.name : "Unknown";
+                            
                             return (
                                 <button
                                     key={customer.id}
@@ -318,11 +320,11 @@ export default function DashboardPage() {
                                 >
                                     <Avatar className="w-10 h-10 mr-3">
                                         <AvatarFallback className="bg-[#329937]/10 text-[#329937] font-semibold">
-                                            {(customer.name || "?").charAt(0)}
+                                            {customerName.charAt(0)}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-[#1A1A1A] truncate">{customer.name || "Unknown"}</p>
+                                        <p className="font-medium text-[#1A1A1A] truncate">{customerName}</p>
                                         <p className="text-sm text-[#52525B]">
                                             {customer.total_visits || 0} visits · {formatSpent(customer.total_spent)} · {formatLastVisit(customer.last_visit)}
                                         </p>
