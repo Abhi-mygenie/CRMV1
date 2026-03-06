@@ -263,6 +263,22 @@ export default function DashboardPage() {
                                 return `₹${amount}`;
                             };
                             
+                            // Format last visit as relative time
+                            const formatLastVisit = (dateStr) => {
+                                if (!dateStr) return 'Never';
+                                const date = new Date(dateStr);
+                                const now = new Date();
+                                const diffMs = now - date;
+                                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                                
+                                if (diffDays === 0) return 'Today';
+                                if (diffDays === 1) return '1d ago';
+                                if (diffDays < 7) return `${diffDays}d ago`;
+                                if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+                                if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
+                                return `${Math.floor(diffDays / 365)}y ago`;
+                            };
+                            
                             return (
                                 <button
                                     key={customer.id}
@@ -276,10 +292,10 @@ export default function DashboardPage() {
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-[#1A1A1A] truncate">
-                                            {customer.name} <span className="text-[#52525B] font-normal text-sm">({customer.total_visits || 0} · {formatSpent(customer.total_spent)})</span>
+                                        <p className="font-medium text-[#1A1A1A] truncate">{customer.name}</p>
+                                        <p className="text-sm text-[#52525B]">
+                                            {customer.total_visits || 0} visits · {formatSpent(customer.total_spent)} · {formatLastVisit(customer.last_visit)}
                                         </p>
-                                        <p className="text-sm text-[#52525B]">{customer.phone}</p>
                                     </div>
                                     <div className="text-right">
                                         <p className="font-semibold text-[#329937] points-display text-sm">{customer.total_points} pts</p>
