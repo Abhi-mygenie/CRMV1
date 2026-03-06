@@ -180,27 +180,27 @@ export default function DashboardPage() {
                     <div className="stats-card-compact" data-testid="points-issued-card">
                         <div className="flex items-center gap-1 text-[#329937] mb-1">
                             <ArrowUpRight className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider">Points Issued</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Points Issued</span>
                         </div>
-                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat'] points-display">
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading points-display">
                             {stats?.total_points_issued?.toLocaleString() || 0}
                         </p>
                     </div>
                     <div className="stats-card-compact" data-testid="points-redeemed-card">
                         <div className="flex items-center gap-1 text-[#329937] mb-1">
                             <ArrowDownRight className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider">Redeemed</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Redeemed</span>
                         </div>
-                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat'] points-display">
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading points-display">
                             {stats?.total_points_redeemed?.toLocaleString() || 0}
                         </p>
                     </div>
                     <div className="stats-card-compact" data-testid="avg-rating-card">
-                        <div className="flex items-center gap-1 text-[#329937] mb-1">
+                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
                             <Star className="w-3.5 h-3.5 fill-current" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider">Rating</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Rating</span>
                         </div>
-                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat']">
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
                             {stats?.avg_rating || "N/A"}
                         </p>
                     </div>
