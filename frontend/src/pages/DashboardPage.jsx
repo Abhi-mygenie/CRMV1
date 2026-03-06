@@ -253,30 +253,42 @@ export default function DashboardPage() {
                     </div>
                 ) : (
                     <div className="space-y-2">
-                        {recentCustomers.map((customer) => (
-                            <button
-                                key={customer.id}
-                                onClick={() => navigate(`/customers/${customer.id}`)}
-                                className="customer-list-item w-full text-left"
-                                data-testid={`customer-item-${customer.id}`}
-                            >
-                                <Avatar className="w-10 h-10 mr-3">
-                                    <AvatarFallback className="bg-[#329937]/10 text-[#329937] font-semibold">
-                                        {customer.name.charAt(0)}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1 min-w-0">
-                                    <p className="font-medium text-[#1A1A1A] truncate">{customer.name} <span className="text-[#52525B] font-normal">({customer.total_visits || 0})</span></p>
-                                    <p className="text-sm text-[#52525B]">{customer.phone}</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="font-semibold text-[#329937] points-display">{customer.total_points}</p>
-                                    <Badge variant="outline" className={`tier-badge ${customer.tier.toLowerCase()}`}>
-                                        {customer.tier}
-                                    </Badge>
-                                </div>
-                            </button>
-                        ))}
+                        {recentCustomers.map((customer) => {
+                            // Format total_spent as ₹23K or ₹1.2L
+                            const formatSpent = (amount) => {
+                                if (!amount || amount === 0) return '₹0';
+                                if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)}L`;
+                                if (amount >= 1000) return `₹${(amount / 1000).toFixed(0)}K`;
+                                return `₹${amount}`;
+                            };
+                            
+                            return (
+                                <button
+                                    key={customer.id}
+                                    onClick={() => navigate(`/customers/${customer.id}`)}
+                                    className="customer-list-item w-full text-left"
+                                    data-testid={`customer-item-${customer.id}`}
+                                >
+                                    <Avatar className="w-10 h-10 mr-3">
+                                        <AvatarFallback className="bg-[#329937]/10 text-[#329937] font-semibold">
+                                            {customer.name.charAt(0)}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-[#1A1A1A] truncate">
+                                            {customer.name} <span className="text-[#52525B] font-normal text-sm">({customer.total_visits || 0} · {formatSpent(customer.total_spent)})</span>
+                                        </p>
+                                        <p className="text-sm text-[#52525B]">{customer.phone}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-semibold text-[#329937] points-display text-sm">{customer.total_points} pts</p>
+                                        <Badge variant="outline" className={`tier-badge ${customer.tier.toLowerCase()}`}>
+                                            {customer.tier}
+                                        </Badge>
+                                    </div>
+                                </button>
+                            );
+                        })}
                     </div>
                 )}
             </div>
