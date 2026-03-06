@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://cmv2-crm-dev.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://brand-refresh-87.preview.emergentagent.com').rstrip('/')
 
 # Test Customer ID with order data
 TEST_CUSTOMER_WITH_ORDERS = "f69d1332-a0d0-4020-8ba7-3cbc5abd1b2b"
