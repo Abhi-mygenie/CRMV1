@@ -314,13 +314,13 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                     </div>
 
                     {/* Step 3: Confirm Migration */}
-                    <div className="border rounded-xl p-4 bg-gray-50">
+                    <div className="border rounded-xl p-4 bg-[#F5F5F5]">
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-semibold text-sm">3</div>
+                                <div className="w-8 h-8 rounded-full bg-[#329937]/20 flex items-center justify-center text-[#329937] font-semibold text-sm">3</div>
                                 <div>
-                                    <h3 className="font-semibold text-[#1A1A1A]">Confirm Migration</h3>
-                                    <p className="text-xs text-[#52525B]">Finalize and complete the migration</p>
+                                    <h3 className="font-semibold text-[#2B2B2B] font-body">Confirm Migration</h3>
+                                    <p className="text-xs text-[#52525B] font-body">Finalize and complete the migration</p>
                                 </div>
                             </div>
                             <Check className="w-5 h-5 text-[#52525B]" />
@@ -329,7 +329,7 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                         <Button
                             onClick={handleConfirmMigration}
                             disabled={confirmingMigration || (!migrationStatus?.customers_synced && !migrationStatus?.orders_synced)}
-                            className="w-full h-10 rounded-xl bg-green-600 hover:bg-green-700"
+                            className="w-full h-10 rounded-xl bg-[#329937] hover:bg-[#287A2D]"
                             data-testid="migration-confirm"
                         >
                             {confirmingMigration ? (
@@ -342,12 +342,12 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                 </div>
 
                 {/* Footer Actions */}
-                <div className="p-6 border-t bg-gray-50 rounded-b-2xl">
+                <div className="p-6 border-t bg-[#F5F5F5] rounded-b-2xl">
                     <div className="flex gap-3">
                         <Button
                             variant="outline"
                             onClick={onClose}
-                            className="flex-1 h-11 rounded-xl"
+                            className="flex-1 h-11 rounded-xl font-body"
                             data-testid="migration-skip"
                         >
                             Skip for Now
@@ -356,7 +356,7 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                             <AlertDialogTrigger asChild>
                                 <Button
                                     variant="ghost"
-                                    className="flex-1 h-11 rounded-xl text-[#52525B] hover:text-[#1A1A1A]"
+                                    className="flex-1 h-11 rounded-xl text-[#52525B] hover:text-[#2B2B2B] font-body"
                                     data-testid="migration-skip-permanently"
                                 >
                                     Don't Need Migration
