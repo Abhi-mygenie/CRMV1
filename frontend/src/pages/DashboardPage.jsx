@@ -127,8 +127,8 @@ export default function DashboardPage() {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-5">
                     <div>
-                        <p className="text-[#52525B] text-sm">Welcome</p>
-                        <h1 className="text-2xl font-bold text-[#1A1A1A] font-['Montserrat']" data-testid="restaurant-name">
+                        <p className="text-[#52525B] text-sm font-body">Welcome</p>
+                        <h1 className="text-2xl font-bold text-[#2B2B2B] font-heading" data-testid="restaurant-name">
                             {user?.restaurant_name}
                         </h1>
                     </div>
@@ -145,12 +145,12 @@ export default function DashboardPage() {
                     <div className="stats-card-compact" data-testid="total-customers-card">
                         <div className="flex items-center gap-1 text-[#F26B33] mb-1">
                             <Users className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider">Customers</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Customers</span>
                         </div>
-                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat']">
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
                             {stats?.total_customers || 0}
                         </p>
-                        <p className="text-[10px] text-[#52525B] flex items-center gap-0.5">
+                        <p className="text-[10px] text-[#52525B] flex items-center gap-0.5 font-body">
                             <TrendingUp className="w-3 h-3" />
                             +{stats?.new_customers_7d || 0} this week
                         </p>
@@ -158,18 +158,18 @@ export default function DashboardPage() {
                     <div className="stats-card-compact" data-testid="active-customers-card">
                         <div className="flex items-center gap-1 text-[#F26B33] mb-1">
                             <Users className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider">Active(30d)</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Active(30d)</span>
                         </div>
-                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat']">
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
                             {stats?.active_customers_30d || 0}
                         </p>
                     </div>
                     <div className="stats-card-compact" data-testid="avg-visits-card">
-                        <div className="flex items-center gap-1 text-[#6366F1] mb-1">
+                        <div className="flex items-center gap-1 text-[#62B5E5] mb-1">
                             <RotateCcw className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider">Avg Visits</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Avg Visits</span>
                         </div>
-                        <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat']">
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
                             {stats?.avg_visits_per_customer || 0}
                         </p>
                     </div>
