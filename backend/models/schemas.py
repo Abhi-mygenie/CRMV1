@@ -500,6 +500,10 @@ class LoyaltySettings(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str
     user_id: str
+    # Master toggles - all disabled by default
+    loyalty_enabled: bool = False
+    coupon_enabled: bool = False
+    wallet_enabled: bool = False
     min_order_value: float = 100.0
     bronze_earn_percent: float = 5.0
     silver_earn_percent: float = 7.0
@@ -539,6 +543,10 @@ class LoyaltySettings(BaseModel):
     feedback_bonus_points: int = 25
 
 class LoyaltySettingsUpdate(BaseModel):
+    # Master toggles
+    loyalty_enabled: Optional[bool] = None
+    coupon_enabled: Optional[bool] = None
+    wallet_enabled: Optional[bool] = None
     min_order_value: Optional[float] = None
     bronze_earn_percent: Optional[float] = None
     silver_earn_percent: Optional[float] = None
