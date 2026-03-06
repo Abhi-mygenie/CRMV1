@@ -150,7 +150,7 @@ export default function DashboardPage() {
                     <div className="stats-card-compact" data-testid="points-issued-card">
                         <div className="flex items-center gap-1 text-[#329937] mb-1">
                             <ArrowUpRight className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider">Issued</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wider">Points Issued</span>
                         </div>
                         <p className="text-xl font-bold text-[#1A1A1A] font-['Montserrat'] points-display">
                             {stats?.total_points_issued?.toLocaleString() || 0}
