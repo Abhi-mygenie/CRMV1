@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MobileLayout } from "@/components/MobileLayout";
+import { MigrationOverlay } from "@/components/MigrationOverlay";
 import {
     Select,
     SelectContent,
@@ -29,6 +30,8 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState("recent");
     const [quickActionsOpen, setQuickActionsOpen] = useState(false);
+    const [showMigrationOverlay, setShowMigrationOverlay] = useState(false);
+    const [migrationChecked, setMigrationChecked] = useState(false);
 
     const fetchCustomers = async (sort) => {
         try {
@@ -46,6 +49,24 @@ export default function DashboardPage() {
             console.error("Failed to fetch customers", err);
         }
     };
+
+    // Check migration status on first load
+    useEffect(() => {
+        const checkMigrationStatus = async () => {
+            try {
+                const res = await api.get("/migration/status");
+                // Show overlay if migration not confirmed and not skipped permanently
+                if (!res.data.migration_confirmed && !res.data.migration_skipped_permanently) {
+                    setShowMigrationOverlay(true);
+                }
+            } catch (err) {
+                console.error("Failed to check migration status", err);
+            } finally {
+                setMigrationChecked(true);
+            }
+        };
+        checkMigrationStatus();
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
