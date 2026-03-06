@@ -323,7 +323,8 @@ export default function SettingsPage() {
         { key: "profile", icon: User, label: "Profile", color: "#F26B33" },
         { key: "whatsapp", icon: MessageSquare, label: "WhatsApp", color: "#25D366" },
         { key: "loyalty", icon: Gift, label: "Loyalty", color: "#329937" },
-        { key: "coupons", icon: Tag, label: "Coupons", color: "#F26B33" }
+        { key: "coupons", icon: Tag, label: "Coupons", color: "#F26B33" },
+        { key: "wallet", icon: Wallet, label: "Wallet", color: "#8B5CF6" }
     ];
 
     return (
