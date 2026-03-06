@@ -1,0 +1,242 @@
+[
+  {
+    "id": "rule-demo-1",
+    "user_id": "demo-user-restaurant",
+    "event": "points_earned",
+    "template_id": "template-demo-2",
+    "template_name": "Points Earned",
+    "is_enabled": true,
+    "delay_minutes": 5,
+    "created_at": "2026-01-15T05:11:04.778437+00:00"
+  },
+  {
+    "id": "rule-demo-2",
+    "user_id": "demo-user-restaurant",
+    "event": "birthday",
+    "template_id": "template-demo-3",
+    "template_name": "Birthday Wishes",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "created_at": "2026-01-20T05:11:04.778437+00:00"
+  },
+  {
+    "id": "83d719b8-1ba9-4129-91e5-b1a9f03aa676",
+    "user_id": "pos_0001_restaurant_478",
+    "event_type": "first_visit",
+    "template_id": "d5d16736-b711-4394-b201-93fe7501df7f",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "9f7720c6-1f5d-4306-ab62-f5c04a565859",
+    "user_id": "pos_0001_restaurant_478",
+    "event_type": "points_earned",
+    "template_id": "0cbf78f9-10a9-41a2-b639-dc654fc2809d",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "ab44df31-6ef4-40a2-8bbc-183f765897d1",
+    "user_id": "pos_0001_restaurant_478",
+    "event_type": "birthday",
+    "template_id": "3ef7fae1-6b58-4fad-b2e7-6b30a5f92099",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "4ba4c20c-b210-4e69-a09a-a4602a55cebf",
+    "user_id": "pos_0001_restaurant_478",
+    "event_type": "anniversary",
+    "template_id": "1b54ebe1-0c05-4095-9ef2-48f75c4169c9",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "d4e48edf-696f-45d6-b412-e72e351fded3",
+    "user_id": "pos_0001_restaurant_478",
+    "event_type": "points_redeemed",
+    "template_id": "41afb0b3-faf5-4cbb-9a77-6775ae0c8d7d",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "fd5480eb-d97e-4624-ba77-e33c868a3a37",
+    "user_id": "pos_0001_restaurant_478",
+    "event_type": "bonus_points",
+    "template_id": "9ad202fc-d94a-4cf2-b566-41371ecb5b88",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "cb209c53-3909-43dd-8551-ecc6c093eb14",
+    "user_id": "pos_0001_restaurant_478",
+    "event_type": "tier_upgrade",
+    "template_id": "6a14f78d-0fe8-45a6-93f7-79219681aafd",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "8938e0c5-f7e0-4edb-8bfc-63d3f8647be3",
+    "user_id": "pos_0001_restaurant_478",
+    "event_type": "points_expiring",
+    "template_id": "a5d87be8-1d44-43db-84b5-4ed1ac2ed4dc",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "6496e84f-e4ba-48a2-8e9f-937114a3242b",
+    "user_id": "pos_0001_restaurant_478",
+    "event_type": "feedback_received",
+    "template_id": "59c5363e-482a-473d-bcce-5d170e3b5fc2",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "f4543280-e262-402c-b466-caf551b7d538",
+    "user_id": "pos_0001_restaurant_478",
+    "event_type": "wallet_credit",
+    "template_id": "97701b77-f433-4469-a9f1-ef80df0711c5",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T07:14:29.519506+00:00",
+    "updated_at": "2026-03-06T07:14:29.519506+00:00"
+  },
+  {
+    "id": "161e6ef3-0a51-4cb5-bd46-3f29e96ddc4f",
+    "user_id": "pos_0001_restaurant_709",
+    "event_type": "first_visit",
+    "template_id": "d367790f-c5b4-48fd-82ca-3d9a41ab6ede",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "1065c290-5df5-4084-b9fb-00bac809a2ce",
+    "user_id": "pos_0001_restaurant_709",
+    "event_type": "points_earned",
+    "template_id": "20eff65b-c032-4eb1-bf7c-a6ca87a082f7",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "647c582d-115b-4543-a7aa-b681853bb961",
+    "user_id": "pos_0001_restaurant_709",
+    "event_type": "birthday",
+    "template_id": "4600195b-933e-4143-9e3c-ca5a5d5fbbbb",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "0b991e55-931f-4a2a-96d7-5d87b28e2196",
+    "user_id": "pos_0001_restaurant_709",
+    "event_type": "anniversary",
+    "template_id": "9bc98e20-c39e-4d33-a8e2-b4ba05ee106f",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "b29f832b-7687-495c-a3eb-f0230dcf3a0d",
+    "user_id": "pos_0001_restaurant_709",
+    "event_type": "points_redeemed",
+    "template_id": "212a9416-dc64-4f77-89cd-def21dc2b34e",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "f0aaa62e-5ba2-40aa-9b2b-a758e8a8fd45",
+    "user_id": "pos_0001_restaurant_709",
+    "event_type": "bonus_points",
+    "template_id": "7aff4416-c40a-4dc5-9aad-e455621c7fbb",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "9cf3c2c2-8bca-40b7-96a0-573bf620af22",
+    "user_id": "pos_0001_restaurant_709",
+    "event_type": "tier_upgrade",
+    "template_id": "5e822b4e-46ed-42a8-94c4-c0af2103c8f7",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "6e9ba73b-0a8c-46ad-9bf4-9ad525ac82c5",
+    "user_id": "pos_0001_restaurant_709",
+    "event_type": "points_expiring",
+    "template_id": "5ccdb649-3282-474a-8e7d-3f4f542b54f9",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "f96d19d0-0b8a-4306-984b-6efb73410a81",
+    "user_id": "pos_0001_restaurant_709",
+    "event_type": "feedback_received",
+    "template_id": "46a576e8-ea85-46ae-a1d4-6fdc0765c896",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  },
+  {
+    "id": "d1d51ad5-2b6d-42bb-a077-fa1d9e17ca29",
+    "user_id": "pos_0001_restaurant_709",
+    "event_type": "wallet_credit",
+    "template_id": "798db5ab-a5c2-4017-8657-ef548786d894",
+    "is_enabled": true,
+    "delay_minutes": 0,
+    "conditions": null,
+    "created_at": "2026-03-06T10:33:11.551386+00:00",
+    "updated_at": "2026-03-06T10:33:11.551386+00:00"
+  }
+]
