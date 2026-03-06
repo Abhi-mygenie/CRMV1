@@ -941,6 +941,39 @@ export default function CustomersPage() {
                                     {expandedFilterGroups.includes("marketing") && (
                                         <div className="p-4 space-y-4 bg-white">
                                             <div>
+                                                <Label className="text-xs text-[#52525B]">Lead Source</Label>
+                                                <Select value={filters.lead_source} onValueChange={(v) => setFilters({...filters, lead_source: v})}>
+                                                    <SelectTrigger className="h-10 mt-1">
+                                                        <SelectValue placeholder="All sources" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="all">All sources</SelectItem>
+                                                        <SelectItem value="Walk-in">Walk-in</SelectItem>
+                                                        <SelectItem value="Swiggy">Swiggy</SelectItem>
+                                                        <SelectItem value="Zomato">Zomato</SelectItem>
+                                                        <SelectItem value="Instagram">Instagram</SelectItem>
+                                                        <SelectItem value="Facebook">Facebook</SelectItem>
+                                                        <SelectItem value="Google">Google</SelectItem>
+                                                        <SelectItem value="Referral">Referral</SelectItem>
+                                                        <SelectItem value="WhatsApp">WhatsApp</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div>
+                                                <Label className="text-xs text-[#52525B]">Gender</Label>
+                                                <Select value={filters.gender} onValueChange={(v) => setFilters({...filters, gender: v})}>
+                                                    <SelectTrigger className="h-10 mt-1" data-testid="filter-gender">
+                                                        <SelectValue placeholder="All" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="all">All</SelectItem>
+                                                        <SelectItem value="male">Male</SelectItem>
+                                                        <SelectItem value="female">Female</SelectItem>
+                                                        <SelectItem value="other">Other</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div>
                                                 <Label className="text-xs text-[#52525B]">WhatsApp Opt-In</Label>
                                                 <Select value={filters.whatsapp_opt_in} onValueChange={(v) => setFilters({...filters, whatsapp_opt_in: v})}>
                                                     <SelectTrigger className="h-10 mt-1">
