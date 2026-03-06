@@ -680,12 +680,23 @@ export function WhatsAppAutomationContent({ embedded = false }) {
             if (response.data.success) {
                 toast.success("Test message sent successfully!");
             } else {
-                toast.error(response.data.error || "Failed to send test message");
+                const errorMsg = typeof response.data.error === 'string' 
+                    ? response.data.error 
+                    : JSON.stringify(response.data.error);
+                toast.error(errorMsg || "Failed to send test message");
             }
         } catch (err) {
-            const error = err.response?.data?.detail || "Failed to send test message";
-            setTestResult({ success: false, error });
-            toast.error(error);
+            let errorMsg = "Failed to send test message";
+            const detail = err.response?.data?.detail;
+            if (typeof detail === 'string') {
+                errorMsg = detail;
+            } else if (Array.isArray(detail)) {
+                errorMsg = detail.map(e => e.msg || e.message || JSON.stringify(e)).join(', ');
+            } else if (detail && typeof detail === 'object') {
+                errorMsg = detail.msg || detail.message || JSON.stringify(detail);
+            }
+            setTestResult({ success: false, error: errorMsg });
+            toast.error(errorMsg);
         } finally {
             setSendingTest(false);
         }
@@ -1897,7 +1908,7 @@ export function WhatsAppAutomationContent({ embedded = false }) {
                                                 <div>
                                                     <p className="text-sm font-medium text-green-700">Test sent successfully!</p>
                                                     {testResult.message_id && (
-                                                        <p className="text-xs text-green-600">Message ID: {testResult.message_id}</p>
+                                                        <p className="text-xs text-green-600">Message ID: {String(testResult.message_id)}</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -1906,7 +1917,11 @@ export function WhatsAppAutomationContent({ embedded = false }) {
                                                 <X className="w-5 h-5 text-red-600" />
                                                 <div>
                                                     <p className="text-sm font-medium text-red-700">Failed to send</p>
-                                                    <p className="text-xs text-red-600">{testResult.error}</p>
+                                                    <p className="text-xs text-red-600">
+                                                        {typeof testResult.error === 'string' 
+                                                            ? testResult.error 
+                                                            : JSON.stringify(testResult.error)}
+                                                    </p>
                                                 </div>
                                             </div>
                                         )}
