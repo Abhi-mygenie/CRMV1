@@ -20,7 +20,10 @@
     "off_peak_hours_start": "14:00",
     "off_peak_hours_end": "17:00",
     "off_peak_bonus_percentage": 20,
-    "updated_at": "2026-03-06T05:11:04.778437+00:00"
+    "updated_at": "2026-03-06T05:11:04.778437+00:00",
+    "loyalty_enabled": false,
+    "coupon_enabled": false,
+    "wallet_enabled": false
   },
   {
     "id": "cd833443-9ccf-4f93-9f15-f28236c57457",
@@ -55,7 +58,10 @@
     "off_peak_bonus_type": "multiplier",
     "off_peak_bonus_value": 2.0,
     "feedback_bonus_enabled": true,
-    "feedback_bonus_points": 25
+    "feedback_bonus_points": 25,
+    "loyalty_enabled": false,
+    "coupon_enabled": false,
+    "wallet_enabled": false
   },
   {
     "id": "aeb6d1fb-0409-4be6-ab63-ac1120c3177a",
@@ -90,6 +96,9 @@
     "off_peak_bonus_type": "multiplier",
     "off_peak_bonus_value": 2.0,
     "feedback_bonus_enabled": true,
-    "feedback_bonus_points": 25
+    "feedback_bonus_points": 25,
+    "loyalty_enabled": false,
+    "coupon_enabled": false,
+    "wallet_enabled": false
   }
 ]
