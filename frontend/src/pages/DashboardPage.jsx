@@ -196,7 +196,7 @@ export default function DashboardPage() {
                         </p>
                     </div>
                     <div className="stats-card-compact" data-testid="avg-rating-card">
-                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
+                        <div className="flex items-center gap-1 text-[#329937] mb-1">
                             <Star className="w-3.5 h-3.5 fill-current" />
                             <span className="text-[10px] font-medium uppercase tracking-wider font-body">Rating</span>
                         </div>
