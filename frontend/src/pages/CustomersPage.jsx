@@ -655,14 +655,14 @@ export default function CustomersPage() {
                     </Button>
                 </div>
 
-                {/* Sorting Tabs */}
+                {/* Sorting Tabs - Orange non-selected, Green selected */}
                 <div className="flex gap-2 overflow-x-auto pb-3 mb-3 -mx-4 px-4 scrollbar-hide">
                     <button
                         onClick={() => setFilters({...filters, sort_by: "created_at", sort_order: "desc"})}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all font-body ${
                             filters.sort_by === "created_at" 
                                 ? 'bg-[#329937] text-white' 
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                : 'bg-[#F5F5F5] text-[#F26B33] hover:bg-[#F26B33]/10'
                         }`}
                         data-testid="sort-tab-recent"
                     >
@@ -670,10 +670,10 @@ export default function CustomersPage() {
                     </button>
                     <button
                         onClick={() => setFilters({...filters, sort_by: "total_visits", sort_order: "desc"})}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all font-body ${
                             filters.sort_by === "total_visits" 
                                 ? 'bg-[#329937] text-white' 
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                : 'bg-[#F5F5F5] text-[#F26B33] hover:bg-[#F26B33]/10'
                         }`}
                         data-testid="sort-tab-most-visited"
                     >
@@ -681,10 +681,10 @@ export default function CustomersPage() {
                     </button>
                     <button
                         onClick={() => setFilters({...filters, sort_by: "total_spent", sort_order: "desc"})}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all font-body ${
                             filters.sort_by === "total_spent" 
                                 ? 'bg-[#329937] text-white' 
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                : 'bg-[#F5F5F5] text-[#F26B33] hover:bg-[#F26B33]/10'
                         }`}
                         data-testid="sort-tab-most-spent"
                     >
@@ -692,10 +692,10 @@ export default function CustomersPage() {
                     </button>
                     <button
                         onClick={() => setFilters({...filters, sort_by: "total_points", sort_order: "desc"})}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all font-body ${
                             filters.sort_by === "total_points" 
                                 ? 'bg-[#329937] text-white' 
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                : 'bg-[#F5F5F5] text-[#F26B33] hover:bg-[#F26B33]/10'
                         }`}
                         data-testid="sort-tab-highest-points"
                     >
