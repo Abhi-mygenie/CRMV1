@@ -246,14 +246,14 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                     </div>
 
                     {/* Step 2: Sync Orders */}
-                    <div className="border rounded-xl p-4 bg-gray-50">
+                    <div className="border rounded-xl p-4 bg-[#F5F5F5]">
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-semibold text-sm">2</div>
+                                <div className="w-8 h-8 rounded-full bg-[#F26B33]/20 flex items-center justify-center text-[#F26B33] font-semibold text-sm">2</div>
                                 <div>
-                                    <h3 className="font-semibold text-[#1A1A1A]">Sync Orders</h3>
+                                    <h3 className="font-semibold text-[#2B2B2B] font-body">Sync Orders</h3>
                                     {migrationStatus?.orders_synced > 0 && (
-                                        <p className="text-xs text-green-600 flex items-center gap-1">
+                                        <p className="text-xs text-[#329937] flex items-center gap-1 font-body">
                                             <Check className="w-3 h-3" /> {migrationStatus.orders_synced} synced
                                         </p>
                                     )}
@@ -265,7 +265,7 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                         {syncingOrders && orderSyncProgress && (
                             <div className="mb-3">
                                 <Progress value={orderSyncProgress.total > 0 ? orderSyncProgress.synced / orderSyncProgress.total * 100 : 0} className="h-2" />
-                                <p className="text-xs text-[#52525B] mt-1">
+                                <p className="text-xs text-[#52525B] mt-1 font-body">
                                     Syncing... {orderSyncProgress.synced} orders
                                 </p>
                             </div>
@@ -275,7 +275,7 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                             <Button
                                 onClick={handleSyncOrders}
                                 disabled={syncingOrders || !migrationStatus?.customers_synced}
-                                className="flex-1 h-10 rounded-xl bg-purple-600 hover:bg-purple-700"
+                                className="flex-1 h-10 rounded-xl bg-[#F26B33] hover:bg-[#D85A2A]"
                                 data-testid="migration-sync-orders"
                             >
                                 {syncingOrders ? (
