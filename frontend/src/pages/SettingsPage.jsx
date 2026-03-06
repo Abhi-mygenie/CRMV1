@@ -348,7 +348,8 @@ export default function SettingsPage() {
             <div className="p-4 max-w-lg mx-auto">
                 <h1 className="text-2xl font-bold text-[#2B2B2B] mb-6 font-heading" data-testid="settings-title">Settings</h1>
 
-                {/* Tab Cards - Orange icon + Green ring (non-selected), Green icon + Orange ring (selected) */}
+                {/* Tab Cards - Non-selected: Light green bg + Orange ring + Green icon (outlined)
+                               Selected: Filled green bg + Orange ring + White icon (filled) */}
                 <div className="grid grid-cols-5 gap-2 mb-4">
                     {tabs.map(({ key, icon: Icon, label }) => {
                         const isSelected = activeSection === key;
@@ -364,15 +365,20 @@ export default function SettingsPage() {
                                 data-testid={`tab-${key}`}
                             >
                                 <div 
-                                    className={`w-9 h-9 rounded-full flex items-center justify-center border-2 ${
+                                    className={`w-10 h-10 rounded-full flex items-center justify-center border-2 border-[#F26B33] ${
                                         isSelected 
-                                            ? "bg-[#329937]/10 border-[#F26B33]" 
-                                            : "bg-[#F26B33]/10 border-[#329937]"
+                                            ? "bg-[#329937]" 
+                                            : "bg-[#329937]/15"
                                     }`}
                                 >
-                                    <Icon className="w-4 h-4" style={{ color: isSelected ? "#329937" : "#F26B33" }} />
+                                    <Icon 
+                                        className="w-5 h-5" 
+                                        style={{ color: isSelected ? "#FFFFFF" : "#329937" }} 
+                                        strokeWidth={isSelected ? 2.5 : 1.5}
+                                        fill={isSelected ? "#FFFFFF" : "none"}
+                                    />
                                 </div>
-                                <p className={`text-[10px] font-medium font-body ${isSelected ? "text-[#329937]" : "text-[#F26B33]"}`}>
+                                <p className={`text-[10px] font-medium font-body ${isSelected ? "text-[#329937]" : "text-[#329937]"}`}>
                                     {label}
                                 </p>
                             </button>
