@@ -19,7 +19,8 @@ export const useAuth = () => {
 export const createApiClient = (token) => {
     const client = axios.create({
         baseURL: API,
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        timeout: 300000 // 5 minutes timeout for long operations like order sync
     });
     return client;
 };
