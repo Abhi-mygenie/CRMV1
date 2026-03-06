@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        /* DinePoints Theme - Brand Colors */
+        --background: 40 20% 98%; /* #F9F9F7 */
+        --foreground: 0 0% 10%; /* #1A1A1A */
+        
+        --card: 0 0% 100%;
+        --card-foreground: 0 0% 10%;
+        
+        --popover: 0 0% 100%;
+        --popover-foreground: 0 0% 10%;
+        
+        /* Brand Orange Primary */
+        --primary: 16 89% 58%; /* #F26B33 */
+        --primary-foreground: 0 0% 100%;
+        
+        /* Brand Green Secondary */
+        --secondary: 122 53% 40%; /* #329937 */
+        --secondary-foreground: 0 0% 100%;
+        
+        --muted: 0 0% 96%;
+        --muted-foreground: 240 4% 46%; /* #52525B */
+        
+        --accent: 122 53% 40%;
+        --accent-foreground: 0 0% 100%;
+        
+        --destructive: 0 72% 51%; /* #DC2626 */
+        --destructive-foreground: 0 0% 100%;
+        
+        --success: 122 53% 40%; /* #329937 */
+        --success-foreground: 0 0% 100%;
+        
+        --border: 0 0% 90%;
+        --input: 0 0% 90%;
+        --ring: 16 89% 58%;
+        
+        --chart-1: 16 89% 58%;
+        --chart-2: 122 53% 40%;
+        --chart-3: 142 71% 45%;
+        --chart-4: 0 72% 51%;
+        --chart-5: 240 4% 46%;
+        
+        --radius: 0.75rem;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    
+    body {
+        @apply bg-background text-foreground;
+        font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Montserrat', system-ui, sans-serif;
+    }
+    
+    .font-mono {
+        font-family: 'JetBrains Mono', monospace;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #E5E7EB;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #D1D5DB;
+}
+
+/* Mobile Bottom Safe Area */
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+/* Active state for buttons */
+.active-scale {
+    transition: transform 0.1s ease;
+}
+
+.active-scale:active {
+    transform: scale(0.95);
+}
+
+/* Loyalty Card Gradient */
+.loyalty-card-gradient {
+    background: linear-gradient(135deg, #F26B33 0%, #329937 100%);
+}
+
+/* Tier Colors */
+.tier-bronze {
+    color: #CD7F32;
+}
+
+.tier-silver {
+    color: #C0C0C0;
+}
+
+.tier-gold {
+    color: #FFD700;
+}
+
+.tier-platinum {
+    color: #E5E4E2;
+}
+
+/* Glass morphism effect */
+.glass {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* Animation keyframes */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-slide-up {
+    animation: slideUp 0.3s ease-out forwards;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* Stagger animation */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+
+/* Input focus ring override */
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(242, 107, 51, 0.2);
+}
+
+/* Bottom nav safe area */
+.bottom-nav {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+}
+
+@layer base {
+    [data-debug-wrapper="true"] {
+        display: contents !important;
+    }
+}
