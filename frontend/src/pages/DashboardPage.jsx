@@ -330,18 +330,18 @@ export default function DashboardPage() {
                                         </p>
                                     </div>
                                     <div className="text-right flex items-center gap-3">
+                                        {customer.wallet_balance > 0 && (
+                                            <div className="text-right border-r pr-3 border-gray-200">
+                                                <p className="font-semibold text-[#F26B33]">₹{customer.wallet_balance.toLocaleString()}</p>
+                                                <p className="text-[10px] text-[#A1A1AA] font-body">Wallet</p>
+                                            </div>
+                                        )}
                                         <div className="text-right">
                                             <p className="font-semibold text-[#329937] points-display text-sm">{customer.total_points} pts</p>
                                             <Badge variant="outline" className={`tier-badge ${customer.tier.toLowerCase()}`}>
                                                 {customer.tier}
                                             </Badge>
                                         </div>
-                                        {customer.wallet_balance > 0 && (
-                                            <div className="text-right border-l pl-3 border-gray-200">
-                                                <p className="font-semibold text-[#F26B33]">₹{customer.wallet_balance.toLocaleString()}</p>
-                                                <p className="text-[10px] text-[#A1A1AA] font-body">Wallet</p>
-                                            </div>
-                                        )}
                                         <ChevronRight className="w-5 h-5 text-[#A1A1AA]" />
                                     </div>
                                 </button>
