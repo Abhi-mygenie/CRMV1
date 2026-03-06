@@ -65,17 +65,29 @@
     
     body {
         @apply bg-background text-foreground;
-        font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        color: #2B2B2B;
     }
     
     h1, h2, h3, h4, h5, h6 {
-        font-family: 'Montserrat', system-ui, sans-serif;
+        font-family: Georgia, 'Times New Roman', serif;
+        color: #2B2B2B;
     }
     
     .font-mono {
         font-family: 'JetBrains Mono', monospace;
+    }
+    
+    /* Georgia for headings utility class */
+    .font-heading {
+        font-family: Georgia, 'Times New Roman', serif;
+    }
+    
+    /* Inter for body utility class */
+    .font-body {
+        font-family: 'Inter', system-ui, sans-serif;
     }
 }
 
