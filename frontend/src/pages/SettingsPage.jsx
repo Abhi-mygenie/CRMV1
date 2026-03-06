@@ -397,6 +397,36 @@ export default function SettingsPage() {
                 {/* Coupons Tab Content - Full Inline */}
                 {activeSection === "coupons" && (
                     <div className="space-y-4">
+                        {/* Coupon Toggle Card */}
+                        <Card className="rounded-xl border-2 border-[#F26B33]/20 shadow-sm bg-[#F26B33]/5">
+                            <CardContent className="p-4 space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <Tag className="w-5 h-5 text-[#F26B33]" />
+                                    <p className="font-semibold text-[#1A1A1A]">Coupons</p>
+                                </div>
+                                <p className="text-xs text-[#52525B]">Enable or disable coupons. When disabled, coupon features will be hidden.</p>
+                                <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                                    <div>
+                                        <p className="text-sm font-medium">Enable Coupons</p>
+                                        <p className="text-xs text-[#52525B]">Create & manage promotional coupons</p>
+                                    </div>
+                                    <Switch 
+                                        checked={loyaltySettings?.coupon_enabled ?? false} 
+                                        onCheckedChange={async (c) => {
+                                            try {
+                                                await api.put("/loyalty/settings", { coupon_enabled: c });
+                                                setLoyaltySettings({...loyaltySettings, coupon_enabled: c});
+                                                toast.success(c ? "Coupons enabled" : "Coupons disabled");
+                                            } catch (_) { toast.error("Failed to update"); }
+                                        }} 
+                                        data-testid="toggle-coupon"
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
+                        
+                        {loyaltySettings?.coupon_enabled ? (
+                        <>
                         <div className="flex items-center justify-between">
                             <p className="text-sm text-[#52525B]">Manage promotional coupons</p>
                             <Button onClick={() => { resetCouponForm(); setShowAddCouponModal(true); }} className="h-10 rounded-full bg-[#F26B33] hover:bg-[#D85A2A] px-4" data-testid="add-coupon-btn"><Plus className="w-4 h-4 mr-1" /> New</Button>
@@ -430,6 +460,14 @@ export default function SettingsPage() {
                                         </CardContent>
                                     </Card>
                                 ))}
+                            </div>
+                        )}
+                        </>
+                        ) : (
+                            <div className="text-center py-12">
+                                <Tag className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                                <p className="text-[#52525B] mb-2">Coupons are disabled</p>
+                                <p className="text-xs text-[#A1A1AA]">Enable coupons to create and manage promotional codes</p>
                             </div>
                         )}
                         <Dialog open={showAddCouponModal} onOpenChange={(open) => { setShowAddCouponModal(open); if (!open) resetCouponForm(); }}>
