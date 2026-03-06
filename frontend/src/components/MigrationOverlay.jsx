@@ -212,7 +212,7 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                             <Button
                                 onClick={handleSyncCustomers}
                                 disabled={syncingCustomers}
-                                className="flex-1 h-10 rounded-xl bg-[#62B5E5] hover:bg-[#4A9FD0]"
+                                className="flex-1 h-10 rounded-xl bg-[#F26B33] hover:bg-[#D85A2A]"
                                 data-testid="migration-sync-customers"
                             >
                                 {syncingCustomers ? (
