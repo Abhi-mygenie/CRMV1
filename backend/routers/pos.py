@@ -3,10 +3,12 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
 import uuid
+import asyncio
 
 from core.database import db
 from core.auth import get_current_user, generate_api_key
 from core.helpers import calculate_tier, get_earn_percent_for_tier, check_off_peak_bonus
+from core.whatsapp import trigger_whatsapp_event
 from models.schemas import (
     POSPaymentWebhook, POSCustomerLookup, POSResponse,
     MessageRequest
@@ -14,6 +16,13 @@ from models.schemas import (
 
 router = APIRouter(prefix="/pos", tags=["POS Gateway"])
 messaging_router = APIRouter(prefix="/messaging", tags=["Messaging"])
+
+
+def _tier_rank_pos(tier: str) -> int:
+    """Get tier rank for comparison"""
+    ranks = {"Bronze": 1, "Silver": 2, "Gold": 3, "Platinum": 4}
+    return ranks.get(tier, 0)
+
 
 # API Key Authentication Dependency
 async def verify_pos_api_key(x_api_key: str = Header(None, alias="X-API-Key")):
@@ -1071,6 +1080,50 @@ async def pos_order_webhook(
             order_data, user, customer, points_earned, new_points,
             wallet_used, new_wallet_balance, pts["off_peak_bonus"], now,
         )
+
+        # Update customer with latest data for triggers
+        updated_customer = {
+            **customer,
+            "total_points": new_points,
+            "tier": new_tier,
+            "wallet_balance": new_wallet_balance,
+            "total_visits": new_total_visits,
+            "total_spent": new_total_spent
+        }
+
+        # 8. Fire WhatsApp triggers
+        # send_bill trigger - for every order
+        asyncio.create_task(trigger_whatsapp_event(
+            db, user["id"], "send_bill", updated_customer,
+            {
+                "order_id": order_id,
+                "pos_order_id": order_data.order_id,
+                "order_amount": order_data.order_amount,
+                "points_earned": points_earned,
+                "points_balance": new_points,
+                "wallet_used": wallet_used,
+                "wallet_balance": new_wallet_balance
+            }
+        ))
+
+        # first_visit trigger - only for new customers
+        if is_new:
+            asyncio.create_task(trigger_whatsapp_event(
+                db, user["id"], "first_visit", updated_customer,
+                {
+                    "first_visit_bonus": first_visit_bonus,
+                    "order_amount": order_data.order_amount,
+                    "points_balance": new_points
+                }
+            ))
+
+        # tier_upgrade trigger - if tier changed
+        old_tier = customer.get("tier", "Bronze")
+        if new_tier != old_tier and _tier_rank_pos(new_tier) > _tier_rank_pos(old_tier):
+            asyncio.create_task(trigger_whatsapp_event(
+                db, user["id"], "tier_upgrade", updated_customer,
+                {"old_tier": old_tier, "new_tier": new_tier, "points_balance": new_points}
+            ))
 
         return POSResponse(
             success=True,

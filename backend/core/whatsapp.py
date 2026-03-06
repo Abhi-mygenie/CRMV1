@@ -87,7 +87,7 @@ async def send_single_message(
             # Check for common success patterns
             is_success = (
                 response.status_code == 200 and 
-                (response_data.get("status") == True or 
+                (response_data.get("status") is True or 
                  response_data.get("Status") == "Success" or
                  response_data.get("message_id") is not None or
                  "success" in str(response_data).lower())
@@ -325,3 +325,118 @@ async def log_message_attempt(
     
     await db.whatsapp_message_logs.insert_one(log_entry)
     return log_entry
+
+
+async def trigger_whatsapp_event(
+    db,
+    user_id: str,
+    event_type: str,
+    customer: Dict[str, Any],
+    event_data: Dict[str, Any] = None
+) -> Optional[SendResult]:
+    """
+    Main trigger function - fires WhatsApp message for an event if configured.
+    
+    Args:
+        db: Database instance
+        user_id: Restaurant user ID
+        event_type: Event trigger type (e.g., "points_earned", "wallet_credit")
+        customer: Customer document with name, phone, points, etc.
+        event_data: Optional event-specific data (amount, points, etc.)
+    
+    Returns:
+        SendResult if message was sent, None if not configured/disabled
+    
+    Usage:
+        await trigger_whatsapp_event(
+            db, user["id"], "wallet_credit",
+            customer, {"amount": 500, "new_balance": 1500}
+        )
+    """
+    try:
+        # 1. Get user's AuthKey API key
+        api_key = await get_user_authkey(db, user_id)
+        if not api_key:
+            logger.debug(f"No AuthKey API key for user {user_id}, skipping WhatsApp trigger")
+            return None
+        
+        # 2. Get template configuration for this event
+        config = await get_event_template_config(db, user_id, event_type)
+        if not config:
+            logger.debug(f"No template configured for event {event_type}, skipping")
+            return None
+        
+        if not config.get("is_enabled", True):
+            logger.debug(f"Event {event_type} is disabled, skipping")
+            return None
+        
+        template_id = config["template_id"]
+        variable_mappings = config.get("variable_mappings", {})
+        
+        # 3. Get template details to find variables
+        # Fetch from authkey templates cache or use stored mapping
+        template_variables = list(variable_mappings.keys()) if variable_mappings else []
+        
+        # 4. Build body values from mappings
+        body_values = build_body_values(
+            template_variables,
+            variable_mappings,
+            customer,
+            event_data
+        )
+        
+        # 5. Prepare message
+        phone = customer.get("phone", "").replace(" ", "").replace("-", "")
+        country_code = customer.get("country_code", "+91").replace("+", "")
+        
+        if not phone:
+            logger.warning(f"Customer {customer.get('id')} has no phone number")
+            return None
+        
+        message = WhatsAppMessage(
+            phone=phone,
+            country_code=country_code,
+            template_id=template_id,
+            body_values=body_values,
+            customer_id=customer.get("id")
+        )
+        
+        # 6. Send message
+        logger.info(f"Triggering WhatsApp for event {event_type} to {phone}")
+        result = await send_single_message(api_key, message)
+        
+        # 7. Log the attempt
+        await log_message_attempt(
+            db, user_id, customer.get("id"), phone,
+            event_type, template_id, result
+        )
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"WhatsApp trigger error for {event_type}: {str(e)}")
+        return None
+
+
+async def trigger_points_earned_event(
+    db,
+    user_id: str,
+    customer: Dict[str, Any],
+    points: int,
+    source: str,
+    balance_after: int
+) -> Optional[SendResult]:
+    """
+    Trigger points_earned event (for bonus_points, wallet_credit, wallet_debit, coupon_earned)
+    NOT for regular purchase/bill points.
+    """
+    return await trigger_whatsapp_event(
+        db, user_id, "points_earned", customer,
+        {
+            "points_earned": points,
+            "points": points,
+            "source": source,
+            "points_balance": balance_after,
+            "balance_after": balance_after
+        }
+    )

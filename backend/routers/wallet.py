@@ -2,9 +2,11 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from datetime import datetime, timezone
 import uuid
+import asyncio
 
 from core.database import db
 from core.auth import get_current_user
+from core.whatsapp import trigger_whatsapp_event, trigger_points_earned_event
 from models.schemas import WalletTransaction, WalletTransactionCreate
 
 router = APIRouter(prefix="/wallet", tags=["Wallet"])
@@ -43,6 +45,32 @@ async def create_wallet_transaction(tx_data: WalletTransactionCreate, user: dict
     }
     
     await db.wallet_transactions.insert_one(tx_doc)
+    
+    # Update customer for trigger
+    updated_customer = {**customer, "wallet_balance": new_balance}
+    
+    # Fire WhatsApp triggers
+    if tx_data.transaction_type == "credit":
+        # wallet_credit trigger
+        asyncio.create_task(trigger_whatsapp_event(
+            db, user["id"], "wallet_credit", updated_customer,
+            {"amount": tx_data.amount, "wallet_balance": new_balance}
+        ))
+        # Also fires points_earned
+        asyncio.create_task(trigger_points_earned_event(
+            db, user["id"], updated_customer, 0, "wallet_credit", customer.get("total_points", 0)
+        ))
+    else:
+        # wallet_debit trigger
+        asyncio.create_task(trigger_whatsapp_event(
+            db, user["id"], "wallet_debit", updated_customer,
+            {"amount": tx_data.amount, "wallet_balance": new_balance}
+        ))
+        # Also fires points_earned
+        asyncio.create_task(trigger_points_earned_event(
+            db, user["id"], updated_customer, 0, "wallet_debit", customer.get("total_points", 0)
+        ))
+    
     return WalletTransaction(**tx_doc)
 
 @router.get("/transactions/{customer_id}", response_model=List[WalletTransaction])

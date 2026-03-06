@@ -2,9 +2,11 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from datetime import datetime, timezone, timedelta
 import uuid
+import asyncio
 
 from core.database import db
 from core.auth import get_current_user
+from core.whatsapp import trigger_whatsapp_event
 from models.schemas import Feedback, FeedbackCreate, DashboardStats
 
 router = APIRouter(prefix="/feedback", tags=["Feedback"])
@@ -28,31 +30,47 @@ async def create_feedback(feedback_data: FeedbackCreate, user: dict = Depends(ge
     
     await db.feedback.insert_one(feedback_doc)
     
+    customer = None
+    
     # Award feedback bonus points if enabled
     if feedback_data.customer_id:
         settings = await db.loyalty_settings.find_one({"user_id": user["id"]}, {"_id": 0})
-        if settings and settings.get("feedback_bonus_enabled", False):
+        customer = await db.customers.find_one({"id": feedback_data.customer_id})
+        
+        if settings and settings.get("feedback_bonus_enabled", False) and customer:
             bonus_points = settings.get("feedback_bonus_points", 25)
-            customer = await db.customers.find_one({"id": feedback_data.customer_id})
-            if customer:
-                new_balance = customer.get("total_points", 0) + bonus_points
-                await db.customers.update_one(
-                    {"id": feedback_data.customer_id},
-                    {"$set": {"total_points": new_balance}}
-                )
-                
-                tx_doc = {
-                    "id": str(uuid.uuid4()),
-                    "user_id": user["id"],
-                    "customer_id": feedback_data.customer_id,
-                    "points": bonus_points,
-                    "transaction_type": "bonus",
-                    "description": "Feedback bonus",
-                    "bill_amount": None,
-                    "balance_after": new_balance,
-                    "created_at": datetime.now(timezone.utc).isoformat()
-                }
-                await db.points_transactions.insert_one(tx_doc)
+            new_balance = customer.get("total_points", 0) + bonus_points
+            await db.customers.update_one(
+                {"id": feedback_data.customer_id},
+                {"$set": {"total_points": new_balance}}
+            )
+            
+            tx_doc = {
+                "id": str(uuid.uuid4()),
+                "user_id": user["id"],
+                "customer_id": feedback_data.customer_id,
+                "points": bonus_points,
+                "transaction_type": "bonus",
+                "description": "Feedback bonus",
+                "bill_amount": None,
+                "balance_after": new_balance,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.points_transactions.insert_one(tx_doc)
+            
+            # Update customer for trigger
+            customer["total_points"] = new_balance
+    
+    # Fire feedback_received WhatsApp trigger
+    if customer:
+        asyncio.create_task(trigger_whatsapp_event(
+            db, user["id"], "feedback_received", customer,
+            {
+                "rating": feedback_data.rating,
+                "feedback_message": feedback_data.message or "",
+                "feedback_id": feedback_id
+            }
+        ))
     
     return Feedback(**feedback_doc)
 

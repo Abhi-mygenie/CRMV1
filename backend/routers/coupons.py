@@ -2,9 +2,11 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from datetime import datetime, timezone
 import uuid
+import asyncio
 
 from core.database import db
 from core.auth import get_current_user
+from core.whatsapp import trigger_whatsapp_event, trigger_points_earned_event
 from models.schemas import Coupon, CouponCreate, CouponUpdate
 
 router = APIRouter(prefix="/coupons", tags=["Coupons"])
@@ -189,6 +191,23 @@ async def apply_coupon(
         {"id": coupon["id"]},
         {"$inc": {"total_used": 1}}
     )
+    
+    # Fire coupon_earned WhatsApp trigger
+    customer = await db.customers.find_one({"id": customer_id, "user_id": user["id"]})
+    if customer:
+        asyncio.create_task(trigger_whatsapp_event(
+            db, user["id"], "coupon_earned", customer,
+            {
+                "coupon_code": code.upper(),
+                "discount": validation["discount"],
+                "discount_type": coupon.get("discount_type"),
+                "discount_value": coupon.get("discount_value")
+            }
+        ))
+        # Also fires points_earned for coupon
+        asyncio.create_task(trigger_points_earned_event(
+            db, user["id"], customer, 0, "coupon_earned", customer.get("total_points", 0)
+        ))
     
     return {
         "success": True,

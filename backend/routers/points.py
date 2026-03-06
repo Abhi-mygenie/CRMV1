@@ -1,11 +1,13 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from typing import List
 from datetime import datetime, timezone, timedelta
 import uuid
+import asyncio
 
 from core.database import db
 from core.auth import get_current_user
 from core.helpers import calculate_tier, get_earn_percent_for_tier
+from core.whatsapp import trigger_whatsapp_event, trigger_points_earned_event
 from models.schemas import (
     PointsTransaction, PointsTransactionCreate,
     LoyaltySettings, LoyaltySettingsUpdate
@@ -15,7 +17,7 @@ router = APIRouter(prefix="/points", tags=["Points"])
 loyalty_router = APIRouter(prefix="/loyalty", tags=["Loyalty Settings"])
 
 @router.post("/transaction", response_model=PointsTransaction)
-async def create_points_transaction(tx_data: PointsTransactionCreate, user: dict = Depends(get_current_user)):
+async def create_points_transaction(tx_data: PointsTransactionCreate, user: dict = Depends(get_current_user), background_tasks: BackgroundTasks = None):
     customer = await db.customers.find_one({"id": tx_data.customer_id, "user_id": user["id"]})
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
@@ -25,6 +27,7 @@ async def create_points_transaction(tx_data: PointsTransactionCreate, user: dict
         settings = {"tier_bronze_min": 0, "tier_silver_min": 500, "tier_gold_min": 1500, "tier_platinum_min": 5000}
     
     current_points = customer.get("total_points", 0)
+    old_tier = customer.get("tier", "Bronze")
     
     if tx_data.transaction_type == "redeem":
         if current_points < tx_data.points:
@@ -61,7 +64,41 @@ async def create_points_transaction(tx_data: PointsTransactionCreate, user: dict
     }
     
     await db.points_transactions.insert_one(tx_doc)
+    
+    # Update customer with new balance for trigger
+    updated_customer = {**customer, "total_points": new_balance, "tier": new_tier}
+    
+    # Fire WhatsApp triggers based on transaction type
+    if tx_data.transaction_type == "redeem":
+        # points_redeemed trigger
+        asyncio.create_task(trigger_whatsapp_event(
+            db, user["id"], "points_redeemed", updated_customer,
+            {"points_redeemed": tx_data.points, "points_balance": new_balance}
+        ))
+    elif tx_data.transaction_type == "bonus":
+        # bonus_points trigger (also fires points_earned)
+        asyncio.create_task(trigger_whatsapp_event(
+            db, user["id"], "bonus_points", updated_customer,
+            {"bonus_points": tx_data.points, "points_balance": new_balance}
+        ))
+        asyncio.create_task(trigger_points_earned_event(
+            db, user["id"], updated_customer, tx_data.points, "bonus", new_balance
+        ))
+    
+    # Check for tier upgrade
+    if new_tier != old_tier and _tier_rank(new_tier) > _tier_rank(old_tier):
+        asyncio.create_task(trigger_whatsapp_event(
+            db, user["id"], "tier_upgrade", updated_customer,
+            {"old_tier": old_tier, "new_tier": new_tier, "points_balance": new_balance}
+        ))
+    
     return PointsTransaction(**tx_doc)
+
+
+def _tier_rank(tier: str) -> int:
+    """Get tier rank for comparison"""
+    ranks = {"Bronze": 1, "Silver": 2, "Gold": 3, "Platinum": 4}
+    return ranks.get(tier, 0)
 
 @router.get("/transactions/{customer_id}", response_model=List[PointsTransaction])
 async def get_customer_transactions(customer_id: str, limit: int = 50, user: dict = Depends(get_current_user)):

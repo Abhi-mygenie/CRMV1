@@ -5,6 +5,7 @@ These functions take user_id as a parameter and don't depend on HTTP authenticat
 from datetime import datetime, timezone, timedelta
 import uuid
 import logging
+import asyncio
 
 from core.database import db
 from core.helpers import calculate_tier
@@ -14,6 +15,8 @@ logger = logging.getLogger(__name__)
 
 async def run_birthday_bonus(user_id: str, settings: dict) -> dict:
     """Award birthday bonus to eligible customers for a given user."""
+    from core.whatsapp import trigger_whatsapp_event
+    
     if not settings.get("birthday_bonus_enabled", False):
         return {"customers_awarded": 0, "total_points_awarded": 0, "awarded_customers": []}
 
@@ -25,7 +28,7 @@ async def run_birthday_bonus(user_id: str, settings: dict) -> dict:
 
     customers = await db.customers.find({
         "user_id": user_id,
-        "dob": {"$exists": True, "$ne": None, "$ne": ""}
+        "dob": {"$exists": True, "$nin": [None, ""]}
     }, {"_id": 0}).to_list(10000)
 
     customers_awarded = 0
@@ -76,6 +79,14 @@ async def run_birthday_bonus(user_id: str, settings: dict) -> dict:
                     "phone": customer.get("phone"),
                     "points_awarded": bonus_points
                 })
+                
+                # Fire birthday WhatsApp trigger
+                updated_customer = {**customer, "total_points": new_points}
+                asyncio.create_task(trigger_whatsapp_event(
+                    db, user_id, "birthday", updated_customer,
+                    {"birthday_bonus": bonus_points, "points_balance": new_points}
+                ))
+                
         except Exception as e:
             logger.warning(f"Birthday bonus error for customer {customer.get('id')}: {e}")
             continue
@@ -89,6 +100,8 @@ async def run_birthday_bonus(user_id: str, settings: dict) -> dict:
 
 async def run_anniversary_bonus(user_id: str, settings: dict) -> dict:
     """Award anniversary bonus to eligible customers for a given user."""
+    from core.whatsapp import trigger_whatsapp_event
+    
     if not settings.get("anniversary_bonus_enabled", False):
         return {"customers_awarded": 0, "total_points_awarded": 0, "awarded_customers": []}
 
@@ -100,7 +113,7 @@ async def run_anniversary_bonus(user_id: str, settings: dict) -> dict:
 
     customers = await db.customers.find({
         "user_id": user_id,
-        "anniversary": {"$exists": True, "$ne": None, "$ne": ""}
+        "anniversary": {"$exists": True, "$nin": [None, ""]}
     }, {"_id": 0}).to_list(10000)
 
     customers_awarded = 0
@@ -151,6 +164,14 @@ async def run_anniversary_bonus(user_id: str, settings: dict) -> dict:
                     "phone": customer.get("phone"),
                     "points_awarded": bonus_points
                 })
+                
+                # Fire anniversary WhatsApp trigger
+                updated_customer = {**customer, "total_points": new_points}
+                asyncio.create_task(trigger_whatsapp_event(
+                    db, user_id, "anniversary", updated_customer,
+                    {"anniversary_bonus": bonus_points, "points_balance": new_points}
+                ))
+                
         except Exception as e:
             logger.warning(f"Anniversary bonus error for customer {customer.get('id')}: {e}")
             continue
@@ -164,6 +185,8 @@ async def run_anniversary_bonus(user_id: str, settings: dict) -> dict:
 
 async def run_expiry_reminders(user_id: str, settings: dict) -> dict:
     """Find customers with expiring points and mark them as reminded."""
+    from core.whatsapp import trigger_whatsapp_event
+    
     expiry_months = settings.get("points_expiry_months", 6)
     reminder_days = settings.get("expiry_reminder_days", 30)
 
@@ -209,7 +232,7 @@ async def run_expiry_reminders(user_id: str, settings: dict) -> dict:
                     expiry_date = tx_date + timedelta(days=expiry_months * 30)
                     if earliest_expiry is None or expiry_date < earliest_expiry:
                         earliest_expiry = expiry_date
-            except:
+            except Exception:
                 continue
 
         if expiring_points > 0:
@@ -225,6 +248,16 @@ async def run_expiry_reminders(user_id: str, settings: dict) -> dict:
                 "expiring_points": expiring_points,
                 "expiry_date": earliest_expiry.isoformat() if earliest_expiry else None
             })
+            
+            # Fire points_expiring WhatsApp trigger
+            asyncio.create_task(trigger_whatsapp_event(
+                db, user_id, "points_expiring", customer,
+                {
+                    "expiring_points": expiring_points,
+                    "expiry_date": earliest_expiry.strftime("%d %b %Y") if earliest_expiry else "",
+                    "points_balance": customer.get("total_points", 0)
+                }
+            ))
 
     return {"customers_to_remind": customers_to_remind, "reminders": reminders}
 
