@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Users, QrCode, Plus, Star, TrendingUp, ArrowUpRight, ArrowDownRight, ChevronDown, ChevronUp, RotateCcw } from "lucide-react";
+import { Users, QrCode, Plus, Star, TrendingUp, ArrowUpRight, ArrowDownRight, ChevronDown, ChevronUp, RotateCcw, ChevronRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
