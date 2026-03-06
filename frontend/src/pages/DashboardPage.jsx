@@ -114,6 +114,15 @@ export default function DashboardPage() {
 
     return (
         <MobileLayout>
+            {/* Migration Overlay */}
+            {showMigrationOverlay && (
+                <MigrationOverlay 
+                    api={api}
+                    onClose={() => setShowMigrationOverlay(false)}
+                    onComplete={() => setShowMigrationOverlay(false)}
+                />
+            )}
+            
             <div className="p-4 max-w-lg mx-auto">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-5">
