@@ -657,6 +657,28 @@ export default function CustomersPage() {
 
                 {/* Quick Filter Chips */}
                 <div className="flex gap-2 overflow-x-auto pb-3 mb-3 -mx-4 px-4 scrollbar-hide">
+                    {/* Sort Chip Dropdown */}
+                    <Select 
+                        value={`${filters.sort_by}-${filters.sort_order}`} 
+                        onValueChange={(v) => {
+                            const [sortBy, sortOrder] = v.split('-');
+                            setFilters({...filters, sort_by: sortBy, sort_order: sortOrder});
+                        }}
+                    >
+                        <SelectTrigger 
+                            className="h-7 px-3 rounded-full text-xs font-medium whitespace-nowrap bg-[#F26B33] text-white border-0 gap-1 w-auto min-w-[110px]"
+                            data-testid="sort-chip"
+                        >
+                            <TrendingUp className="w-3 h-3" />
+                            <SelectValue placeholder="Sort" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="created_at-desc">Recent</SelectItem>
+                            <SelectItem value="total_visits-desc">Most Visited</SelectItem>
+                            <SelectItem value="total_spent-desc">Most Spent</SelectItem>
+                            <SelectItem value="total_points-desc">Highest Points</SelectItem>
+                        </SelectContent>
+                    </Select>
                     <button
                         onClick={() => setFilters({...filters, vip_flag: filters.vip_flag === "true" ? "all" : "true"})}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
