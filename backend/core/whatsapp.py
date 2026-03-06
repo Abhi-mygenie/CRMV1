@@ -84,13 +84,25 @@ async def send_single_message(
             response_data = response.json() if response.text else {}
             
             # AuthKey returns different success indicators
-            # Check for common success patterns
+            # Check for explicit failure first
+            status_val = response_data.get("status") or response_data.get("Status")
+            is_fail = (
+                status_val == "Fail" or 
+                status_val == "fail" or 
+                status_val is False or
+                "Invalid" in response_data.get("Message", "") or
+                "insufficient" in response_data.get("Message", "").lower()
+            )
+            
+            # Check for success patterns
             is_success = (
                 response.status_code == 200 and 
-                (response_data.get("status") is True or 
-                 response_data.get("Status") == "Success" or
+                not is_fail and
+                (status_val == "Success" or 
+                 status_val is True or
                  response_data.get("message_id") is not None or
-                 "success" in str(response_data).lower())
+                 response_data.get("LogID") is not None or
+                 "Submitted Successfully" in response_data.get("Message", ""))
             )
             
             if is_success:

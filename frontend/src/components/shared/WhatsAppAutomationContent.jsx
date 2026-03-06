@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { MessageSquare, Settings, Plus, Check, X, Trash2, Eye, Tag, ChevronLeft, KeyRound, Pause, Play, Send, FlaskConical } from "lucide-react";
@@ -1786,12 +1786,7 @@ export function WhatsAppAutomationContent({ embedded = false }) {
                                         <input
                                             type="text"
                                             value={testPhone}
-                                            onChange={(e) => {
-                                                const val = e.target.value.replace(/[^0-9]/g, "");
-                                                if (val.length <= 10) {
-                                                    setTestPhone(val);
-                                                }
-                                            }}
+                                            onChange={(e) => setTestPhone(e.target.value.replace(/\D/g, "").substring(0, 10))}
                                             placeholder="9876543210"
                                             className="flex-1 h-10 px-3 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                             inputMode="numeric"
