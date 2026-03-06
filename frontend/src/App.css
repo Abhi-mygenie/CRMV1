@@ -97,6 +97,27 @@
     transform: scale(0.95);
 }
 
+/* Quick action button compact */
+.quick-action-btn-compact {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 12px 14px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+}
+
+.quick-action-btn-compact:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.quick-action-btn-compact:active {
+    transform: scale(0.97);
+}
+
 /* Customer list item */
 .customer-list-item {
     display: flex;
