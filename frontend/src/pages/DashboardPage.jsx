@@ -262,7 +262,7 @@ export default function DashboardPage() {
                         </Select>
                         <button 
                             onClick={() => navigate("/customers")}
-                            className="text-xs text-[#62B5E5] font-medium whitespace-nowrap font-body hover:text-[#4A9FD0]"
+                            className="text-xs text-[#F26B33] font-medium whitespace-nowrap font-body hover:text-[#D85A2A]"
                             data-testid="view-all-customers"
                         >
                             View all
