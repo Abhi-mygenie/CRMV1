@@ -153,6 +153,17 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
         avg_rating = round(rating_result[0].get("avg_rating", 0) or 0, 1)
         total_feedback = rating_result[0].get("count", 0)
     
+    # Calculate average visits per customer
+    visits_pipeline = [
+        {"$match": {"user_id": user_id}},
+        {"$group": {
+            "_id": None,
+            "avg_visits": {"$avg": "$total_visits"}
+        }}
+    ]
+    visits_result = await db.customers.aggregate(visits_pipeline).to_list(1)
+    avg_visits = round(visits_result[0].get("avg_visits", 0) or 0, 1) if visits_result else 0.0
+    
     return DashboardStats(
         total_customers=total_customers,
         total_points_issued=points_issued,
@@ -160,5 +171,6 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
         active_customers_30d=active_30d,
         new_customers_7d=new_7d,
         avg_rating=avg_rating,
-        total_feedback=total_feedback
+        total_feedback=total_feedback,
+        avg_visits_per_customer=avg_visits
     )
