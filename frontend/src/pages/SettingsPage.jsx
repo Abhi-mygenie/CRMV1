@@ -169,7 +169,6 @@ export default function SettingsPage() {
     };
 
     const handleRevertCustomers = async () => {
-        if (!confirm("This will delete all synced customers. Are you sure?")) return;
         setRevertingCustomers(true);
         try {
             const res = await api.post("/migration/revert-customers");
@@ -183,7 +182,6 @@ export default function SettingsPage() {
     };
 
     const handleRevertOrders = async () => {
-        if (!confirm("This will delete all synced orders. Are you sure?")) return;
         setRevertingOrders(true);
         try {
             const res = await api.post("/migration/revert-orders");
