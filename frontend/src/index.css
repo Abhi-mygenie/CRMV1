@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,15 +6,15 @@
 
 @layer base {
     :root {
-        /* DinePoints Theme - Brand Colors */
-        --background: 40 20% 98%; /* #F9F9F7 */
-        --foreground: 0 0% 10%; /* #1A1A1A */
+        /* MyGenie Brand Colors */
+        --background: 0 0% 96%; /* #F5F5F5 Light Grey */
+        --foreground: 0 0% 17%; /* #2B2B2B Dark Grey */
         
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 10%;
+        --card: 0 0% 100%; /* White */
+        --card-foreground: 0 0% 17%; /* #2B2B2B */
         
         --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 10%;
+        --popover-foreground: 0 0% 17%;
         
         /* Brand Orange Primary */
         --primary: 16 89% 58%; /* #F26B33 */
@@ -24,11 +24,12 @@
         --secondary: 122 53% 40%; /* #329937 */
         --secondary-foreground: 0 0% 100%;
         
-        --muted: 0 0% 96%;
-        --muted-foreground: 240 4% 46%; /* #52525B */
-        
-        --accent: 122 53% 40%;
+        /* Genie Blue Accent */
+        --accent: 199 73% 64%; /* #62B5E5 */
         --accent-foreground: 0 0% 100%;
+        
+        --muted: 0 0% 96%; /* #F5F5F5 */
+        --muted-foreground: 240 4% 46%; /* #52525B */
         
         --destructive: 0 72% 51%; /* #DC2626 */
         --destructive-foreground: 0 0% 100%;
@@ -37,16 +38,23 @@
         --success-foreground: 0 0% 100%;
         
         --border: 0 0% 90%;
-        --input: 0 0% 90%;
+        --input: 0 0% 96%; /* #F5F5F5 */
         --ring: 16 89% 58%;
         
-        --chart-1: 16 89% 58%;
-        --chart-2: 122 53% 40%;
-        --chart-3: 142 71% 45%;
+        --chart-1: 16 89% 58%; /* Orange */
+        --chart-2: 122 53% 40%; /* Green */
+        --chart-3: 199 73% 64%; /* Genie Blue */
         --chart-4: 0 72% 51%;
         --chart-5: 240 4% 46%;
         
         --radius: 0.75rem;
+        
+        /* Brand Colors as CSS variables */
+        --brand-orange: #F26B33;
+        --brand-green: #329937;
+        --brand-blue: #62B5E5;
+        --brand-dark: #2B2B2B;
+        --brand-light: #F5F5F5;
     }
 }
 
