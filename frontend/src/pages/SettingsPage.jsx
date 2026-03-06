@@ -461,16 +461,33 @@ export default function SettingsPage() {
                                                 {syncingCustomers ? "Syncing..." : migrationStatus?.customers_synced > 0 ? "Sync Again" : "Sync Customers"}
                                             </Button>
                                             {migrationStatus?.customers_synced > 0 && (
-                                                <Button 
-                                                    onClick={handleRevertCustomers}
-                                                    disabled={revertingCustomers}
-                                                    variant="outline"
-                                                    className="flex-1 h-11 rounded-xl border-red-300 text-red-600 hover:bg-red-50"
-                                                    data-testid="revert-customers-btn"
-                                                >
-                                                    <RotateCcw className="w-4 h-4 mr-2" />
-                                                    {revertingCustomers ? "Reverting..." : "Revert"}
-                                                </Button>
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button 
+                                                            disabled={revertingCustomers}
+                                                            variant="outline"
+                                                            className="flex-1 h-11 rounded-xl border-red-300 text-red-600 hover:bg-red-50"
+                                                            data-testid="revert-customers-btn"
+                                                        >
+                                                            <RotateCcw className="w-4 h-4 mr-2" />
+                                                            {revertingCustomers ? "Reverting..." : "Revert"}
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Revert Customers?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                This will delete all {migrationStatus?.customers_synced} synced customers. This action cannot be undone.
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction onClick={handleRevertCustomers} className="bg-red-600 hover:bg-red-700">
+                                                                Delete Customers
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
                                             )}
                                         </div>
                                     </CardContent>
