@@ -293,7 +293,7 @@ export default function TemplatesPage() {
                                                     <SelectItem value="authentication">Authentication</SelectItem>
                                                 </SelectContent>
                                             </Select>
-                                            <Button onClick={() => { setEditingCustomTemplate(null); setNewTemplate({ template_name: "", category: "utility", language: "en", header_type: "none", header_content: "", body: "", footer: "", buttons: [], media_url: "" }); setShowAddTemplate(true); }} className="bg-[#25D366] hover:bg-[#1da851] text-white rounded-full" data-testid="add-template-btn"><Plus className="w-4 h-4 mr-1" /> Add Template</Button>
+                                            <Button onClick={() => { setEditingCustomTemplate(null); setNewTemplate({ template_name: "", category: "utility", language: "en", header_type: "none", header_content: "", body: "", footer: "", buttons: [], media_url: "" }); setShowAddTemplate(true); }} className="bg-[#F26B33] hover:bg-[#D85A2A] text-white rounded-full" data-testid="add-template-btn"><Plus className="w-4 h-4 mr-1" /> Add Template</Button>
                                         </div>
                                     </div>
                                     <div className="border-b border-gray-200 mb-4"></div>
@@ -327,7 +327,7 @@ export default function TemplatesPage() {
                                                                 {ct.status === "draft" && (
                                                                     <>
                                                                         <Button size="sm" variant="outline" onClick={() => openEditCustomTemplate(ct)}><Edit2 className="w-3 h-3 mr-1" /> Edit</Button>
-                                                                        <Button size="sm" className="bg-[#25D366] hover:bg-[#1da851] text-white" onClick={() => handleSubmitCustomTemplate(ct.id)}><Send className="w-3 h-3 mr-1" /> Submit</Button>
+                                                                        <Button size="sm" className="bg-[#F26B33] hover:bg-[#D85A2A] text-white" onClick={() => handleSubmitCustomTemplate(ct.id)}><Send className="w-3 h-3 mr-1" /> Submit</Button>
                                                                     </>
                                                                 )}
                                                                 {ct.status === "pending" && <span className="text-xs text-amber-600 flex items-center gap-1"><Clock className="w-3 h-3" /> Awaiting approval</span>}
@@ -427,7 +427,7 @@ export default function TemplatesPage() {
                             {newTemplate.body && (
                                 <div className="space-y-1"><Label className="text-xs text-gray-500">Preview</Label><div className="bg-[#E5DDD5] p-3 rounded-lg"><div className="bg-[#DCF8C6] rounded-lg p-3 shadow-sm">{newTemplate.header_type === "text" && newTemplate.header_content && <p className="text-sm font-bold text-[#1A1A1A] mb-1">{newTemplate.header_content}</p>}<p className="text-sm text-[#1A1A1A] whitespace-pre-wrap">{newTemplate.body}</p>{newTemplate.footer && <p className="text-xs text-gray-500 mt-2 border-t border-gray-200 pt-1">{newTemplate.footer}</p>}</div></div></div>
                             )}
-                            <DialogFooter className="gap-2"><Button variant="outline" onClick={() => setShowAddTemplate(false)}>Cancel</Button><Button onClick={handleSaveCustomTemplate} disabled={savingTemplate} className="bg-[#25D366] hover:bg-[#1da851] text-white" data-testid="save-new-template-btn">{savingTemplate ? "Saving..." : editingCustomTemplate ? "Update Template" : "Save as Draft"}</Button></DialogFooter>
+                            <DialogFooter className="gap-2"><Button variant="outline" onClick={() => setShowAddTemplate(false)}>Cancel</Button><Button onClick={handleSaveCustomTemplate} disabled={savingTemplate} className="bg-[#F26B33] hover:bg-[#D85A2A] text-white" data-testid="save-new-template-btn">{savingTemplate ? "Saving..." : editingCustomTemplate ? "Update Template" : "Save as Draft"}</Button></DialogFooter>
                         </div>
                     </DialogContent>
                 </Dialog>
@@ -467,7 +467,7 @@ export default function TemplatesPage() {
                                 </div>
                                 <DialogFooter className="gap-2">
                                     <Button variant="outline" onClick={() => { setShowVariableMappingModal(false); setMappingTemplate(null); setVariableMappings({}); setVariableMappingModes({}); }}>Cancel</Button>
-                                    <Button onClick={handleSaveVariableMapping} disabled={savingVariableMapping} className="bg-[#25D366] hover:bg-[#1da851] text-white" data-testid="save-variable-mapping-btn">{savingVariableMapping ? "Saving..." : "Save Mappings"}</Button>
+                                    <Button onClick={handleSaveVariableMapping} disabled={savingVariableMapping} className="bg-[#F26B33] hover:bg-[#D85A2A] text-white" data-testid="save-variable-mapping-btn">{savingVariableMapping ? "Saving..." : "Save Mappings"}</Button>
                                 </DialogFooter>
                             </div>
                         )}
