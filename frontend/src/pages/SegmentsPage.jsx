@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const SegmentsPageContent = () => {
+export const SegmentsPageContent = () => {
     const { api } = useAuth();
     const navigate = useNavigate();
     const [segments, setSegments] = useState([]);
