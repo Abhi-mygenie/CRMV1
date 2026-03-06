@@ -614,6 +614,7 @@ class DashboardStats(BaseModel):
     new_customers_7d: int
     avg_rating: float
     total_feedback: int
+    avg_visits_per_customer: float
 
 # Messaging Models
 class MessageRequest(BaseModel):
