@@ -70,17 +70,24 @@ async def background_customer_sync(user_id: str, mygenie_token: str):
                     "anniversary": mygenie_customer.get("anniversary"),
                     "gst_name": mygenie_customer.get("gst_name"),
                     "gst_number": mygenie_customer.get("gst_number"),
+                    # Points - loyalty_point is int, others are strings
                     "total_points": mygenie_customer.get("loyalty_point", 0),
-                    "total_points_earned": mygenie_customer.get("total_points_earned", 0),
-                    "total_points_redeemed": mygenie_customer.get("total_points_redeemed", 0),
-                    "total_spent": float(mygenie_customer.get("total_spent") or 0),
+                    "total_points_earned": int(mygenie_customer.get("total_points_earned") or 0),
+                    "total_points_redeemed": int(mygenie_customer.get("total_points_redeemed") or 0),
+                    # Wallet - wallet_balance is int, others are strings
                     "wallet_balance": float(mygenie_customer.get("wallet_balance") or 0),
-                    "total_wallet_deposit": float(mygenie_customer.get("total_wallet_deposit") or 0),
-                    "wallet_used": float(mygenie_customer.get("wallet_used") or 0),
+                    "total_wallet_received": float(mygenie_customer.get("total_wallet_received") or 0),
+                    "total_wallet_used": float(mygenie_customer.get("total_wallet_used") or 0),
+                    # Coupons
+                    "total_coupon_used": mygenie_customer.get("total_coupon_used", 0),
+                    # POS IDs
                     "pos_customer_id": mygenie_customer["id"],
                     "pos_id": mygenie_customer.get("pos_id"),
+                    "pos_restaurant_id": mygenie_customer.get("restaurant_id"),
+                    # Sync metadata
                     "mygenie_synced": True,
-                    "last_synced_at": now
+                    "last_synced_at": now,
+                    "last_updated_at": mygenie_customer.get("updated_time"),
                 }
                 
                 # Determine tier
@@ -120,9 +127,10 @@ async def background_customer_sync(user_id: str, mygenie_token: str):
                     customer_data["custom_field_2"] = None
                     customer_data["custom_field_3"] = None
                     customer_data["favorites"] = []
+                    # These will be calculated from orders sync
                     customer_data["total_visits"] = 0
-                    customer_data["total_spent"] = 0.0
-                    customer_data["last_visit"] = None
+                    customer_data["total_spent"] = 0.0  # Calculated from orders
+                    customer_data["last_visit"] = None  # Updated from orders
                     
                     await db.customers.insert_one(customer_data)
                     synced_count += 1

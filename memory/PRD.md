@@ -93,3 +93,42 @@ Pull and build CRMV1 from GitHub: https://github.com/Abhi-mygenie/CRMV1.git with
 ### Pending:
 - WhatsApp API integration for actual OTP delivery
 - POS events trigger mechanism (MyGenie webhook integration)
+
+## Updates - March 7, 2026 (Session 3)
+
+### Customer Migration API - Field Mapping Fixes
+
+**Fixed Issues:**
+1. `total_points_earned` - Added `int()` conversion (API returns string)
+2. `total_points_redeemed` - Added `int()` conversion (API returns string)
+3. `total_wallet_deposit` → `total_wallet_received` (correct API field name)
+4. `wallet_used` → `total_wallet_used` (correct API field name)
+
+**Added New Fields:**
+- `pos_restaurant_id` - Restaurant ID from MyGenie
+- `total_coupon_used` - Total coupons used by customer
+- `last_updated_at` - From MyGenie `updated_time`
+
+**Removed:**
+- `total_spent` from API mapping (calculated from orders sync instead)
+
+### Complete Customer Field Mapping:
+| MyGenie API | CRM Database | Type |
+|-------------|--------------|------|
+| id | pos_customer_id | int |
+| pos_id | pos_id | str |
+| restaurant_id | pos_restaurant_id | str |
+| loyalty_point | total_points | int |
+| total_points_earned | total_points_earned | str→int |
+| total_points_redeemed | total_points_redeemed | str→int |
+| wallet_balance | wallet_balance | float |
+| total_wallet_received | total_wallet_received | str→float |
+| total_wallet_used | total_wallet_used | str→float |
+| total_coupon_used | total_coupon_used | int |
+| updated_time | last_updated_at | str |
+
+### Calculated Fields (from Orders):
+- total_spent
+- total_visits
+- last_visit
+- tier

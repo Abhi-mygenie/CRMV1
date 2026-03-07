@@ -76,12 +76,40 @@ POST https://preprod.mygenie.online/api/v1/vendoremployee/whatsappcrm/customer-o
 ## Field Mappings
 
 ### Customer Fields
-| MyGenie API | CRM Database |
-|-------------|--------------|
-| `name` | `name` |
-| `dob` | `dob` |
-| `anniversary` | `anniversary` |
-| `id` | `pos_customer_id` |
+| MyGenie API | CRM Database | Type Conversion |
+|-------------|--------------|-----------------|
+| `id` | `pos_customer_id` | int |
+| `pos_id` | `pos_id` | str |
+| `restaurant_id` | `pos_restaurant_id` | str |
+| `name` | `name` | str |
+| `phone` | `phone` | str |
+| `country_code` | `country_code` | str |
+| `email` | `email` | str |
+| `dob` | `dob` | str |
+| `anniversary` | `anniversary` | str |
+| `customer_type` | `customer_type` | str |
+| `gst_name` | `gst_name` | str |
+| `gst_number` | `gst_number` | str |
+| `address` | `address` | str |
+| `city` | `city` | str |
+| `pincode` | `pincode` | str |
+| `loyalty_point` | `total_points` | int |
+| `total_points_earned` | `total_points_earned` | str → int |
+| `total_points_redeemed` | `total_points_redeemed` | str → int |
+| `wallet_balance` | `wallet_balance` | int → float |
+| `total_wallet_received` | `total_wallet_received` | str → float |
+| `total_wallet_used` | `total_wallet_used` | str → float |
+| `total_coupon_used` | `total_coupon_used` | int |
+| `created_time` | `created_at` | str |
+| `updated_time` | `last_updated_at` | str |
+
+### Calculated Fields (from Orders sync)
+| CRM Field | Source |
+|-----------|--------|
+| `total_spent` | Sum of order amounts |
+| `total_visits` | Count of orders |
+| `last_visit` | Latest order date |
+| `tier` | Calculated from total_points |
 
 ### Order Fields
 | MyGenie API | CRM Database |
