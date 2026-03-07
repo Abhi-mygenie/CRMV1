@@ -597,7 +597,7 @@ export default function CustomersPage() {
                     <h1 className="text-2xl font-bold text-[#1A1A1A] font-['Montserrat']" data-testid="customers-title">
                         {customerTab === "customers" ? "Customers" : "Segments"}
                     </h1>
-                    {customerTab === "customers" && (
+                    {customerTab === "customers" ? (
                     <div className="flex gap-2">
                         {/* Sync button only shows when NOT in demo mode AND no customers exist */}
                         {!isDemoMode && !loading && customers.length === 0 && (
@@ -618,6 +618,14 @@ export default function CustomersPage() {
                             <Plus className="w-4 h-4 mr-1" /> Add
                         </Button>
                     </div>
+                    ) : (
+                    <Button 
+                        onClick={() => { setCustomerTab("customers"); setShowFilters(true); }}
+                        className="bg-[#F26B33] hover:bg-[#D85A2A] rounded-full h-10 px-4"
+                        data-testid="add-segment-btn"
+                    >
+                        <Plus className="w-4 h-4 mr-1" /> Add
+                    </Button>
                     )}
                 </div>
 
