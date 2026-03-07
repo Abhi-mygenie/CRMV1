@@ -141,42 +141,6 @@ export default function LoginPage() {
                     >
                         {isLoading ? "Signing in..." : "Sign In"}
                     </Button>
-
-                    {/* Divider */}
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-300"></div>
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-4 bg-[#F5F5F5] text-[#52525B] font-medium font-body">or</span>
-                        </div>
-                    </div>
-
-                    {/* Demo Mode Button */}
-                    <Button 
-                        type="button"
-                        onClick={handleDemoLogin}
-                        className="w-full h-12 rounded-full bg-[#329937] hover:bg-[#287A2D] text-white font-semibold active-scale shadow-lg font-body"
-                        disabled={isDemoLoading}
-                        data-testid="demo-login-btn"
-                    >
-                        {isDemoLoading ? "Loading Demo..." : "Try Demo Mode"}
-                    </Button>
-                    <p className="text-xs text-center text-[#A1A1AA] mt-2 font-body">
-                        Explore all features with pre-loaded demo data
-                    </p>
-                    
-                    <div className="text-center mt-4">
-                        <span className="text-sm text-[#52525B] font-body">Don't have an account? </span>
-                        <button 
-                            type="button"
-                            onClick={() => navigate("/register")}
-                            className="text-sm text-[#F26B33] font-medium hover:underline font-body"
-                            data-testid="signup-link"
-                        >
-                            Sign up
-                        </button>
-                    </div>
                 </form>
             </div>
         </div>

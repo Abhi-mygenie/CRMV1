@@ -132,6 +132,39 @@ async def update_profile(updates: dict, user: dict = Depends(get_current_user)):
     updated = await db.users.find_one({"id": user["id"]}, {"_id": 0})
     return {"business_name": updated.get("restaurant_name", ""), "phone": updated.get("phone", ""), "address": updated.get("address", ""), "email": updated.get("email", ""), "pos_id": updated.get("pos_id", ""), "pos_name": updated.get("restaurant_name", "")}
 
+
+@router.put("/reset-password")
+async def reset_password(data: dict, user: dict = Depends(get_current_user)):
+    """
+    Reset password for logged-in user.
+    Requires current password verification.
+    Updates local DB only (not MyGenie).
+    """
+    current_password = data.get("current_password")
+    new_password = data.get("new_password")
+    
+    if not current_password or not new_password:
+        raise HTTPException(status_code=400, detail="Both current and new password are required")
+    
+    if len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
+    
+    # Verify current password
+    if not user.get("password_hash"):
+        raise HTTPException(status_code=400, detail="Password not set for this account")
+    
+    if not verify_password(current_password, user["password_hash"]):
+        raise HTTPException(status_code=401, detail="Current password is incorrect")
+    
+    # Update password
+    new_hash = hash_password(new_password)
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"password_hash": new_hash}}
+    )
+    
+    return {"message": "Password updated successfully"}
+
 @router.post("/demo-login", response_model=TokenResponse)
 async def demo_login():
     """
