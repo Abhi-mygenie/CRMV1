@@ -238,6 +238,14 @@ export default function CustomerDetailPage() {
                                         <span>{customer.email}</span>
                                     </div>
                                 )}
+                                {/* Stats Subtitle */}
+                                <div className="flex items-center gap-1.5 mt-2 text-white/90 text-sm">
+                                    <span>{customer.total_visits} visit{customer.total_visits !== 1 ? 's' : ''}</span>
+                                    <span className="text-white/50">•</span>
+                                    <span>₹{customer.total_spent.toLocaleString()} spent</span>
+                                    <span className="text-white/50">•</span>
+                                    <span>Last: {customer.last_visit ? new Date(customer.last_visit).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : "N/A"}</span>
+                                </div>
                             </div>
                             <div className="flex items-center gap-2">
                                 <button
@@ -393,24 +401,6 @@ export default function CustomerDetailPage() {
                         */}
                     </CardContent>
                 </Card>
-
-                {/* Stats Row */}
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                    <div className="stats-card text-center">
-                        <p className="text-2xl font-bold text-[#1A1A1A] font-['Montserrat']">{customer.total_visits}</p>
-                        <p className="text-xs text-[#52525B] uppercase tracking-wider">Visits</p>
-                    </div>
-                    <div className="stats-card text-center">
-                        <p className="text-2xl font-bold text-[#1A1A1A] font-['Montserrat']">₹{customer.total_spent.toLocaleString()}</p>
-                        <p className="text-xs text-[#52525B] uppercase tracking-wider">Total Spent</p>
-                    </div>
-                    <div className="stats-card text-center">
-                        <p className="text-2xl font-bold text-[#1A1A1A] font-['Montserrat']">
-                            {customer.last_visit ? new Date(customer.last_visit).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : "N/A"}
-                        </p>
-                        <p className="text-xs text-[#52525B] uppercase tracking-wider">Last Visit</p>
-                    </div>
-                </div>
 
                 {/* AI Insights Card */}
                 {!insightsLoading && insights && (insights.top_items?.length > 0 || insights.common_notes?.length > 0 || insights.preferred_day || insights.avg_frequency_days) && (
