@@ -823,24 +823,7 @@ export default function CustomersPage() {
                                                         </Select>
                                                     </div>
                                                 </div>
-                                                {/* Sort By */}
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    <div>
-                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Sort By</Label>
-                                                        <Select value={filters.sort_by} onValueChange={(v) => setFilters({...filters, sort_by: v})}>
-                                                            <SelectTrigger className="h-8 text-xs">
-                                                                <SelectValue />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="created_at">Date Added</SelectItem>
-                                                                <SelectItem value="last_visit">Last Visit</SelectItem>
-                                                                <SelectItem value="total_spent">Total Spent</SelectItem>
-                                                                <SelectItem value="total_points">Points</SelectItem>
-                                                                <SelectItem value="name">Name</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-                                                </div>
+                                                {/* Sort By - hidden, using sort tabs instead */}
                                             </div>
                                         )}
                                     </div>
