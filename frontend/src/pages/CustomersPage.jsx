@@ -261,8 +261,11 @@ export default function CustomersPage() {
 
             toast.success(`Segment "${segmentName}" saved successfully!`);
             setShowSaveSegmentDialog(false);
+            setShowFilters(false);
             setSegmentName("");
             fetchSegments();
+            // Redirect to Segments tab
+            setCustomerTab("segments");
         } catch (err) {
             toast.error("Failed to save segment");
         }
@@ -1136,7 +1139,7 @@ export default function CustomersPage() {
                                         className="flex-1 h-9 rounded-xl border-[#F26B33] text-[#F26B33] text-xs font-semibold"
                                         data-testid="save-segment-btn"
                                     >
-                                        <Save className="w-3.5 h-3.5 mr-1" /> Save
+                                        <Save className="w-3.5 h-3.5 mr-1" /> Save Segment
                                     </Button>
                                 )}
                                 <Button 
@@ -1208,7 +1211,7 @@ export default function CustomersPage() {
                                         className="flex-1 bg-[#F26B33] hover:bg-[#D85A2A]"
                                         data-testid="save-segment-confirm-btn"
                                     >
-                                        Save
+                                        Save Segment
                                     </Button>
                                 </div>
                             </div>
