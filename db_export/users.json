@@ -1,0 +1,46 @@
+[
+  {
+    "id": "demo-user-restaurant",
+    "email": "demo@restaurant.com",
+    "password_hash": "$2b$12$y.ufcL.PvsXhiceufJFv6eJse3w59qyOdQciuDPVhFWoEfsQ050Ca",
+    "api_key": "demo-api-key-12345",
+    "restaurant_name": "Demo Restaurant & Cafe",
+    "phone": "+919876543210",
+    "created_at": "2026-03-06T05:11:04.565028+00:00"
+  },
+  {
+    "id": "pos_0001_restaurant_478",
+    "pos_id": "0001",
+    "pos_name": "MyGenie",
+    "restaurant_id": "478",
+    "api_key": "dp_live_avMm1bquxnYp2uh5QyYZNrPUn47p-nBK8toeWamgQRs",
+    "email": "owner@18march.com",
+    "password_hash": "$2b$12$GVSGSL0I08TsPt66it40bODzJkIm.P.plr2zxzxTQtFG7PMokazFS",
+    "restaurant_name": "18march",
+    "phone": "9823905119",
+    "first_name": "Owner",
+    "last_name": "",
+    "mygenie_token": "4rD9sAL9Fu21LvmdXzuH76IPoO5UgBPlTCemT8Q2SqaPnG8TH7XYANpxpgl2uR0XtagrtRty5sZ4zeE0Vdaztko9tz7jY8Kisvh8S2ydzAoJ4WA7nfa3hFTN",
+    "mygenie_synced": true,
+    "created_at": "2026-03-06T07:14:29.283458+00:00",
+    "last_login": "2026-03-06T07:14:29.283458+00:00",
+    "authkey_api_key": "d70e42b590e7fed7"
+  },
+  {
+    "id": "pos_0001_restaurant_709",
+    "pos_id": "0001",
+    "pos_name": "MyGenie",
+    "restaurant_id": "709",
+    "api_key": "dp_live_Pp1oEFsqyF43GelQCVOttOrZzIO0zJv6AtRkwuYwsuk",
+    "email": "owner@youngmonk.com",
+    "password_hash": "$2b$12$viY/AsTW46Tr/fKyafn8Iu8s16Va9WwDs3dJ/YjcJC02s4wrwHdzK",
+    "restaurant_name": "Young Monk Cafe",
+    "phone": "3434565456",
+    "first_name": "Owner",
+    "last_name": "",
+    "mygenie_token": "XSuXiYgsRZqM8M2J6UGm8C3UMZCSE2MNDgKuIelfW2bJezU76qbMzLRBoOrWAmQNQ8O0oUHCyyuRep9q9qDPIWXBC9aIlLq3W6vAueaLzhpOfZg8n2a2lEAx",
+    "mygenie_synced": true,
+    "created_at": "2026-03-06T10:33:11.321718+00:00",
+    "last_login": "2026-03-06T10:33:11.321718+00:00"
+  }
+]
