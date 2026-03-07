@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -203,8 +204,6 @@ export const SegmentsPageContent = () => {
     };
 
     const deleteSegment = async (segmentId) => {
-        if (!window.confirm("Are you sure you want to delete this segment?")) return;
-        
         try {
             await api.delete(`/segments/${segmentId}`);
             toast.success("Segment deleted");
@@ -487,6 +486,37 @@ export const SegmentsPageContent = () => {
                                                     >
                                                         <Edit2 className="w-4 h-4" />
                                                     </button>
+                                                )}
+                                                {!segment.isDefault && (
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <button
+                                                                onClick={(e) => e.stopPropagation()}
+                                                                className="text-gray-400 hover:text-red-500 p-0.5 rounded transition-colors"
+                                                                title="Delete segment"
+                                                                data-testid={`delete-segment-inline-${segment.id}`}
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Delete Segment?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Are you sure you want to delete "{segment.name}"? This action cannot be undone.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction 
+                                                                    onClick={() => deleteSegment(segment.id)} 
+                                                                    className="bg-red-600 hover:bg-red-700"
+                                                                >
+                                                                    Delete
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
                                                 )}
                                                 <Badge className={`${hasConfig ? (isConfigActive ? 'bg-[#25D366]' : 'bg-amber-500') : 'bg-gray-400'} text-white text-xs`}>
                                                     {hasConfig ? (isConfigActive ? "Active" : "Paused") : "Not Configured"}
