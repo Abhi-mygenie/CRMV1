@@ -232,12 +232,7 @@ export default function CustomerDetailPage() {
                                     <Phone className="w-4 h-4" />
                                     <span>{customer.phone}</span>
                                 </div>
-                                {customer.email && (
-                                    <div className="flex items-center gap-2 mt-1 text-white/80">
-                                        <Mail className="w-4 h-4" />
-                                        <span>{customer.email}</span>
-                                    </div>
-                                )}
+{/* Email hidden as per requirement */}
                                 {/* Stats Subtitle */}
                                 <div className="flex items-center gap-1.5 mt-2 text-white/90 text-sm">
                                     <span>{customer.total_visits} visit{customer.total_visits !== 1 ? 's' : ''}</span>
