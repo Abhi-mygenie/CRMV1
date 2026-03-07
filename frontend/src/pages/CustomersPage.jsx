@@ -713,7 +713,7 @@ export default function CustomersPage() {
 
                 {/* Compact Filter Drawer */}
                 {showFilters && (
-                    <div className="fixed inset-0 z-50" data-testid="filter-drawer">
+                    <div className="fixed inset-0 z-[10000]" data-testid="filter-drawer">
                         {/* Backdrop */}
                         <div 
                             className="absolute inset-0 bg-black/30"
@@ -741,252 +741,331 @@ export default function CustomersPage() {
 
                             {/* Compact Filter Content */}
                             <ScrollArea className="flex-1 p-3">
-                                <div className="space-y-3">
-                                    {/* Row 1: Tier + Customer Type */}
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">Tier</Label>
-                                            <Select value={filters.tier} onValueChange={(v) => setFilters({...filters, tier: v})}>
-                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
-                                                    <SelectValue placeholder="All" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">All tiers</SelectItem>
-                                                    <SelectItem value="Bronze">Bronze</SelectItem>
-                                                    <SelectItem value="Silver">Silver</SelectItem>
-                                                    <SelectItem value="Gold">Gold</SelectItem>
-                                                    <SelectItem value="Platinum">Platinum</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">Type</Label>
-                                            <Select value={filters.customer_type} onValueChange={(v) => setFilters({...filters, customer_type: v})}>
-                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
-                                                    <SelectValue placeholder="All" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">All types</SelectItem>
-                                                    <SelectItem value="normal">Normal</SelectItem>
-                                                    <SelectItem value="corporate">Corporate</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
+                                <div className="space-y-2">
+                                    {/* === BASIC SECTION === */}
+                                    <div data-testid="filter-section-basic">
+                                        <button
+                                            onClick={() => toggleFilterGroup("basic")}
+                                            className="flex items-center justify-between w-full py-2 text-sm font-semibold text-[#1A1A1A]"
+                                            data-testid="filter-toggle-basic"
+                                        >
+                                            <span>Basic</span>
+                                            {expandedFilterGroups.includes("basic") ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                        </button>
+                                        {expandedFilterGroups.includes("basic") && (
+                                            <div className="space-y-3 pb-3">
+                                                {/* Tier + Customer Type */}
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Tier</Label>
+                                                        <Select value={filters.tier} onValueChange={(v) => setFilters({...filters, tier: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All tiers</SelectItem>
+                                                                <SelectItem value="Bronze">Bronze</SelectItem>
+                                                                <SelectItem value="Silver">Silver</SelectItem>
+                                                                <SelectItem value="Gold">Gold</SelectItem>
+                                                                <SelectItem value="Platinum">Platinum</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Type</Label>
+                                                        <Select value={filters.customer_type} onValueChange={(v) => setFilters({...filters, customer_type: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All types</SelectItem>
+                                                                <SelectItem value="normal">Normal</SelectItem>
+                                                                <SelectItem value="corporate">Corporate</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
+
+                                                {/* City + Inactive */}
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">City</Label>
+                                                        <Input
+                                                            type="text"
+                                                            placeholder="Enter city"
+                                                            value={filters.city}
+                                                            onChange={(e) => setFilters({...filters, city: e.target.value})}
+                                                            className="h-9 mt-0.5 text-sm"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Inactive</Label>
+                                                        <Select value={filters.last_visit_days} onValueChange={(v) => setFilters({...filters, last_visit_days: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All</SelectItem>
+                                                                <SelectItem value="7">7+ days</SelectItem>
+                                                                <SelectItem value="14">14+ days</SelectItem>
+                                                                <SelectItem value="30">30+ days</SelectItem>
+                                                                <SelectItem value="60">60+ days</SelectItem>
+                                                                <SelectItem value="90">90+ days</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
+
+                                                {/* Sort By */}
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Sort By</Label>
+                                                        <Select value={filters.sort_by} onValueChange={(v) => setFilters({...filters, sort_by: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="created_at">Date Added</SelectItem>
+                                                                <SelectItem value="last_visit">Last Visit</SelectItem>
+                                                                <SelectItem value="total_spent">Total Spent</SelectItem>
+                                                                <SelectItem value="total_points">Points</SelectItem>
+                                                                <SelectItem value="name">Name</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* Row 2: City + Inactive */}
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">City</Label>
-                                            <Input
-                                                type="text"
-                                                placeholder="Enter city"
-                                                value={filters.city}
-                                                onChange={(e) => setFilters({...filters, city: e.target.value})}
-                                                className="h-9 mt-0.5 text-sm"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">Inactive</Label>
-                                            <Select value={filters.last_visit_days} onValueChange={(v) => setFilters({...filters, last_visit_days: v})}>
-                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
-                                                    <SelectValue placeholder="All" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">All</SelectItem>
-                                                    <SelectItem value="7">7+ days</SelectItem>
-                                                    <SelectItem value="14">14+ days</SelectItem>
-                                                    <SelectItem value="30">30+ days</SelectItem>
-                                                    <SelectItem value="60">60+ days</SelectItem>
-                                                    <SelectItem value="90">90+ days</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    </div>
+                                    <div className="border-t" />
 
-                                    {/* Row 3: Visits + Spent */}
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">Visits</Label>
-                                            <Select value={filters.total_visits} onValueChange={(v) => setFilters({...filters, total_visits: v})}>
-                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
-                                                    <SelectValue placeholder="Any" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">Any</SelectItem>
-                                                    <SelectItem value="0">New (0)</SelectItem>
-                                                    <SelectItem value="1-5">1-5</SelectItem>
-                                                    <SelectItem value="6-10">6-10</SelectItem>
-                                                    <SelectItem value="10+">10+</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">Spent</Label>
-                                            <Select value={filters.total_spent} onValueChange={(v) => setFilters({...filters, total_spent: v})}>
-                                                <SelectTrigger className="h-9 mt-0.5 text-sm" data-testid="filter-total-spent">
-                                                    <SelectValue placeholder="Any" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">Any</SelectItem>
-                                                    <SelectItem value="0-500">&lt;500</SelectItem>
-                                                    <SelectItem value="500-2000">500-2K</SelectItem>
-                                                    <SelectItem value="2000-5000">2K-5K</SelectItem>
-                                                    <SelectItem value="5000-10000">5K-10K</SelectItem>
-                                                    <SelectItem value="10000+">10K+</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    </div>
+                                    {/* === ADVANCED SECTION === */}
+                                    <div data-testid="filter-section-advanced">
+                                        <button
+                                            onClick={() => toggleFilterGroup("advanced")}
+                                            className="flex items-center justify-between w-full py-2 text-sm font-semibold text-[#1A1A1A]"
+                                            data-testid="filter-toggle-advanced"
+                                        >
+                                            <span>Advanced</span>
+                                            {expandedFilterGroups.includes("advanced") ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                        </button>
+                                        {expandedFilterGroups.includes("advanced") && (
+                                            <div className="space-y-3 pb-3">
+                                                {/* Visits + Spent */}
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Visits</Label>
+                                                        <Select value={filters.total_visits} onValueChange={(v) => setFilters({...filters, total_visits: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue placeholder="Any" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">Any</SelectItem>
+                                                                <SelectItem value="0">New (0)</SelectItem>
+                                                                <SelectItem value="1-5">1-5</SelectItem>
+                                                                <SelectItem value="6-10">6-10</SelectItem>
+                                                                <SelectItem value="10+">10+</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Spent</Label>
+                                                        <Select value={filters.total_spent} onValueChange={(v) => setFilters({...filters, total_spent: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm" data-testid="filter-total-spent">
+                                                                <SelectValue placeholder="Any" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">Any</SelectItem>
+                                                                <SelectItem value="0-500">&lt;500</SelectItem>
+                                                                <SelectItem value="500-2000">500-2K</SelectItem>
+                                                                <SelectItem value="2000-5000">2K-5K</SelectItem>
+                                                                <SelectItem value="5000-10000">5K-10K</SelectItem>
+                                                                <SelectItem value="10000+">10K+</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
 
-                                    {/* Row 4: Diet + Time Slot */}
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">Diet</Label>
-                                            <Select value={filters.diet_preference} onValueChange={(v) => setFilters({...filters, diet_preference: v})}>
-                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
-                                                    <SelectValue placeholder="All" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">All</SelectItem>
-                                                    <SelectItem value="veg">Veg</SelectItem>
-                                                    <SelectItem value="non_veg">Non-Veg</SelectItem>
-                                                    <SelectItem value="vegan">Vegan</SelectItem>
-                                                    <SelectItem value="jain">Jain</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">Time Slot</Label>
-                                            <Select value={filters.preferred_time_slot} onValueChange={(v) => setFilters({...filters, preferred_time_slot: v})}>
-                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
-                                                    <SelectValue placeholder="All" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">All</SelectItem>
-                                                    <SelectItem value="breakfast">Breakfast</SelectItem>
-                                                    <SelectItem value="lunch">Lunch</SelectItem>
-                                                    <SelectItem value="evening">Evening</SelectItem>
-                                                    <SelectItem value="dinner">Dinner</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    </div>
+                                                {/* Diet + Time Slot */}
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Diet</Label>
+                                                        <Select value={filters.diet_preference} onValueChange={(v) => setFilters({...filters, diet_preference: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All</SelectItem>
+                                                                <SelectItem value="veg">Veg</SelectItem>
+                                                                <SelectItem value="non_veg">Non-Veg</SelectItem>
+                                                                <SelectItem value="vegan">Vegan</SelectItem>
+                                                                <SelectItem value="jain">Jain</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Time Slot</Label>
+                                                        <Select value={filters.preferred_time_slot} onValueChange={(v) => setFilters({...filters, preferred_time_slot: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All</SelectItem>
+                                                                <SelectItem value="breakfast">Breakfast</SelectItem>
+                                                                <SelectItem value="lunch">Lunch</SelectItem>
+                                                                <SelectItem value="evening">Evening</SelectItem>
+                                                                <SelectItem value="dinner">Dinner</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
 
-                                    {/* Row 5: Dining Type + Gender */}
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">Dining</Label>
-                                            <Select value={filters.preferred_dining_type} onValueChange={(v) => setFilters({...filters, preferred_dining_type: v})}>
-                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
-                                                    <SelectValue placeholder="All" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">All</SelectItem>
-                                                    <SelectItem value="Dine-In">Dine-In</SelectItem>
-                                                    <SelectItem value="Takeaway">Takeaway</SelectItem>
-                                                    <SelectItem value="Delivery">Delivery</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">Gender</Label>
-                                            <Select value={filters.gender} onValueChange={(v) => setFilters({...filters, gender: v})}>
-                                                <SelectTrigger className="h-9 mt-0.5 text-sm" data-testid="filter-gender">
-                                                    <SelectValue placeholder="All" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">All</SelectItem>
-                                                    <SelectItem value="male">Male</SelectItem>
-                                                    <SelectItem value="female">Female</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    </div>
+                                                {/* Dining Type + Gender */}
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Dining</Label>
+                                                        <Select value={filters.preferred_dining_type} onValueChange={(v) => setFilters({...filters, preferred_dining_type: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All</SelectItem>
+                                                                <SelectItem value="Dine-In">Dine-In</SelectItem>
+                                                                <SelectItem value="Takeaway">Takeaway</SelectItem>
+                                                                <SelectItem value="Delivery">Delivery</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Gender</Label>
+                                                        <Select value={filters.gender} onValueChange={(v) => setFilters({...filters, gender: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm" data-testid="filter-gender">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All</SelectItem>
+                                                                <SelectItem value="male">Male</SelectItem>
+                                                                <SelectItem value="female">Female</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
 
-                                    {/* Row 6: Lead Source + WhatsApp */}
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">Source</Label>
-                                            <Select value={filters.lead_source} onValueChange={(v) => setFilters({...filters, lead_source: v})}>
-                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
-                                                    <SelectValue placeholder="All" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">All</SelectItem>
-                                                    <SelectItem value="Walk-in">Walk-in</SelectItem>
-                                                    <SelectItem value="Swiggy">Swiggy</SelectItem>
-                                                    <SelectItem value="Zomato">Zomato</SelectItem>
-                                                    <SelectItem value="Instagram">Instagram</SelectItem>
-                                                    <SelectItem value="Referral">Referral</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">WhatsApp</Label>
-                                            <Select value={filters.whatsapp_opt_in} onValueChange={(v) => setFilters({...filters, whatsapp_opt_in: v})}>
-                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
-                                                    <SelectValue placeholder="All" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">All</SelectItem>
-                                                    <SelectItem value="true">Opted-In</SelectItem>
-                                                    <SelectItem value="false">Not Opted</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    </div>
+                                                {/* Lead Source + WhatsApp */}
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Source</Label>
+                                                        <Select value={filters.lead_source} onValueChange={(v) => setFilters({...filters, lead_source: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All</SelectItem>
+                                                                <SelectItem value="Walk-in">Walk-in</SelectItem>
+                                                                <SelectItem value="Swiggy">Swiggy</SelectItem>
+                                                                <SelectItem value="Zomato">Zomato</SelectItem>
+                                                                <SelectItem value="Instagram">Instagram</SelectItem>
+                                                                <SelectItem value="Referral">Referral</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">WhatsApp</Label>
+                                                        <Select value={filters.whatsapp_opt_in} onValueChange={(v) => setFilters({...filters, whatsapp_opt_in: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All</SelectItem>
+                                                                <SelectItem value="true">Opted-In</SelectItem>
+                                                                <SelectItem value="false">Not Opted</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
 
-                                    {/* Row 7: VIP + Sort */}
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">VIP Status</Label>
-                                            <Select value={filters.vip_flag} onValueChange={(v) => setFilters({...filters, vip_flag: v})}>
-                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
-                                                    <SelectValue placeholder="All" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">All</SelectItem>
-                                                    <SelectItem value="true">VIP Only</SelectItem>
-                                                    <SelectItem value="false">Non-VIP</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div>
-                                            <Label className="text-[10px] text-[#52525B] uppercase">Sort By</Label>
-                                            <Select value={filters.sort_by} onValueChange={(v) => setFilters({...filters, sort_by: v})}>
-                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="created_at">Date Added</SelectItem>
-                                                    <SelectItem value="last_visit">Last Visit</SelectItem>
-                                                    <SelectItem value="total_spent">Total Spent</SelectItem>
-                                                    <SelectItem value="total_points">Points</SelectItem>
-                                                    <SelectItem value="name">Name</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    </div>
+                                                {/* VIP + Blocked */}
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">VIP Status</Label>
+                                                        <Select value={filters.vip_flag} onValueChange={(v) => setFilters({...filters, vip_flag: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All</SelectItem>
+                                                                <SelectItem value="true">VIP Only</SelectItem>
+                                                                <SelectItem value="false">Non-VIP</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Blocked</Label>
+                                                        <Select value={filters.is_blocked} onValueChange={(v) => setFilters({...filters, is_blocked: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All</SelectItem>
+                                                                <SelectItem value="true">Blocked</SelectItem>
+                                                                <SelectItem value="false">Not Blocked</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
 
-                                    {/* Checkboxes Row */}
-                                    <div className="flex flex-wrap gap-3 pt-2">
-                                        <label className="flex items-center gap-2 text-sm">
-                                            <Checkbox 
-                                                checked={filters.has_birthday_this_month}
-                                                onCheckedChange={(checked) => setFilters({...filters, has_birthday_this_month: checked})}
-                                            />
-                                            <Cake className="w-3.5 h-3.5 text-pink-500" />
-                                            Birthday
-                                        </label>
-                                        <label className="flex items-center gap-2 text-sm">
-                                            <Checkbox 
-                                                checked={filters.has_anniversary_this_month}
-                                                onCheckedChange={(checked) => setFilters({...filters, has_anniversary_this_month: checked})}
-                                            />
-                                            <Heart className="w-3.5 h-3.5 text-red-500" />
-                                            Anniversary
-                                        </label>
+                                                {/* Blacklist + Complaint */}
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Blacklist</Label>
+                                                        <Select value={filters.blacklist_flag} onValueChange={(v) => setFilters({...filters, blacklist_flag: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All</SelectItem>
+                                                                <SelectItem value="true">Blacklisted</SelectItem>
+                                                                <SelectItem value="false">Not Blacklisted</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#52525B] uppercase">Complaint</Label>
+                                                        <Select value={filters.complaint_flag} onValueChange={(v) => setFilters({...filters, complaint_flag: v})}>
+                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All</SelectItem>
+                                                                <SelectItem value="true">Has Complaints</SelectItem>
+                                                                <SelectItem value="false">No Complaints</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
+
+                                                {/* Checkboxes Row */}
+                                                <div className="flex flex-wrap gap-3 pt-2">
+                                                    <label className="flex items-center gap-2 text-sm">
+                                                        <Checkbox 
+                                                            checked={filters.has_birthday_this_month}
+                                                            onCheckedChange={(checked) => setFilters({...filters, has_birthday_this_month: checked})}
+                                                        />
+                                                        <Cake className="w-3.5 h-3.5 text-pink-500" />
+                                                        Birthday
+                                                    </label>
+                                                    <label className="flex items-center gap-2 text-sm">
+                                                        <Checkbox 
+                                                            checked={filters.has_anniversary_this_month}
+                                                            onCheckedChange={(checked) => setFilters({...filters, has_anniversary_this_month: checked})}
+                                                        />
+                                                        <Heart className="w-3.5 h-3.5 text-red-500" />
+                                                        Anniversary
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Saved Segments */}
