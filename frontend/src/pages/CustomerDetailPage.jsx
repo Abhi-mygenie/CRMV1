@@ -243,20 +243,42 @@ export default function CustomerDetailPage() {
                         </div>
                     </div>
                     
-                    {/* Points & Wallet Summary */}
+                    {/* Points & Wallet Summary - Option 2 Design */}
                     <CardContent className="p-4 bg-white">
                         <div className="grid grid-cols-2 gap-4 mb-4">
-                            <div className="text-center p-3 bg-[#329937]/10 rounded-xl">
-                                <p className="text-xs text-[#52525B] uppercase tracking-wider">Points</p>
-                                <p className="text-3xl font-bold text-[#329937] font-['Montserrat'] points-display" data-testid="customer-points">
+                            {/* Points Card */}
+                            <div className="p-3 bg-[#329937]/10 rounded-xl">
+                                <p className="text-xs text-[#52525B] uppercase tracking-wider text-center">Points</p>
+                                <p className="text-3xl font-bold text-[#329937] font-['Montserrat'] points-display text-center" data-testid="customer-points">
                                     {customer.total_points.toLocaleString()}
                                 </p>
+                                <div className="border-t border-[#329937]/20 mt-2 pt-2">
+                                    <div className="flex justify-between text-xs">
+                                        <span className="text-[#52525B]">Earned</span>
+                                        <span className="font-medium text-[#329937]">{(customer.total_points_earned || 0).toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between text-xs mt-1">
+                                        <span className="text-[#52525B]">Redeemed</span>
+                                        <span className="font-medium text-[#EF4444]">{(customer.total_points_redeemed || 0).toLocaleString()}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="text-center p-3 bg-[#F26B33]/10 rounded-xl">
-                                <p className="text-xs text-[#52525B] uppercase tracking-wider">Wallet</p>
-                                <p className="text-3xl font-bold text-[#F26B33] font-['Montserrat']" data-testid="customer-wallet">
-                                    ₹{customer.wallet_balance?.toLocaleString() || 0}
+                            {/* Wallet Card */}
+                            <div className="p-3 bg-[#F26B33]/10 rounded-xl">
+                                <p className="text-xs text-[#52525B] uppercase tracking-wider text-center">Wallet</p>
+                                <p className="text-3xl font-bold text-[#F26B33] font-['Montserrat'] text-center" data-testid="customer-wallet">
+                                    ₹{(customer.wallet_balance || 0).toLocaleString()}
                                 </p>
+                                <div className="border-t border-[#F26B33]/20 mt-2 pt-2">
+                                    <div className="flex justify-between text-xs">
+                                        <span className="text-[#52525B]">Added</span>
+                                        <span className="font-medium text-[#329937]">₹{(customer.total_wallet_received || 0).toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between text-xs mt-1">
+                                        <span className="text-[#52525B]">Used</span>
+                                        <span className="font-medium text-[#EF4444]">₹{(customer.total_wallet_used || 0).toLocaleString()}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         

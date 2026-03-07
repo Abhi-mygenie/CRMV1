@@ -270,7 +270,12 @@ class Customer(BaseModel):
     
     # Loyalty Information
     total_points: int = 0
+    total_points_earned: int = 0
+    total_points_redeemed: int = 0
     wallet_balance: float = 0.0
+    total_wallet_received: float = 0.0
+    total_wallet_used: float = 0.0
+    total_coupon_used: int = 0
     tier: str = "Bronze"
     referral_code: Optional[str] = None
     referred_by: Optional[str] = None
