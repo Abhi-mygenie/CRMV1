@@ -315,6 +315,18 @@ export default function CustomersPage() {
         fetchSegments();
     }, [search, filters]);
 
+    // Lock body scroll when filter drawer is open
+    useEffect(() => {
+        if (showFilters) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [showFilters]);
+
     const handleAddCustomer = async (e) => {
         e.preventDefault();
         setSubmitting(true);
@@ -742,7 +754,7 @@ export default function CustomersPage() {
                             onClick={() => setShowFilters(false)}
                         />
                         {/* Slide-down Panel */}
-                        <div className="absolute top-0 left-0 right-0 bg-white rounded-b-2xl max-h-[80vh] flex flex-col animate-slide-down shadow-2xl">
+                        <div className="absolute top-0 left-0 right-0 bg-white rounded-b-2xl max-h-[80vh] flex flex-col animate-slide-down shadow-2xl overscroll-contain">
                             {/* Header */}
                             <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100">
                                 <h2 className="text-sm font-bold text-[#1A1A1A] tracking-wide uppercase">Filters</h2>
