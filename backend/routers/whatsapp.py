@@ -12,7 +12,7 @@ from core.whatsapp import send_single_message, WhatsAppMessage
 from models.schemas import (
     WhatsAppTemplate, WhatsAppTemplateCreate, WhatsAppTemplateUpdate,
     AutomationRule, AutomationRuleCreate, AutomationRuleUpdate,
-    AUTOMATION_EVENTS
+    AUTOMATION_EVENTS, POS_EVENTS, CRM_EVENTS
 )
 
 
@@ -170,24 +170,45 @@ async def list_automation_rules(user: dict = Depends(get_current_user)):
 
 @router.get("/automation/events")
 async def get_automation_events():
-    """Get all available automation event types with descriptions"""
-    event_descriptions = {
-        "points_earned": "When customer earns points from a purchase",
-        "points_redeemed": "When customer redeems points",
-        "bonus_points": "When bonus points are given manually",
-        "wallet_credit": "When money is added to wallet",
-        "wallet_debit": "When money is deducted from wallet",
-        "birthday": "On customer's birthday",
-        "anniversary": "On customer's anniversary",
-        "first_visit": "After first purchase",
-        "tier_upgrade": "When customer upgrades tier",
-        "coupon_earned": "When customer receives a coupon",
-        "points_expiring": "When points are about to expire",
-        "feedback_received": "When customer submits feedback",
-        "inactive_reminder": "When customer hasn't visited in X days",
-        "send_bill": "When a new order is received, send the bill to the customer"
+    """Get all available automation event types with descriptions, categorized by POS and CRM"""
+    
+    # POS Events descriptions
+    pos_event_descriptions = {
+        "new_order_customer": "Notify customer when a new order is placed",
+        "new_order_outlet": "Alert outlet/restaurant when a new order is received",
+        "order_confirmed": "Confirm order to customer when outlet accepts",
+        "order_ready_customer": "Notify customer when order is ready for pickup/serve",
+        "item_ready": "Notify customer when a specific item is ready",
+        "order_served": "Notify customer when order has been served",
+        "item_served": "Notify customer when a specific item has been served",
+        "order_ready_delivery": "Alert delivery boy when order is ready for pickup",
+        "order_dispatched": "Notify customer when order is out for delivery",
+        "send_bill_manual": "Manually send bill/receipt to customer",
+        "send_bill_auto": "Automatically send bill after order completion",
     }
-    return {"events": AUTOMATION_EVENTS, "descriptions": event_descriptions}
+    
+    # CRM Events descriptions
+    crm_event_descriptions = {
+        "reset_password": "Send OTP for forgot password verification",
+        "welcome_message": "Welcome message for new customers",
+        "birthday": "Send birthday wishes to customers",
+        "anniversary": "Send anniversary wishes to customers",
+        "points_earned": "Notify when customer earns loyalty points",
+        "points_expiring": "Remind customers before their points expire",
+        "feedback_request": "Request feedback from customers after visit",
+    }
+    
+    # Combined for backward compatibility
+    event_descriptions = {**pos_event_descriptions, **crm_event_descriptions}
+    
+    return {
+        "events": AUTOMATION_EVENTS,
+        "descriptions": event_descriptions,
+        "pos_events": POS_EVENTS,
+        "crm_events": CRM_EVENTS,
+        "pos_descriptions": pos_event_descriptions,
+        "crm_descriptions": crm_event_descriptions
+    }
 
 @router.get("/automation/{rule_id}", response_model=AutomationRule)
 async def get_automation_rule(rule_id: str, user: dict = Depends(get_current_user)):

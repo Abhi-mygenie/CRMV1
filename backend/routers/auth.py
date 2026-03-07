@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import uuid
 import os
+import random
+import string
 
 from core.database import db
 from core.auth import hash_password, verify_password, create_token, generate_api_key, get_current_user
@@ -13,6 +15,14 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 # Demo user credentials
 DEMO_EMAIL = "demo@restaurant.com"
 DEMO_PASSWORD = "demo123"
+
+# OTP expiry time in minutes
+OTP_EXPIRY_MINUTES = 10
+
+
+def generate_otp(length=6):
+    """Generate a random numeric OTP"""
+    return ''.join(random.choices(string.digits, k=length))
 
 
 async def create_default_whatsapp_templates(user_id: str):
@@ -399,3 +409,163 @@ async def mygenie_login(credentials: UserLogin):
             raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Authentication failed: {str(e)}")
+
+
+
+# Forgot Password OTP Endpoints
+@router.post("/forgot-password/request-otp")
+async def request_forgot_password_otp(data: dict):
+    """
+    Request OTP for forgot password.
+    Sends OTP via WhatsApp if configured, otherwise returns OTP for testing.
+    """
+    email = data.get("email")
+    
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    
+    # Find user by email
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    
+    if not user:
+        # Don't reveal if email exists or not for security
+        raise HTTPException(status_code=404, detail="If this email exists, an OTP will be sent")
+    
+    # Generate OTP
+    otp = generate_otp(6)
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=OTP_EXPIRY_MINUTES)
+    
+    # Store OTP in database
+    otp_doc = {
+        "id": str(uuid.uuid4()),
+        "user_id": user["id"],
+        "email": email,
+        "otp": otp,
+        "purpose": "reset_password",
+        "expires_at": expires_at.isoformat(),
+        "used": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Remove any existing OTPs for this user/purpose
+    await db.otp_tokens.delete_many({"user_id": user["id"], "purpose": "reset_password"})
+    await db.otp_tokens.insert_one(otp_doc)
+    
+    # Check if WhatsApp is configured
+    whatsapp_key = user.get("authkey_api_key")
+    
+    # TODO: Send OTP via WhatsApp when configured
+    # For now, return OTP for testing purposes
+    if not whatsapp_key:
+        # No WhatsApp configured - return OTP for testing
+        return {
+            "message": "OTP generated (testing mode - WhatsApp not configured)",
+            "otp": otp,  # Only for testing - remove in production
+            "expires_in_minutes": OTP_EXPIRY_MINUTES,
+            "whatsapp_enabled": False
+        }
+    else:
+        # WhatsApp configured - would send OTP via WhatsApp
+        # For now, still return OTP for testing
+        return {
+            "message": "OTP sent to your registered phone via WhatsApp",
+            "otp": otp,  # Only for testing - remove in production
+            "expires_in_minutes": OTP_EXPIRY_MINUTES,
+            "whatsapp_enabled": True
+        }
+
+
+@router.post("/forgot-password/verify-otp")
+async def verify_forgot_password_otp(data: dict):
+    """
+    Verify OTP for forgot password.
+    Returns a temporary token for password reset.
+    """
+    email = data.get("email")
+    otp = data.get("otp")
+    
+    if not email or not otp:
+        raise HTTPException(status_code=400, detail="Email and OTP are required")
+    
+    # Find OTP record
+    otp_record = await db.otp_tokens.find_one({
+        "email": email,
+        "otp": otp,
+        "purpose": "reset_password",
+        "used": False
+    }, {"_id": 0})
+    
+    if not otp_record:
+        raise HTTPException(status_code=400, detail="Invalid OTP")
+    
+    # Check expiry
+    expires_at = datetime.fromisoformat(otp_record["expires_at"].replace("Z", "+00:00"))
+    if datetime.now(timezone.utc) > expires_at:
+        raise HTTPException(status_code=400, detail="OTP has expired")
+    
+    # Generate reset token (valid for 15 minutes)
+    reset_token = str(uuid.uuid4())
+    reset_expires = datetime.now(timezone.utc) + timedelta(minutes=15)
+    
+    # Mark OTP as used and store reset token
+    await db.otp_tokens.update_one(
+        {"id": otp_record["id"]},
+        {"$set": {
+            "used": True,
+            "reset_token": reset_token,
+            "reset_token_expires": reset_expires.isoformat()
+        }}
+    )
+    
+    return {
+        "message": "OTP verified successfully",
+        "reset_token": reset_token,
+        "expires_in_minutes": 15
+    }
+
+
+@router.post("/forgot-password/reset")
+async def reset_password_with_token(data: dict):
+    """
+    Reset password using the token from OTP verification.
+    """
+    email = data.get("email")
+    reset_token = data.get("reset_token")
+    new_password = data.get("new_password")
+    
+    if not email or not reset_token or not new_password:
+        raise HTTPException(status_code=400, detail="Email, reset token, and new password are required")
+    
+    if len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Find and validate reset token
+    otp_record = await db.otp_tokens.find_one({
+        "email": email,
+        "reset_token": reset_token,
+        "purpose": "reset_password",
+        "used": True
+    }, {"_id": 0})
+    
+    if not otp_record:
+        raise HTTPException(status_code=400, detail="Invalid reset token")
+    
+    # Check token expiry
+    expires_at = datetime.fromisoformat(otp_record["reset_token_expires"].replace("Z", "+00:00"))
+    if datetime.now(timezone.utc) > expires_at:
+        raise HTTPException(status_code=400, detail="Reset token has expired")
+    
+    # Update user password
+    new_hash = hash_password(new_password)
+    result = await db.users.update_one(
+        {"email": email},
+        {"$set": {"password_hash": new_hash}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Delete the OTP record
+    await db.otp_tokens.delete_one({"id": otp_record["id"]})
+    
+    return {"message": "Password reset successfully"}

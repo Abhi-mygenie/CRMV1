@@ -160,40 +160,94 @@ export function WhatsAppAutomationContent({ embedded = false }) {
     };
 
     // Event labels for better display
+    // POS Events Labels
+    const posEventLabels = {
+        "new_order_customer": "New Order (Customer)",
+        "new_order_outlet": "New Order (Outlet)",
+        "order_confirmed": "Order Confirmed",
+        "order_ready_customer": "Order Ready (Customer)",
+        "item_ready": "Item Ready",
+        "order_served": "Order Served",
+        "item_served": "Item Served",
+        "order_ready_delivery": "Order Ready (Delivery)",
+        "order_dispatched": "Order Dispatched",
+        "send_bill_manual": "Send Bill (Manual)",
+        "send_bill_auto": "Send Bill (Auto)",
+    };
+
+    // CRM Events Labels
+    const crmEventLabels = {
+        "reset_password": "Reset Password (OTP)",
+        "welcome_message": "Welcome Message",
+        "birthday": "Birthday Wish",
+        "anniversary": "Anniversary Wish",
+        "points_earned": "Points Earned",
+        "points_expiring": "Points Expiring",
+        "feedback_request": "Feedback Request",
+    };
+
+    // Combined event labels for backward compatibility
     const eventLabels = {
-        "points_earned": "Points Earned (Purchase)",
+        ...posEventLabels,
+        ...crmEventLabels,
+        // Legacy labels for old events
         "points_redeemed": "Points Redeemed",
         "bonus_points": "Bonus Points Given",
         "wallet_credit": "Wallet Top-up",
         "wallet_debit": "Wallet Payment",
-        "birthday": "Birthday Wish",
-        "anniversary": "Anniversary Wish",
         "first_visit": "First Visit Welcome",
         "tier_upgrade": "Tier Upgrade",
         "coupon_earned": "Coupon Received",
-        "points_expiring": "Points Expiring Reminder",
         "feedback_received": "Feedback Thank You",
         "inactive_reminder": "Win-back Message",
         "send_bill": "Send Bill (New Order)"
     };
 
-    // Event descriptions for the card UI
+    // POS Events descriptions
+    const posEventDescriptions = {
+        "new_order_customer": "Notify customer when a new order is placed",
+        "new_order_outlet": "Alert outlet/restaurant when a new order is received",
+        "order_confirmed": "Confirm order to customer when outlet accepts",
+        "order_ready_customer": "Notify customer when order is ready for pickup/serve",
+        "item_ready": "Notify customer when a specific item is ready",
+        "order_served": "Notify customer when order has been served",
+        "item_served": "Notify customer when a specific item has been served",
+        "order_ready_delivery": "Alert delivery boy when order is ready for pickup",
+        "order_dispatched": "Notify customer when order is out for delivery",
+        "send_bill_manual": "Manually send bill/receipt to customer",
+        "send_bill_auto": "Automatically send bill after order completion",
+    };
+
+    // CRM Events descriptions
+    const crmEventDescriptions = {
+        "reset_password": "Send OTP for forgot password verification",
+        "welcome_message": "Welcome message for new customers",
+        "birthday": "Send birthday wishes to customers on their special day",
+        "anniversary": "Celebrate customer's anniversary with your business",
+        "points_earned": "Notify when customer earns loyalty points",
+        "points_expiring": "Remind customers before their points expire",
+        "feedback_request": "Request feedback from customers after visit",
+    };
+
+    // Combined event descriptions
     const eventDescriptions = {
-        "points_earned": "Automatically send when customer earns points from a purchase",
+        ...posEventDescriptions,
+        ...crmEventDescriptions,
+        // Legacy descriptions
         "points_redeemed": "Notify customer when they redeem their loyalty points",
         "bonus_points": "Send when bonus points are added to customer's account",
         "wallet_credit": "Alert customer when wallet is topped up",
         "wallet_debit": "Confirm when payment is made from wallet",
-        "birthday": "Send birthday wishes to customers on their special day",
-        "anniversary": "Celebrate customer's anniversary with your business",
         "first_visit": "Welcome message for first-time customers",
         "tier_upgrade": "Congratulate customer on reaching a new loyalty tier",
         "coupon_earned": "Notify when customer receives a new coupon",
-        "points_expiring": "Remind customers before their points expire",
         "feedback_received": "Thank customer for submitting feedback",
         "inactive_reminder": "Re-engage customers who haven't visited recently",
         "send_bill": "Send bill/receipt after a new order"
     };
+
+    // Event category tab state
+    const [eventCategoryTab, setEventCategoryTab] = useState("pos"); // "pos" or "crm"
 
     // State for automation card configuration modal
     const [showAutomationConfigModal, setShowAutomationConfigModal] = useState(false);
@@ -803,13 +857,44 @@ export function WhatsAppAutomationContent({ embedded = false }) {
                                     </Card>
                                 ) : authkeyTemplates.length > 0 && (
                                     <>
+                                        {/* POS Events / CRM Events Tab Selector */}
+                                        <div className="flex gap-1 mb-4 bg-gray-100 p-1 rounded-xl">
+                                            <button
+                                                onClick={() => setEventCategoryTab("pos")}
+                                                className={`flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all ${
+                                                    eventCategoryTab === "pos" 
+                                                        ? "bg-white text-[#F26B33] shadow-sm" 
+                                                        : "text-gray-600 hover:text-gray-900"
+                                                }`}
+                                                data-testid="pos-events-tab"
+                                            >
+                                                POS Events
+                                            </button>
+                                            <button
+                                                onClick={() => setEventCategoryTab("crm")}
+                                                className={`flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all ${
+                                                    eventCategoryTab === "crm" 
+                                                        ? "bg-white text-[#F26B33] shadow-sm" 
+                                                        : "text-gray-600 hover:text-gray-900"
+                                                }`}
+                                                data-testid="crm-events-tab"
+                                            >
+                                                CRM Events
+                                            </button>
+                                        </div>
+
                                         {/* Filter Tabs for Automation */}
                                         {(() => {
-                                            const activeCount = Object.keys(eventMappings).filter(k => eventMappings[k]?.saved && eventMappings[k]?.is_enabled !== false).length;
-                                            const notConfiguredCount = availableEvents.length - Object.keys(eventMappings).filter(k => eventMappings[k]?.saved).length;
+                                            // Get events based on selected category tab
+                                            const posEvents = Object.keys(posEventLabels);
+                                            const crmEvents = Object.keys(crmEventLabels);
+                                            const categoryEvents = eventCategoryTab === "pos" ? posEvents : crmEvents;
                                             
-                                            // Filter events based on filter
-                                            const filteredEvents = availableEvents.filter(eventKey => {
+                                            const activeCount = categoryEvents.filter(k => eventMappings[k]?.saved && eventMappings[k]?.is_enabled !== false).length;
+                                            const notConfiguredCount = categoryEvents.length - categoryEvents.filter(k => eventMappings[k]?.saved).length;
+                                            
+                                            // Filter events based on filter and category
+                                            const filteredEvents = categoryEvents.filter(eventKey => {
                                                 const mapped = eventMappings[eventKey];
                                                 const isSaved = mapped?.saved;
                                                 const isEnabled = mapped?.is_enabled !== false;
@@ -831,7 +916,7 @@ export function WhatsAppAutomationContent({ embedded = false }) {
                                                             }`}
                                                             data-testid="filter-all-events"
                                                         >
-                                                            All ({availableEvents.length})
+                                                            All ({categoryEvents.length})
                                                         </button>
                                                         <button
                                                             onClick={() => setAutomationFilter("active")}

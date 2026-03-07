@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, X, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import axios from "axios";
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -13,9 +16,20 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [isDemoLoading, setIsDemoLoading] = useState(false);
-    const { login, demoLogin } = useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
+
+    // Forgot Password State
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [forgotStep, setForgotStep] = useState(1); // 1: email, 2: otp, 3: new password
+    const [forgotEmail, setForgotEmail] = useState("");
+    const [otp, setOtp] = useState("");
+    const [displayOtp, setDisplayOtp] = useState(""); // For testing mode
+    const [resetToken, setResetToken] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmNewPassword, setConfirmNewPassword] = useState("");
+    const [forgotLoading, setForgotLoading] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
 
     // Load saved credentials on mount
     useEffect(() => {
@@ -32,7 +46,6 @@ export default function LoginPage() {
         e.preventDefault();
         setIsLoading(true);
         try {
-            // Save or clear credentials based on remember me
             if (rememberMe) {
                 localStorage.setItem("remembered_email", email);
                 localStorage.setItem("remembered_password", password);
@@ -50,17 +63,85 @@ export default function LoginPage() {
         }
     };
 
-    const handleDemoLogin = async () => {
-        setIsDemoLoading(true);
-        try {
-            await demoLogin();
-            toast.success("Welcome to Demo Mode! 🎉");
-            navigate("/");
-        } catch (err) {
-            toast.error(err.response?.data?.detail || "Demo login failed");
-        } finally {
-            setIsDemoLoading(false);
+    // Forgot Password Handlers
+    const handleRequestOtp = async () => {
+        if (!forgotEmail) {
+            toast.error("Please enter your email");
+            return;
         }
+        setForgotLoading(true);
+        try {
+            const res = await axios.post(`${API_URL}/api/auth/forgot-password/request-otp`, {
+                email: forgotEmail
+            });
+            toast.success("OTP sent!");
+            // If OTP is returned (testing mode), display it
+            if (res.data.otp) {
+                setDisplayOtp(res.data.otp);
+            }
+            setForgotStep(2);
+        } catch (err) {
+            toast.error(err.response?.data?.detail || "Failed to send OTP");
+        } finally {
+            setForgotLoading(false);
+        }
+    };
+
+    const handleVerifyOtp = async () => {
+        if (!otp || otp.length < 6) {
+            toast.error("Please enter the 6-digit OTP");
+            return;
+        }
+        setForgotLoading(true);
+        try {
+            const res = await axios.post(`${API_URL}/api/auth/forgot-password/verify-otp`, {
+                email: forgotEmail,
+                otp: otp
+            });
+            toast.success("OTP verified!");
+            setResetToken(res.data.reset_token);
+            setForgotStep(3);
+        } catch (err) {
+            toast.error(err.response?.data?.detail || "Invalid OTP");
+        } finally {
+            setForgotLoading(false);
+        }
+    };
+
+    const handleResetPassword = async () => {
+        if (!newPassword || newPassword.length < 6) {
+            toast.error("Password must be at least 6 characters");
+            return;
+        }
+        if (newPassword !== confirmNewPassword) {
+            toast.error("Passwords do not match");
+            return;
+        }
+        setForgotLoading(true);
+        try {
+            await axios.post(`${API_URL}/api/auth/forgot-password/reset`, {
+                email: forgotEmail,
+                reset_token: resetToken,
+                new_password: newPassword
+            });
+            toast.success("Password reset successfully! Please login.");
+            closeForgotPassword();
+        } catch (err) {
+            toast.error(err.response?.data?.detail || "Failed to reset password");
+        } finally {
+            setForgotLoading(false);
+        }
+    };
+
+    const closeForgotPassword = () => {
+        setShowForgotPassword(false);
+        setForgotStep(1);
+        setForgotEmail("");
+        setOtp("");
+        setDisplayOtp("");
+        setResetToken("");
+        setNewPassword("");
+        setConfirmNewPassword("");
     };
 
     return (
@@ -125,7 +206,7 @@ export default function LoginPage() {
                         </label>
                         <button 
                             type="button"
-                            onClick={() => toast.info("Please contact admin to reset your password")}
+                            onClick={() => setShowForgotPassword(true)}
                             className="text-sm text-[#F26B33] font-medium hover:underline font-body"
                             data-testid="forgot-password-btn"
                         >
@@ -143,6 +224,155 @@ export default function LoginPage() {
                     </Button>
                 </form>
             </div>
+
+            {/* Forgot Password Modal */}
+            {showForgotPassword && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-xl">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-2">
+                                {forgotStep > 1 && (
+                                    <button 
+                                        onClick={() => setForgotStep(forgotStep - 1)}
+                                        className="p-1 hover:bg-gray-100 rounded-lg"
+                                    >
+                                        <ArrowLeft className="w-5 h-5 text-[#52525B]" />
+                                    </button>
+                                )}
+                                <h2 className="text-xl font-bold text-[#2B2B2B] font-heading">
+                                    {forgotStep === 1 && "Forgot Password"}
+                                    {forgotStep === 2 && "Enter OTP"}
+                                    {forgotStep === 3 && "New Password"}
+                                </h2>
+                            </div>
+                            <button onClick={closeForgotPassword} className="p-1 hover:bg-gray-100 rounded-lg">
+                                <X className="w-5 h-5 text-[#52525B]" />
+                            </button>
+                        </div>
+
+                        {/* Step 1: Enter Email */}
+                        {forgotStep === 1 && (
+                            <div className="space-y-4">
+                                <p className="text-sm text-[#52525B] font-body">
+                                    Enter your email address and we'll send you an OTP to reset your password.
+                                </p>
+                                <div>
+                                    <Label className="form-label font-body">Email</Label>
+                                    <Input
+                                        type="email"
+                                        value={forgotEmail}
+                                        onChange={(e) => setForgotEmail(e.target.value)}
+                                        placeholder="owner@restaurant.com"
+                                        className="h-12 rounded-xl"
+                                        data-testid="forgot-email-input"
+                                    />
+                                </div>
+                                <Button
+                                    onClick={handleRequestOtp}
+                                    disabled={forgotLoading}
+                                    className="w-full h-12 rounded-full bg-[#F26B33] hover:bg-[#D85A2A] text-white font-semibold font-body"
+                                    data-testid="request-otp-btn"
+                                >
+                                    {forgotLoading ? "Sending..." : "Send OTP"}
+                                </Button>
+                            </div>
+                        )}
+
+                        {/* Step 2: Enter OTP */}
+                        {forgotStep === 2 && (
+                            <div className="space-y-4">
+                                <p className="text-sm text-[#52525B] font-body">
+                                    Enter the 6-digit OTP sent to your phone.
+                                </p>
+                                
+                                {/* Testing Mode - Show OTP */}
+                                {displayOtp && (
+                                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
+                                        <p className="text-xs text-amber-700 font-medium mb-1">Testing Mode (WhatsApp not configured)</p>
+                                        <p className="text-2xl font-bold text-amber-800 tracking-widest text-center">{displayOtp}</p>
+                                    </div>
+                                )}
+                                
+                                <div>
+                                    <Label className="form-label font-body">OTP</Label>
+                                    <Input
+                                        type="text"
+                                        value={otp}
+                                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                        placeholder="Enter 6-digit OTP"
+                                        className="h-12 rounded-xl text-center text-xl tracking-widest"
+                                        maxLength={6}
+                                        data-testid="otp-input"
+                                    />
+                                </div>
+                                <Button
+                                    onClick={handleVerifyOtp}
+                                    disabled={forgotLoading || otp.length < 6}
+                                    className="w-full h-12 rounded-full bg-[#F26B33] hover:bg-[#D85A2A] text-white font-semibold font-body"
+                                    data-testid="verify-otp-btn"
+                                >
+                                    {forgotLoading ? "Verifying..." : "Verify OTP"}
+                                </Button>
+                                <button
+                                    onClick={handleRequestOtp}
+                                    className="w-full text-sm text-[#F26B33] font-medium hover:underline font-body"
+                                    disabled={forgotLoading}
+                                >
+                                    Resend OTP
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Step 3: New Password */}
+                        {forgotStep === 3 && (
+                            <div className="space-y-4">
+                                <p className="text-sm text-[#52525B] font-body">
+                                    Enter your new password.
+                                </p>
+                                <div>
+                                    <Label className="form-label font-body">New Password</Label>
+                                    <div className="relative">
+                                        <Input
+                                            type={showNewPassword ? "text" : "password"}
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            placeholder="Enter new password"
+                                            className="h-12 rounded-xl pr-12"
+                                            data-testid="new-password-input"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowNewPassword(!showNewPassword)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-[#A1A1AA] hover:text-[#52525B]"
+                                        >
+                                            {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <Label className="form-label font-body">Confirm Password</Label>
+                                    <Input
+                                        type="password"
+                                        value={confirmNewPassword}
+                                        onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                        placeholder="Confirm new password"
+                                        className="h-12 rounded-xl"
+                                        data-testid="confirm-new-password-input"
+                                    />
+                                </div>
+                                <Button
+                                    onClick={handleResetPassword}
+                                    disabled={forgotLoading}
+                                    className="w-full h-12 rounded-full bg-[#329937] hover:bg-[#287A2D] text-white font-semibold font-body"
+                                    data-testid="reset-password-btn"
+                                >
+                                    {forgotLoading ? "Resetting..." : "Reset Password"}
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

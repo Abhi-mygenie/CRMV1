@@ -696,20 +696,31 @@ class AutomationRule(BaseModel):
     created_at: str
     updated_at: Optional[str] = None
 
-# Automation Events
-AUTOMATION_EVENTS = [
-    "send_bill",
-    "points_earned",
-    "points_redeemed",
-    "bonus_points",
-    "wallet_credit",
-    "wallet_debit",
-    "birthday",
-    "anniversary",
-    "first_visit",
-    "tier_upgrade",
-    "coupon_earned",
-    "points_expiring",
-    "feedback_received",
-    "inactive_reminder"
+# Automation Events - POS Events (Order related from Point of Sale)
+POS_EVENTS = [
+    "new_order_customer",      # New order placed - Customer notification
+    "new_order_outlet",        # New order placed - Outlet notification
+    "order_confirmed",         # Order confirmed - Customer
+    "order_ready_customer",    # Order Ready - Customer
+    "item_ready",              # Item Ready - Customer
+    "order_served",            # Order Served - Customer
+    "item_served",             # Item Served - Customer
+    "order_ready_delivery",    # Order Ready - Delivery Boy
+    "order_dispatched",        # Order dispatched - Customer
+    "send_bill_manual",        # Send Bill - Manual
+    "send_bill_auto",          # Send Bill - Auto
 ]
+
+# Automation Events - CRM Events (Customer Relationship Management)
+CRM_EVENTS = [
+    "reset_password",          # OTP for forgot password
+    "welcome_message",         # Welcome message for new customers
+    "birthday",                # Birthday Wish
+    "anniversary",             # Anniversary Wish
+    "points_earned",           # Points Earned
+    "points_expiring",         # Points Expiring Reminder
+    "feedback_request",        # Feedback Request
+]
+
+# All automation events (combined for backward compatibility)
+AUTOMATION_EVENTS = POS_EVENTS + CRM_EVENTS
