@@ -62,7 +62,7 @@ export default function CustomersPage() {
         total_spent: "all",
         is_blocked: "all"
     });
-    const [expandedFilterGroups, setExpandedFilterGroups] = useState(["basic"]);
+    const [expandedFilterGroups, setExpandedFilterGroups] = useState(["basic", "advanced"]);
     const [newCustomer, setNewCustomer] = useState({ 
         // Basic Information
         name: "", 
@@ -754,7 +754,7 @@ export default function CustomersPage() {
                             onClick={() => setShowFilters(false)}
                         />
                         {/* Slide-down Panel */}
-                        <div className="absolute top-0 left-0 right-0 bg-white rounded-b-2xl max-h-[80vh] flex flex-col animate-slide-down shadow-2xl overscroll-contain">
+                        <div className="absolute top-0 left-0 right-0 bg-white rounded-b-2xl max-h-[90vh] flex flex-col animate-slide-down shadow-2xl" style={{ overscrollBehavior: 'contain' }}>
                             {/* Header */}
                             <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100">
                                 <h2 className="text-sm font-bold text-[#1A1A1A] tracking-wide uppercase">Filters</h2>
@@ -775,17 +775,17 @@ export default function CustomersPage() {
                             </div>
 
                             {/* Filter Content */}
-                            <ScrollArea className="flex-1 px-3 py-2">
+                            <div className="flex-1 overflow-y-auto px-3 py-2" style={{ overscrollBehavior: 'contain' }}>
                                 <div className="space-y-1">
                                     {/* === BASIC SECTION === */}
                                     <div data-testid="filter-section-basic">
                                         <button
                                             onClick={() => toggleFilterGroup("basic")}
-                                            className="flex items-center justify-between w-full px-2.5 py-2 rounded-lg bg-[#F8F8F8] hover:bg-[#F0F0F0] transition-colors"
+                                            className="flex items-center justify-between w-full px-2.5 py-2 rounded-lg bg-[#E5E5E5] hover:bg-[#D9D9D9] transition-colors"
                                             data-testid="filter-toggle-basic"
                                         >
                                             <span className="text-xs font-bold text-[#1A1A1A] uppercase tracking-wider">Basic</span>
-                                            <ChevronDown className={`w-3.5 h-3.5 text-gray-500 transition-transform duration-200 ${expandedFilterGroups.includes("basic") ? "rotate-180" : ""}`} />
+                                            <ChevronDown className={`w-3.5 h-3.5 text-gray-600 transition-transform duration-200 ${expandedFilterGroups.includes("basic") ? "rotate-180" : ""}`} />
                                         </button>
                                         {expandedFilterGroups.includes("basic") && (
                                             <div className="space-y-2 pt-2 pb-1 px-0.5">
@@ -1099,7 +1099,7 @@ export default function CustomersPage() {
                                         </div>
                                     )}
                                 </div>
-                            </ScrollArea>
+                            </div>
 
                             {/* Footer */}
                             <div className="px-3 py-2.5 border-t border-gray-100 bg-white flex gap-2">
