@@ -553,54 +553,6 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Row 9: Top Selling Items - 30D, 7D, All Time */}
-                <div className="grid grid-cols-3 gap-2 mb-5">
-                    <div className="stats-card-compact" data-testid="top-items-30d-card">
-                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
-                            <Star className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Top 3 (30D)</span>
-                        </div>
-                        <div className="text-xs text-[#2B2B2B]">
-                            {stats?.top_items_30d?.length > 0 ? (
-                                stats.top_items_30d.map((item, i) => (
-                                    <div key={i} className="truncate">{item.name}: {item.qty}</div>
-                                ))
-                            ) : (
-                                <div className="text-[#A1A1AA]">No data</div>
-                            )}
-                        </div>
-                    </div>
-                    <div className="stats-card-compact" data-testid="top-items-7d-card">
-                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
-                            <Star className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Top 3 (7D)</span>
-                        </div>
-                        <div className="text-xs text-[#2B2B2B]">
-                            {stats?.top_items_7d?.length > 0 ? (
-                                stats.top_items_7d.map((item, i) => (
-                                    <div key={i} className="truncate">{item.name}: {item.qty}</div>
-                                ))
-                            ) : (
-                                <div className="text-[#A1A1AA]">No data</div>
-                            )}
-                        </div>
-                    </div>
-                    <div className="stats-card-compact" data-testid="top-items-all-card">
-                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
-                            <Star className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Top 3 (All)</span>
-                        </div>
-                        <div className="text-xs text-[#2B2B2B]">
-                            {stats?.top_items_all_time?.length > 0 ? (
-                                stats.top_items_all_time.map((item, i) => (
-                                    <div key={i} className="truncate">{item.name}: {item.qty}</div>
-                                ))
-                            ) : (
-                                <div className="text-[#A1A1AA]">No data</div>
-                            )}
-                        </div>
-                    </div>
-                </div>
             </div>
         </MobileLayout>
     );
