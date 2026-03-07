@@ -392,38 +392,7 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Row 4: Total Orders, Avg Order Value, Avg Orders/Day */}
-                <div className="grid grid-cols-3 gap-2 mb-2">
-                    <div className="stats-card-compact" data-testid="total-orders-card">
-                        <div className="flex items-center gap-1 text-[#8B5CF6] mb-1">
-                            <ShoppingBag className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Orders</span>
-                        </div>
-                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
-                            {stats?.total_orders || 0}
-                        </p>
-                    </div>
-                    <div className="stats-card-compact" data-testid="avg-order-value-card">
-                        <div className="flex items-center gap-1 text-[#8B5CF6] mb-1">
-                            <ShoppingBag className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Avg Order</span>
-                        </div>
-                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
-                            ₹{stats?.avg_order_value?.toLocaleString() || 0}
-                        </p>
-                    </div>
-                    <div className="stats-card-compact" data-testid="avg-orders-per-day-card">
-                        <div className="flex items-center gap-1 text-[#8B5CF6] mb-1">
-                            <Calendar className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Orders/Day</span>
-                        </div>
-                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
-                            {stats?.avg_orders_per_day || 0}
-                        </p>
-                    </div>
-                </div>
-
-                {/* Row 5: Points Issued, Points Redeemed, Points Balance */}
+                {/* Row 4: Points Issued, Points Redeemed, Points Balance */}
                 <div className="grid grid-cols-3 gap-2 mb-2">
                     <div className="stats-card-compact" data-testid="points-issued-card">
                         <div className="flex items-center gap-1 text-[#329937] mb-1">
@@ -454,7 +423,7 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Row 6: Wallet Issued, Wallet Used, Wallet Balance */}
+                {/* Row 5: Wallet Issued, Wallet Used, Wallet Balance */}
                 <div className="grid grid-cols-3 gap-2 mb-2">
                     <div className="stats-card-compact" data-testid="wallet-issued-card">
                         <div className="flex items-center gap-1 text-[#F26B33] mb-1">
@@ -485,8 +454,8 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Row 7: Total Coupons, Active Coupons, Discount Availed */}
-                <div className="grid grid-cols-3 gap-2 mb-5">
+                {/* Row 6: Total Coupons, Active Coupons, Discount Availed */}
+                <div className="grid grid-cols-3 gap-2 mb-2">
                     <div className="stats-card-compact" data-testid="total-coupons-card">
                         <div className="flex items-center gap-1 text-[#8B5CF6] mb-1">
                             <Ticket className="w-3.5 h-3.5" />
@@ -512,6 +481,37 @@ export default function DashboardPage() {
                         </div>
                         <p className="text-xl font-bold text-[#2B2B2B] font-heading">
                             ₹{stats?.discount_availed?.toLocaleString() || 0}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Row 7: Total Orders, Avg Order Value, Avg Orders/Day */}
+                <div className="grid grid-cols-3 gap-2 mb-5">
+                    <div className="stats-card-compact" data-testid="total-orders-card">
+                        <div className="flex items-center gap-1 text-[#8B5CF6] mb-1">
+                            <ShoppingBag className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Orders</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
+                            {stats?.total_orders || 0}
+                        </p>
+                    </div>
+                    <div className="stats-card-compact" data-testid="avg-order-value-card">
+                        <div className="flex items-center gap-1 text-[#8B5CF6] mb-1">
+                            <ShoppingBag className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Avg Order</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
+                            ₹{stats?.avg_order_value?.toLocaleString() || 0}
+                        </p>
+                    </div>
+                    <div className="stats-card-compact" data-testid="avg-orders-per-day-card">
+                        <div className="flex items-center gap-1 text-[#8B5CF6] mb-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Orders/Day</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
+                            {stats?.avg_orders_per_day || 0}
                         </p>
                     </div>
                 </div>
