@@ -1093,7 +1093,7 @@ export default function CustomersPage() {
 
                 {/* Save Segment Dialog */}
                 {showSaveSegmentDialog && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4" onClick={() => setShowSaveSegmentDialog(false)}>
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10002] p-4" onClick={() => setShowSaveSegmentDialog(false)}>
                         <div className="bg-white rounded-2xl p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
                             <h3 className="text-lg font-semibold mb-4">Save Segment</h3>
                             <div className="space-y-4">
