@@ -281,27 +281,73 @@ export default function DashboardPage() {
 
                 {/* Stats Grid - 6 Rows x 3 Columns */}
                 
-                {/* Header Stats: Loyalty Orders % and Repeat vs New Revenue */}
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                    <div className="stats-card-compact bg-gradient-to-r from-[#F26B33]/10 to-[#F26B33]/5" data-testid="loyalty-orders-card">
+                {/* Header Row 1: Loyalty Orders % - Total, 30D, 7D */}
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                    <div className="stats-card-compact bg-gradient-to-r from-[#F26B33]/10 to-transparent" data-testid="loyalty-orders-total-card">
                         <div className="flex items-center gap-1 text-[#F26B33] mb-1">
                             <Repeat className="w-3.5 h-3.5" />
                             <span className="text-[10px] font-medium uppercase tracking-wider font-body">Loyalty Orders</span>
                         </div>
-                        <p className="text-2xl font-bold text-[#F26B33] font-heading">
+                        <p className="text-xl font-bold text-[#F26B33] font-heading">
                             {stats?.loyalty_orders_percent || 0}%
                         </p>
                     </div>
-                    <div className="stats-card-compact bg-gradient-to-r from-[#329937]/10 to-[#329937]/5" data-testid="revenue-split-card">
+                    <div className="stats-card-compact" data-testid="loyalty-orders-30d-card">
+                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
+                            <Repeat className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Loyalty (30D)</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#F26B33] font-heading">
+                            {stats?.loyalty_orders_percent_30d || 0}%
+                        </p>
+                    </div>
+                    <div className="stats-card-compact" data-testid="loyalty-orders-7d-card">
+                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
+                            <Repeat className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Loyalty (7D)</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#F26B33] font-heading">
+                            {stats?.loyalty_orders_percent_7d || 0}%
+                        </p>
+                    </div>
+                </div>
+
+                {/* Header Row 2: Revenue Split - Total, 30D, 7D */}
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                    <div className="stats-card-compact bg-gradient-to-r from-[#329937]/10 to-transparent" data-testid="revenue-split-total-card">
                         <div className="flex items-center gap-1 text-[#329937] mb-1">
                             <TrendingUp className="w-3.5 h-3.5" />
                             <span className="text-[10px] font-medium uppercase tracking-wider font-body">Revenue Split</span>
                         </div>
-                        <p className="text-lg font-bold text-[#2B2B2B] font-heading">
+                        <p className="text-sm font-bold text-[#2B2B2B] font-heading">
                             <span className="text-[#329937]">{stats?.repeat_revenue_percent || 0}%</span>
-                            <span className="text-xs font-normal text-[#52525B] mx-1">Repeat</span>
+                            <span className="text-[10px] font-normal text-[#52525B]"> R </span>
                             <span className="text-[#F26B33]">{stats?.new_revenue_percent || 0}%</span>
-                            <span className="text-xs font-normal text-[#52525B] ml-1">New</span>
+                            <span className="text-[10px] font-normal text-[#52525B]"> N</span>
+                        </p>
+                    </div>
+                    <div className="stats-card-compact" data-testid="revenue-split-30d-card">
+                        <div className="flex items-center gap-1 text-[#329937] mb-1">
+                            <TrendingUp className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Split (30D)</span>
+                        </div>
+                        <p className="text-sm font-bold text-[#2B2B2B] font-heading">
+                            <span className="text-[#329937]">{stats?.repeat_revenue_percent_30d || 0}%</span>
+                            <span className="text-[10px] font-normal text-[#52525B]"> R </span>
+                            <span className="text-[#F26B33]">{stats?.new_revenue_percent_30d || 0}%</span>
+                            <span className="text-[10px] font-normal text-[#52525B]"> N</span>
+                        </p>
+                    </div>
+                    <div className="stats-card-compact" data-testid="revenue-split-7d-card">
+                        <div className="flex items-center gap-1 text-[#329937] mb-1">
+                            <TrendingUp className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Split (7D)</span>
+                        </div>
+                        <p className="text-sm font-bold text-[#2B2B2B] font-heading">
+                            <span className="text-[#329937]">{stats?.repeat_revenue_percent_7d || 0}%</span>
+                            <span className="text-[10px] font-normal text-[#52525B]"> R </span>
+                            <span className="text-[#F26B33]">{stats?.new_revenue_percent_7d || 0}%</span>
+                            <span className="text-[10px] font-normal text-[#52525B]"> N</span>
                         </p>
                     </div>
                 </div>
