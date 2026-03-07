@@ -616,10 +616,10 @@ class DashboardStats(BaseModel):
     total_customers: int
     active_customers_30d: int
     new_customers_7d: int
-    # Row 2: Customer Engagement
-    repeat_rate: float
-    avg_visits_per_customer: float
-    inactive_customers_60d: int
+    # Row 2: Repeat Customers
+    repeat_2_plus: int
+    repeat_5_plus: int
+    repeat_10_plus: int
     # Row 3: Orders
     total_orders: int
     avg_order_value: float

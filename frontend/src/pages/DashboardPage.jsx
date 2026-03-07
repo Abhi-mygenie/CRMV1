@@ -312,33 +312,33 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Row 2: Repeat Rate, Avg Visits, Inactive (60D) */}
+                {/* Row 2: Repeat 2+, Repeat 5+, Repeat 10+ */}
                 <div className="grid grid-cols-3 gap-2 mb-2">
-                    <div className="stats-card-compact" data-testid="repeat-rate-card">
+                    <div className="stats-card-compact" data-testid="repeat-2-card">
                         <div className="flex items-center gap-1 text-[#F26B33] mb-1">
                             <Repeat className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Repeat %</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Repeat 2+</span>
                         </div>
                         <p className="text-xl font-bold text-[#2B2B2B] font-heading">
-                            {stats?.repeat_rate || 0}%
+                            {stats?.repeat_2_plus || 0}
                         </p>
                     </div>
-                    <div className="stats-card-compact" data-testid="avg-visits-card">
+                    <div className="stats-card-compact" data-testid="repeat-5-card">
                         <div className="flex items-center gap-1 text-[#F26B33] mb-1">
-                            <RotateCcw className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Avg Visits</span>
+                            <Repeat className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Repeat 5+</span>
                         </div>
                         <p className="text-xl font-bold text-[#2B2B2B] font-heading">
-                            {stats?.avg_visits_per_customer || 0}
+                            {stats?.repeat_5_plus || 0}
                         </p>
                     </div>
-                    <div className="stats-card-compact" data-testid="inactive-customers-card">
-                        <div className="flex items-center gap-1 text-[#EF4444] mb-1">
-                            <UserMinus className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Inactive(60d)</span>
+                    <div className="stats-card-compact" data-testid="repeat-10-card">
+                        <div className="flex items-center gap-1 text-[#329937] mb-1">
+                            <Repeat className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Repeat 10+</span>
                         </div>
                         <p className="text-xl font-bold text-[#2B2B2B] font-heading">
-                            {stats?.inactive_customers_60d || 0}
+                            {stats?.repeat_10_plus || 0}
                         </p>
                     </div>
                 </div>

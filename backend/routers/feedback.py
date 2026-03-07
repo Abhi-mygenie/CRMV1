@@ -121,33 +121,19 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
         "created_at": {"$gte": seven_days_ago}
     })
     
-    # Row 2: Customer Engagement
-    sixty_days_ago = (datetime.now(timezone.utc) - timedelta(days=60)).isoformat()
-    inactive_60d = await db.customers.count_documents({
+    # Row 2: Repeat Customers
+    repeat_2_plus = await db.customers.count_documents({
         "user_id": user_id,
-        "$or": [
-            {"last_visit": {"$lt": sixty_days_ago}},
-            {"last_visit": None}
-        ]
+        "total_visits": {"$gte": 2}
     })
-    
-    # Repeat customers (visited more than once)
-    repeat_customers = await db.customers.count_documents({
+    repeat_5_plus = await db.customers.count_documents({
         "user_id": user_id,
-        "total_visits": {"$gt": 1}
+        "total_visits": {"$gte": 5}
     })
-    repeat_rate = round((repeat_customers / total_customers * 100), 1) if total_customers > 0 else 0.0
-    
-    # Average visits per customer
-    visits_pipeline = [
-        {"$match": {"user_id": user_id}},
-        {"$group": {
-            "_id": None,
-            "avg_visits": {"$avg": "$total_visits"}
-        }}
-    ]
-    visits_result = await db.customers.aggregate(visits_pipeline).to_list(1)
-    avg_visits = round(visits_result[0].get("avg_visits", 0) or 0, 1) if visits_result else 0.0
+    repeat_10_plus = await db.customers.count_documents({
+        "user_id": user_id,
+        "total_visits": {"$gte": 10}
+    })
     
     # Row 3: Orders
     total_orders = await db.orders.count_documents({"user_id": user_id})
@@ -248,9 +234,9 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
         total_customers=total_customers,
         active_customers_30d=active_30d,
         new_customers_7d=new_7d,
-        repeat_rate=repeat_rate,
-        avg_visits_per_customer=avg_visits,
-        inactive_customers_60d=inactive_60d,
+        repeat_2_plus=repeat_2_plus,
+        repeat_5_plus=repeat_5_plus,
+        repeat_10_plus=repeat_10_plus,
         total_orders=total_orders,
         avg_order_value=avg_order_value,
         avg_orders_per_day=avg_orders_per_day,
