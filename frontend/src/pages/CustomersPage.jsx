@@ -1178,29 +1178,12 @@ export default function CustomersPage() {
                     </div>
                 )}
 
-                {/* Segment Stats Bar - Shows filtered count when special filter active */}
+                {/* Segment Stats Bar - Always shows filtered count */}
                 {segments && (
                     <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-                        {(filters.most_loyal || filters.inactive_days) ? (
-                            <div className="flex-shrink-0 px-3 py-1.5 bg-[#F26B33]/10 rounded-full text-xs font-medium text-[#F26B33]">
-                                Showing {customers.length} of {segments.total?.toLocaleString()} customers
-                            </div>
-                        ) : (
-                            <>
-                                <div className="flex-shrink-0 px-3 py-1.5 bg-gray-100 rounded-full text-xs font-medium text-[#52525B]">
-                                    Total: {segments.total?.toLocaleString()}
-                                </div>
-                                <div className="flex-shrink-0 px-3 py-1.5 bg-amber-50 rounded-full text-xs font-medium text-amber-700">
-                                    Bronze: {segments.by_tier?.bronze || 0}
-                                </div>
-                                <div className="flex-shrink-0 px-3 py-1.5 bg-gray-200 rounded-full text-xs font-medium text-gray-700">
-                                    Silver: {segments.by_tier?.silver || 0}
-                                </div>
-                                <div className="flex-shrink-0 px-3 py-1.5 bg-yellow-50 rounded-full text-xs font-medium text-yellow-700">
-                                    Gold: {segments.by_tier?.gold || 0}
-                                </div>
-                            </>
-                        )}
+                        <div className="flex-shrink-0 px-3 py-1.5 bg-[#F26B33]/10 rounded-full text-xs font-medium text-[#F26B33]">
+                            Showing {customers.length} of {segments.total?.toLocaleString()} customers
+                        </div>
                     </div>
                 )}
 
