@@ -761,7 +761,7 @@ qr_router = APIRouter(prefix="/qr", tags=["QR Code"])
 @qr_router.get("/generate")
 async def generate_customer_qr(user: dict = Depends(get_current_user)):
     """Generate QR code for customer registration"""
-    frontend_url = os.environ.get('FRONTEND_URL', 'https://brand-refresh-87.preview.emergentagent.com')
+    frontend_url = os.environ.get('FRONTEND_URL', 'https://migration-dashboard-1.preview.emergentagent.com')
     registration_url = f"{frontend_url}/register-customer/{user['id']}"
     
     qr_base64 = generate_qr_code(registration_url)
@@ -1121,6 +1121,41 @@ async def get_all_segment_whatsapp_configs(user: dict = Depends(get_current_user
         {"_id": 0}
     ).to_list(100)
     return {"configs": configs}
+
+
+@router.get("/{customer_id}/loyalty-details")
+async def get_customer_loyalty_details(customer_id: str, user: dict = Depends(get_current_user)):
+    """Get loyalty conversion rate and coupon summary for a customer"""
+    customer = await db.customers.find_one({"id": customer_id, "user_id": user["id"]}, {"_id": 0})
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+
+    # Get loyalty settings for conversion rate
+    loyalty_settings = await db.loyalty_settings.find_one({"user_id": user["id"]}, {"_id": 0})
+    redemption_value = 0.25  # default: 1 point = ₹0.25
+    if loyalty_settings:
+        redemption_value = loyalty_settings.get("redemption_value", 0.25)
+
+    # Get active coupons for the restaurant
+    now = datetime.now(timezone.utc).isoformat()
+    active_coupons = await db.coupons.find(
+        {"user_id": user["id"], "is_active": True},
+        {"_id": 0, "id": 1, "code": 1, "description": 1, "discount_type": 1, "discount_value": 1, "max_discount": 1, "valid_until": 1, "end_date": 1, "usage_limit": 1, "used_count": 1, "total_used": 1}
+    ).to_list(50)
+
+    # Calculate monetary values
+    total_points = customer.get("total_points", 0)
+    total_earned = customer.get("total_points_earned", 0)
+    total_redeemed = customer.get("total_points_redeemed", 0)
+
+    return {
+        "redemption_value": redemption_value,
+        "points_money_value": round(total_points * redemption_value, 2),
+        "earned_money_value": round(total_earned * redemption_value, 2),
+        "redeemed_money_value": round(total_redeemed * redemption_value, 2),
+        "total_coupon_used": customer.get("total_coupon_used", 0),
+        "active_coupons": active_coupons
+    }
 
 
 @router.get("/{customer_id}/insights")

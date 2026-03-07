@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 class CRMBackendTester:
-    def __init__(self, base_url="https://crm-v1.preview.emergentagent.com"):
+    def __init__(self, base_url="https://migration-dashboard-1.preview.emergentagent.com"):
         self.base_url = base_url.rstrip('/')
         self.session = requests.Session()
         self.tests_run = 0

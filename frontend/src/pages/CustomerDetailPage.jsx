@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { Plus, ChevronRight, ArrowUpRight, ArrowDownRight, Gift, Phone, Mail, Edit2, Save, Wallet, ChevronLeft, TrendingUp, TrendingDown, Clock, CalendarDays, Utensils, Sparkles, MessageCircle } from "lucide-react";
+import { Plus, ChevronRight, ArrowUpRight, ArrowDownRight, Gift, Phone, Mail, Edit2, Save, Wallet, ChevronLeft, TrendingUp, TrendingDown, Clock, CalendarDays, Utensils, Sparkles, MessageCircle, Ticket } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,7 @@ export default function CustomerDetailPage() {
     const [expiringPoints, setExpiringPoints] = useState(null);
     const [insights, setInsights] = useState(null);
     const [insightsLoading, setInsightsLoading] = useState(true);
+    const [loyaltyDetails, setLoyaltyDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("points");
     const [showPointsModal, setShowPointsModal] = useState(false);
@@ -68,9 +69,19 @@ export default function CustomerDetailPage() {
         }
     };
 
+    const fetchLoyaltyDetails = async () => {
+        try {
+            const res = await api.get(`/customers/${id}/loyalty-details`);
+            setLoyaltyDetails(res.data);
+        } catch (err) {
+            // Non-critical, fail silently
+        }
+    };
+
     useEffect(() => {
         fetchData();
         fetchInsights();
+        fetchLoyaltyDetails();
     }, [id]);
 
     const handlePointsTransaction = async (e) => {
@@ -243,30 +254,41 @@ export default function CustomerDetailPage() {
                         </div>
                     </div>
                     
-                    {/* Points & Wallet Summary - Option 2 Design */}
+                    {/* Points, Wallet & Coupons Summary */}
                     <CardContent className="p-4 bg-white">
-                        <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="grid grid-cols-3 gap-3 mb-4">
                             {/* Points Card */}
                             <div className="p-3 bg-[#329937]/10 rounded-xl">
                                 <p className="text-xs text-[#52525B] uppercase tracking-wider text-center">Points</p>
-                                <p className="text-3xl font-bold text-[#329937] font-['Montserrat'] points-display text-center" data-testid="customer-points">
+                                <p className="text-2xl font-bold text-[#329937] font-['Montserrat'] points-display text-center" data-testid="customer-points">
                                     {customer.total_points.toLocaleString()}
                                 </p>
+                                {loyaltyDetails && (
+                                    <p className="text-xs text-[#329937]/70 text-center font-medium" data-testid="points-money-value">
+                                        = ₹{loyaltyDetails.points_money_value}
+                                    </p>
+                                )}
                                 <div className="border-t border-[#329937]/20 mt-2 pt-2">
                                     <div className="flex justify-between text-xs">
                                         <span className="text-[#52525B]">Earned</span>
-                                        <span className="font-medium text-[#329937]">{(customer.total_points_earned || 0).toLocaleString()}</span>
+                                        <span className="font-medium text-[#329937]">
+                                            {(customer.total_points_earned || 0).toLocaleString()}
+                                            {loyaltyDetails && <span className="text-[#329937]/60 ml-0.5">(₹{loyaltyDetails.earned_money_value})</span>}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between text-xs mt-1">
                                         <span className="text-[#52525B]">Redeemed</span>
-                                        <span className="font-medium text-[#EF4444]">{(customer.total_points_redeemed || 0).toLocaleString()}</span>
+                                        <span className="font-medium text-[#EF4444]">
+                                            {(customer.total_points_redeemed || 0).toLocaleString()}
+                                            {loyaltyDetails && <span className="text-[#EF4444]/60 ml-0.5">(₹{loyaltyDetails.redeemed_money_value})</span>}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                             {/* Wallet Card */}
                             <div className="p-3 bg-[#F26B33]/10 rounded-xl">
                                 <p className="text-xs text-[#52525B] uppercase tracking-wider text-center">Wallet</p>
-                                <p className="text-3xl font-bold text-[#F26B33] font-['Montserrat'] text-center" data-testid="customer-wallet">
+                                <p className="text-2xl font-bold text-[#F26B33] font-['Montserrat'] text-center" data-testid="customer-wallet">
                                     ₹{(customer.wallet_balance || 0).toLocaleString()}
                                 </p>
                                 <div className="border-t border-[#F26B33]/20 mt-2 pt-2">
@@ -278,6 +300,32 @@ export default function CustomerDetailPage() {
                                         <span className="text-[#52525B]">Used</span>
                                         <span className="font-medium text-[#EF4444]">₹{(customer.total_wallet_used || 0).toLocaleString()}</span>
                                     </div>
+                                </div>
+                            </div>
+                            {/* Coupons Card */}
+                            <div className="p-3 bg-[#8B5CF6]/10 rounded-xl">
+                                <p className="text-xs text-[#52525B] uppercase tracking-wider text-center">Coupons</p>
+                                <p className="text-2xl font-bold text-[#8B5CF6] font-['Montserrat'] text-center" data-testid="customer-coupons-used">
+                                    {(customer.total_coupon_used || 0)}
+                                </p>
+                                <p className="text-xs text-[#8B5CF6]/70 text-center font-medium">used</p>
+                                <div className="border-t border-[#8B5CF6]/20 mt-2 pt-2">
+                                    <div className="flex justify-between text-xs">
+                                        <span className="text-[#52525B]">Available</span>
+                                        <span className="font-medium text-[#8B5CF6]" data-testid="coupons-available-count">
+                                            {loyaltyDetails?.active_coupons?.length || 0}
+                                        </span>
+                                    </div>
+                                    {loyaltyDetails?.active_coupons?.length > 0 && (
+                                        <div className="mt-1.5 space-y-1">
+                                            {loyaltyDetails.active_coupons.slice(0, 2).map((c) => (
+                                                <div key={c.id} className="flex items-center gap-1" data-testid={`coupon-code-${c.code}`}>
+                                                    <Ticket className="w-3 h-3 text-[#8B5CF6] shrink-0" />
+                                                    <span className="text-[10px] font-mono font-semibold text-[#8B5CF6] truncate">{c.code}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
