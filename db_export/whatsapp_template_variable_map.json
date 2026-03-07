@@ -1,0 +1,18 @@
+[
+  {
+    "template_id": "25140",
+    "user_id": "pos_0001_restaurant_478",
+    "mappings": {
+      "{{1}}": "customer_name",
+      "{{2}}": "amount",
+      "{{3}}": "restaurant_name",
+      "{{4}}": "points_balance",
+      "{{5}}": "coupon_code",
+      "{{6}}": "wallet_balance",
+      "{{7}}": "points_balance"
+    },
+    "modes": {},
+    "template_name": "loyality_points_collect_bill",
+    "updated_at": "2026-03-06T07:20:31.219687+00:00"
+  }
+]

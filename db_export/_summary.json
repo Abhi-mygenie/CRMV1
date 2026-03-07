@@ -1,0 +1,21 @@
+{
+  "exported_at": "2026-03-06T10:36:27.702061",
+  "db_name": "test_database",
+  "collections": {
+    "whatsapp_template_variable_map": 1,
+    "loyalty_settings": 3,
+    "users": 3,
+    "orders": 294,
+    "segments": 4,
+    "coupons": 3,
+    "whatsapp_message_logs": 3,
+    "whatsapp_event_template_map": 1,
+    "customers": 55,
+    "points_transactions": 326,
+    "automation_rules": 22,
+    "wallet_transactions": 61,
+    "whatsapp_templates": 23,
+    "feedback": 20,
+    "order_items": 1050
+  }
+}
