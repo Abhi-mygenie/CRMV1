@@ -26,6 +26,9 @@ export default function SettingsPage() {
     
     // Profile state
     const [whatsappApiKey, setWhatsappApiKey] = useState("");
+    const [brandNumber, setBrandNumber] = useState("");
+    const [metaWabaId, setMetaWabaId] = useState("");
+    const [metaAccessToken, setMetaAccessToken] = useState("");
     const [savingApiKey, setSavingApiKey] = useState(false);
     const [profile, setProfile] = useState({ restaurant_name: "", phone: "", address: "" });
     const [savingProfile, setSavingProfile] = useState(false);
@@ -64,6 +67,9 @@ export default function SettingsPage() {
             try {
                 const res = await api.get("/whatsapp/api-key");
                 setWhatsappApiKey(res.data.authkey_api_key || "");
+                setBrandNumber(res.data.brand_number || "");
+                setMetaWabaId(res.data.meta_waba_id || "");
+                setMetaAccessToken(res.data.meta_access_token || "");
             } catch (_) {}
             setProfile({ restaurant_name: user?.restaurant_name || "", phone: user?.phone || "", address: user?.address || "" });
         };
@@ -285,7 +291,19 @@ export default function SettingsPage() {
 
     const handleSaveApiKey = async () => {
         setSavingApiKey(true);
-        try { await api.put("/whatsapp/api-key", { authkey_api_key: whatsappApiKey }); toast.success("WhatsApp API key saved!"); } catch (_) { toast.error("Failed to save API key"); } finally { setSavingApiKey(false); }
+        try { 
+            await api.put("/whatsapp/api-key", { 
+                authkey_api_key: whatsappApiKey,
+                brand_number: brandNumber,
+                meta_waba_id: metaWabaId,
+                meta_access_token: metaAccessToken
+            }); 
+            toast.success("WhatsApp settings saved!"); 
+        } catch (_) { 
+            toast.error("Failed to save settings"); 
+        } finally { 
+            setSavingApiKey(false); 
+        }
     };
 
     const handleSaveProfile = async () => {
@@ -389,11 +407,31 @@ export default function SettingsPage() {
                         <Card className="rounded-xl border-0 shadow-sm" data-testid="whatsapp-api-key-card">
                             <CardContent className="p-4 space-y-4">
                                 <div className="flex items-start gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-[#F26B33]/10 flex items-center justify-center flex-shrink-0"><KeyRound className="w-5 h-5 text-[#F26B33]" /></div>
-                                    <div><p className="font-medium text-[#2B2B2B] font-body">WhatsApp API Key</p><p className="text-xs text-[#52525B] mt-1 font-body">Enter your AuthKey.io API key</p></div>
+                                    <div className="w-10 h-10 rounded-full bg-[#25D366]/10 flex items-center justify-center flex-shrink-0"><MessageSquare className="w-5 h-5 text-[#25D366]" /></div>
+                                    <div><p className="font-medium text-[#2B2B2B] font-body">WhatsApp Configuration</p><p className="text-xs text-[#52525B] mt-1 font-body">Configure your WhatsApp Business API credentials</p></div>
                                 </div>
-                                <div><Label className="form-label font-body">API Key</Label><Input type="password" value={whatsappApiKey} onChange={(e) => setWhatsappApiKey(e.target.value)} placeholder="Enter your AuthKey.io API key" className="h-12 rounded-xl font-mono" data-testid="whatsapp-api-key-input" /></div>
-                                <Button onClick={handleSaveApiKey} disabled={savingApiKey} className="w-full h-12 rounded-xl bg-[#329937] hover:bg-[#287A2D] text-white font-body" data-testid="save-whatsapp-api-key-btn">{savingApiKey ? "Saving..." : "Save API Key"}</Button>
+                                <div className="space-y-3">
+                                    <div>
+                                        <Label className="form-label font-body">AuthKey API Key</Label>
+                                        <Input type="password" value={whatsappApiKey} onChange={(e) => setWhatsappApiKey(e.target.value)} placeholder="Enter your AuthKey.io API key" className="h-12 rounded-xl font-mono" data-testid="whatsapp-api-key-input" />
+                                    </div>
+                                    <div>
+                                        <Label className="form-label font-body">Brand Number</Label>
+                                        <Input value={brandNumber} onChange={(e) => setBrandNumber(e.target.value)} placeholder="e.g., 917666859544" className="h-12 rounded-xl font-mono" data-testid="brand-number-input" />
+                                        <p className="text-xs text-gray-400 mt-1">WhatsApp Business phone with country code (no +)</p>
+                                    </div>
+                                    <div>
+                                        <Label className="form-label font-body">Meta WABA ID</Label>
+                                        <Input value={metaWabaId} onChange={(e) => setMetaWabaId(e.target.value)} placeholder="e.g., 1427078455442831" className="h-12 rounded-xl font-mono" data-testid="meta-waba-id-input" />
+                                        <p className="text-xs text-gray-400 mt-1">WhatsApp Business Account ID from Meta</p>
+                                    </div>
+                                    <div>
+                                        <Label className="form-label font-body">Meta Access Token</Label>
+                                        <Input type="password" value={metaAccessToken} onChange={(e) => setMetaAccessToken(e.target.value)} placeholder="Enter Meta access token" className="h-12 rounded-xl font-mono" data-testid="meta-access-token-input" />
+                                        <p className="text-xs text-gray-400 mt-1">Permanent access token from Meta Business</p>
+                                    </div>
+                                </div>
+                                <Button onClick={handleSaveApiKey} disabled={savingApiKey} className="w-full h-12 rounded-xl bg-[#25D366] hover:bg-[#1da851] text-white font-body" data-testid="save-whatsapp-api-key-btn">{savingApiKey ? "Saving..." : "Save WhatsApp Settings"}</Button>
                             </CardContent>
                         </Card>
                         <Card className="rounded-xl border-0 shadow-sm" data-testid="profile-card">

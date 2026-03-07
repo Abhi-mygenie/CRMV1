@@ -251,17 +251,37 @@ async def delete_automation_rule(rule_id: str, user: dict = Depends(get_current_
 
 @router.get("/api-key")
 async def get_whatsapp_api_key(user: dict = Depends(get_current_user)):
-    user_doc = await db.users.find_one({"id": user["id"]}, {"_id": 0, "authkey_api_key": 1})
-    return {"authkey_api_key": user_doc.get("authkey_api_key", "") if user_doc else ""}
+    user_doc = await db.users.find_one(
+        {"id": user["id"]}, 
+        {"_id": 0, "authkey_api_key": 1, "brand_number": 1, "meta_waba_id": 1, "meta_access_token": 1}
+    )
+    if not user_doc:
+        return {"authkey_api_key": "", "brand_number": "", "meta_waba_id": "", "meta_access_token": ""}
+    return {
+        "authkey_api_key": user_doc.get("authkey_api_key", ""),
+        "brand_number": user_doc.get("brand_number", ""),
+        "meta_waba_id": user_doc.get("meta_waba_id", ""),
+        "meta_access_token": user_doc.get("meta_access_token", "")
+    }
 
 @router.put("/api-key")
 async def save_whatsapp_api_key(payload: dict, user: dict = Depends(get_current_user)):
-    api_key = payload.get("authkey_api_key", "")
-    await db.users.update_one(
-        {"id": user["id"]},
-        {"$set": {"authkey_api_key": api_key}}
-    )
-    return {"message": "WhatsApp API key saved", "authkey_api_key": api_key}
+    update_fields = {}
+    if "authkey_api_key" in payload:
+        update_fields["authkey_api_key"] = payload.get("authkey_api_key", "")
+    if "brand_number" in payload:
+        update_fields["brand_number"] = payload.get("brand_number", "")
+    if "meta_waba_id" in payload:
+        update_fields["meta_waba_id"] = payload.get("meta_waba_id", "")
+    if "meta_access_token" in payload:
+        update_fields["meta_access_token"] = payload.get("meta_access_token", "")
+    
+    if update_fields:
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$set": update_fields}
+        )
+    return {"message": "WhatsApp settings saved", **update_fields}
 
 
 @router.get("/authkey-templates")
