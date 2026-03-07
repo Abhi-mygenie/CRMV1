@@ -177,12 +177,44 @@ async def background_order_sync(user_id: str, mygenie_token: str):
                         if customer:
                             order_date = mygenie_order.get("created_at")
                             order_amount = float(mygenie_order.get("order_amount") or 0)
+                            
+                            # Get loyalty settings for points calculation
+                            loyalty_settings = await db.loyalty_settings.find_one({"user_id": user_id})
+                            earn_percent = 0
+                            if loyalty_settings and loyalty_settings.get("loyalty_enabled"):
+                                earn_percent = loyalty_settings.get("earn_percent", 0)
+                            
+                            # Calculate points earned
+                            points_earned = int(order_amount * earn_percent / 100) if earn_percent > 0 else 0
+                            
+                            # Update order with points_earned
+                            if points_earned > 0:
+                                await db.orders.update_one(
+                                    {"id": order_doc["id"]},
+                                    {"$set": {"points_earned": points_earned}}
+                                )
+                                
+                                # Create points_transaction record
+                                points_tx_doc = {
+                                    "id": str(uuid.uuid4()),
+                                    "user_id": user_id,
+                                    "customer_id": customer["id"],
+                                    "order_id": order_doc["id"],
+                                    "transaction_type": "earn",
+                                    "points": points_earned,
+                                    "description": f"Points earned from order (synced from MyGenie)",
+                                    "created_at": order_date or now
+                                }
+                                await db.points_transactions.insert_one(points_tx_doc)
+                            
+                            # Update customer stats including points
+                            update_fields = {
+                                "$inc": {"total_visits": 1, "total_spent": order_amount, "total_points": points_earned},
+                                "$max": {"last_visit": order_date}
+                            }
                             await db.customers.update_one(
                                 {"id": customer["id"]},
-                                {
-                                    "$inc": {"total_visits": 1, "total_spent": order_amount},
-                                    "$max": {"last_visit": order_date}
-                                }
+                                update_fields
                             )
                         
                         if order_doc["items"] and customer:
