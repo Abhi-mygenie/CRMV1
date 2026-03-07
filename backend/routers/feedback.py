@@ -106,8 +106,72 @@ async def resolve_feedback(feedback_id: str, user: dict = Depends(get_current_us
 async def get_dashboard_stats(user: dict = Depends(get_current_user)):
     user_id = user["id"]
     
+    # Row 1: Customer Health
     total_customers = await db.customers.count_documents({"user_id": user_id})
     
+    thirty_days_ago = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
+    active_30d = await db.customers.count_documents({
+        "user_id": user_id,
+        "last_visit": {"$gte": thirty_days_ago}
+    })
+    
+    seven_days_ago = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
+    new_7d = await db.customers.count_documents({
+        "user_id": user_id,
+        "created_at": {"$gte": seven_days_ago}
+    })
+    
+    # Row 2: Customer Engagement
+    sixty_days_ago = (datetime.now(timezone.utc) - timedelta(days=60)).isoformat()
+    inactive_60d = await db.customers.count_documents({
+        "user_id": user_id,
+        "$or": [
+            {"last_visit": {"$lt": sixty_days_ago}},
+            {"last_visit": None}
+        ]
+    })
+    
+    # Repeat customers (visited more than once)
+    repeat_customers = await db.customers.count_documents({
+        "user_id": user_id,
+        "total_visits": {"$gt": 1}
+    })
+    repeat_rate = round((repeat_customers / total_customers * 100), 1) if total_customers > 0 else 0.0
+    
+    # Average visits per customer
+    visits_pipeline = [
+        {"$match": {"user_id": user_id}},
+        {"$group": {
+            "_id": None,
+            "avg_visits": {"$avg": "$total_visits"}
+        }}
+    ]
+    visits_result = await db.customers.aggregate(visits_pipeline).to_list(1)
+    avg_visits = round(visits_result[0].get("avg_visits", 0) or 0, 1) if visits_result else 0.0
+    
+    # Row 3: Orders
+    total_orders = await db.orders.count_documents({"user_id": user_id})
+    
+    order_value_pipeline = [
+        {"$match": {"user_id": user_id}},
+        {"$group": {
+            "_id": None,
+            "total_revenue": {"$sum": "$total_amount"},
+            "count": {"$sum": 1}
+        }}
+    ]
+    order_result = await db.orders.aggregate(order_value_pipeline).to_list(1)
+    total_revenue = order_result[0].get("total_revenue", 0) if order_result else 0
+    avg_order_value = round(total_revenue / total_orders, 2) if total_orders > 0 else 0.0
+    
+    # Avg orders per day (last 30 days)
+    orders_30d = await db.orders.count_documents({
+        "user_id": user_id,
+        "created_at": {"$gte": thirty_days_ago}
+    })
+    avg_orders_per_day = round(orders_30d / 30, 1)
+    
+    # Row 4: Points
     points_pipeline = [
         {"$match": {"user_id": user_id}},
         {"$group": {
@@ -124,19 +188,46 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
             points_issued += stat["total"]
         elif stat["_id"] == "redeem":
             points_redeemed += stat["total"]
+    points_balance = points_issued - points_redeemed
     
-    thirty_days_ago = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
-    active_30d = await db.customers.count_documents({
+    # Row 5: Wallet
+    wallet_pipeline = [
+        {"$match": {"user_id": user_id}},
+        {"$group": {
+            "_id": "$transaction_type",
+            "total": {"$sum": "$amount"}
+        }}
+    ]
+    wallet_stats = await db.wallet_transactions.aggregate(wallet_pipeline).to_list(10)
+    
+    wallet_issued = 0.0
+    wallet_used = 0.0
+    for stat in wallet_stats:
+        if stat["_id"] == "credit":
+            wallet_issued += stat["total"]
+        elif stat["_id"] == "debit":
+            wallet_used += stat["total"]
+    wallet_balance = wallet_issued - wallet_used
+    
+    # Row 6: Coupons
+    total_coupons = await db.coupons.count_documents({"user_id": user_id})
+    active_coupons = await db.coupons.count_documents({
         "user_id": user_id,
-        "last_visit": {"$gte": thirty_days_ago}
+        "is_active": True
     })
     
-    seven_days_ago = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
-    new_7d = await db.customers.count_documents({
-        "user_id": user_id,
-        "created_at": {"$gte": seven_days_ago}
-    })
+    # Discount availed from coupons (sum of discount_amount from orders with coupon)
+    discount_pipeline = [
+        {"$match": {"user_id": user_id, "coupon_discount": {"$gt": 0}}},
+        {"$group": {
+            "_id": None,
+            "total_discount": {"$sum": "$coupon_discount"}
+        }}
+    ]
+    discount_result = await db.orders.aggregate(discount_pipeline).to_list(1)
+    discount_availed = discount_result[0].get("total_discount", 0) if discount_result else 0.0
     
+    # Rating (legacy)
     rating_pipeline = [
         {"$match": {"user_id": user_id}},
         {"$group": {
@@ -153,24 +244,25 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
         avg_rating = round(rating_result[0].get("avg_rating", 0) or 0, 1)
         total_feedback = rating_result[0].get("count", 0)
     
-    # Calculate average visits per customer
-    visits_pipeline = [
-        {"$match": {"user_id": user_id}},
-        {"$group": {
-            "_id": None,
-            "avg_visits": {"$avg": "$total_visits"}
-        }}
-    ]
-    visits_result = await db.customers.aggregate(visits_pipeline).to_list(1)
-    avg_visits = round(visits_result[0].get("avg_visits", 0) or 0, 1) if visits_result else 0.0
-    
     return DashboardStats(
         total_customers=total_customers,
-        total_points_issued=points_issued,
-        total_points_redeemed=points_redeemed,
         active_customers_30d=active_30d,
         new_customers_7d=new_7d,
+        repeat_rate=repeat_rate,
+        avg_visits_per_customer=avg_visits,
+        inactive_customers_60d=inactive_60d,
+        total_orders=total_orders,
+        avg_order_value=avg_order_value,
+        avg_orders_per_day=avg_orders_per_day,
+        total_points_issued=points_issued,
+        total_points_redeemed=points_redeemed,
+        points_balance=points_balance,
+        wallet_issued=wallet_issued,
+        wallet_used=wallet_used,
+        wallet_balance=wallet_balance,
+        total_coupons=total_coupons,
+        active_coupons=active_coupons,
+        discount_availed=discount_availed,
         avg_rating=avg_rating,
-        total_feedback=total_feedback,
-        avg_visits_per_customer=avg_visits
+        total_feedback=total_feedback
     )

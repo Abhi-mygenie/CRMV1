@@ -612,14 +612,33 @@ class Feedback(BaseModel):
 
 # Analytics Models
 class DashboardStats(BaseModel):
+    # Row 1: Customer Health
     total_customers: int
-    total_points_issued: int
-    total_points_redeemed: int
     active_customers_30d: int
     new_customers_7d: int
+    # Row 2: Customer Engagement
+    repeat_rate: float
+    avg_visits_per_customer: float
+    inactive_customers_60d: int
+    # Row 3: Orders
+    total_orders: int
+    avg_order_value: float
+    avg_orders_per_day: float
+    # Row 4: Points
+    total_points_issued: int
+    total_points_redeemed: int
+    points_balance: int
+    # Row 5: Wallet
+    wallet_issued: float
+    wallet_used: float
+    wallet_balance: float
+    # Row 6: Coupons
+    total_coupons: int
+    active_coupons: int
+    discount_availed: float
+    # Legacy fields
     avg_rating: float
     total_feedback: int
-    avg_visits_per_customer: float
 
 # Messaging Models
 class MessageRequest(BaseModel):
