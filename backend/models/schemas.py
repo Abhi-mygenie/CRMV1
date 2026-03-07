@@ -620,19 +620,23 @@ class DashboardStats(BaseModel):
     repeat_2_plus: int
     repeat_5_plus: int
     repeat_10_plus: int
-    # Row 3: Orders
+    # Row 3: Inactive Customers
+    inactive_30d: int
+    inactive_60d: int
+    inactive_90d: int
+    # Row 4: Orders
     total_orders: int
     avg_order_value: float
     avg_orders_per_day: float
-    # Row 4: Points
+    # Row 5: Points
     total_points_issued: int
     total_points_redeemed: int
     points_balance: int
-    # Row 5: Wallet
+    # Row 6: Wallet
     wallet_issued: float
     wallet_used: float
     wallet_balance: float
-    # Row 6: Coupons
+    # Row 7: Coupons
     total_coupons: int
     active_coupons: int
     discount_availed: float

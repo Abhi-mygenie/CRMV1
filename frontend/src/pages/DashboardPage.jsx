@@ -352,7 +352,47 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Row 3: Total Orders, Avg Order Value, Avg Orders/Day */}
+                {/* Row 3: Inactive 30D, 60D, 90D */}
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                    <div className="stats-card-compact" data-testid="inactive-30d-card">
+                        <div className="flex items-center gap-1 text-[#EF4444] mb-1">
+                            <UserMinus className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Inactive 30d</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
+                            {stats?.inactive_30d || 0}
+                            <span className="text-xs font-normal text-[#52525B] ml-1">
+                                ({stats?.total_customers > 0 ? ((stats.inactive_30d / stats.total_customers) * 100).toFixed(1) : 0}%)
+                            </span>
+                        </p>
+                    </div>
+                    <div className="stats-card-compact" data-testid="inactive-60d-card">
+                        <div className="flex items-center gap-1 text-[#EF4444] mb-1">
+                            <UserMinus className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Inactive 60d</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
+                            {stats?.inactive_60d || 0}
+                            <span className="text-xs font-normal text-[#52525B] ml-1">
+                                ({stats?.total_customers > 0 ? ((stats.inactive_60d / stats.total_customers) * 100).toFixed(1) : 0}%)
+                            </span>
+                        </p>
+                    </div>
+                    <div className="stats-card-compact" data-testid="inactive-90d-card">
+                        <div className="flex items-center gap-1 text-[#EF4444] mb-1">
+                            <UserMinus className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Inactive 90d</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
+                            {stats?.inactive_90d || 0}
+                            <span className="text-xs font-normal text-[#52525B] ml-1">
+                                ({stats?.total_customers > 0 ? ((stats.inactive_90d / stats.total_customers) * 100).toFixed(1) : 0}%)
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                {/* Row 4: Total Orders, Avg Order Value, Avg Orders/Day */}
                 <div className="grid grid-cols-3 gap-2 mb-2">
                     <div className="stats-card-compact" data-testid="total-orders-card">
                         <div className="flex items-center gap-1 text-[#8B5CF6] mb-1">
@@ -383,7 +423,7 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Row 4: Points Issued, Points Redeemed, Points Balance */}
+                {/* Row 5: Points Issued, Points Redeemed, Points Balance */}
                 <div className="grid grid-cols-3 gap-2 mb-2">
                     <div className="stats-card-compact" data-testid="points-issued-card">
                         <div className="flex items-center gap-1 text-[#329937] mb-1">
@@ -414,7 +454,7 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Row 5: Wallet Issued, Wallet Used, Wallet Balance */}
+                {/* Row 6: Wallet Issued, Wallet Used, Wallet Balance */}
                 <div className="grid grid-cols-3 gap-2 mb-2">
                     <div className="stats-card-compact" data-testid="wallet-issued-card">
                         <div className="flex items-center gap-1 text-[#F26B33] mb-1">
@@ -445,7 +485,7 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Row 6: Total Coupons, Active Coupons, Discount Availed */}
+                {/* Row 7: Total Coupons, Active Coupons, Discount Availed */}
                 <div className="grid grid-cols-3 gap-2 mb-5">
                     <div className="stats-card-compact" data-testid="total-coupons-card">
                         <div className="flex items-center gap-1 text-[#8B5CF6] mb-1">

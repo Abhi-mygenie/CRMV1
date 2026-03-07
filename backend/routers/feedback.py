@@ -135,6 +135,32 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
         "total_visits": {"$gte": 10}
     })
     
+    # Row 3: Inactive Customers (no visit in last X days)
+    sixty_days_ago = (datetime.now(timezone.utc) - timedelta(days=60)).isoformat()
+    ninety_days_ago = (datetime.now(timezone.utc) - timedelta(days=90)).isoformat()
+    
+    inactive_30d = await db.customers.count_documents({
+        "user_id": user_id,
+        "$or": [
+            {"last_visit": {"$lt": thirty_days_ago}},
+            {"last_visit": None}
+        ]
+    })
+    inactive_60d = await db.customers.count_documents({
+        "user_id": user_id,
+        "$or": [
+            {"last_visit": {"$lt": sixty_days_ago}},
+            {"last_visit": None}
+        ]
+    })
+    inactive_90d = await db.customers.count_documents({
+        "user_id": user_id,
+        "$or": [
+            {"last_visit": {"$lt": ninety_days_ago}},
+            {"last_visit": None}
+        ]
+    })
+    
     # Row 3: Orders
     total_orders = await db.orders.count_documents({"user_id": user_id})
     
@@ -237,6 +263,9 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
         repeat_2_plus=repeat_2_plus,
         repeat_5_plus=repeat_5_plus,
         repeat_10_plus=repeat_10_plus,
+        inactive_30d=inactive_30d,
+        inactive_60d=inactive_60d,
+        inactive_90d=inactive_90d,
         total_orders=total_orders,
         avg_order_value=avg_order_value,
         avg_orders_per_day=avg_orders_per_day,
