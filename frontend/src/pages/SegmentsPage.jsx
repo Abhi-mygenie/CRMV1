@@ -462,6 +462,17 @@ export const SegmentsPageContent = () => {
                                                 <h3 className="font-semibold text-[#1A1A1A]" data-testid={`segment-name-${segment.id}`}>
                                                     {segment.name}
                                                 </h3>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        viewSegmentCustomers(segment);
+                                                    }}
+                                                    className="text-gray-400 hover:text-[#F26B33] p-0.5 rounded transition-colors"
+                                                    title="View customers"
+                                                    data-testid={`view-segment-inline-${segment.id}`}
+                                                >
+                                                    <Eye className="w-4 h-4" />
+                                                </button>
                                                 <Badge className={`${hasConfig ? (isConfigActive ? 'bg-[#25D366]' : 'bg-amber-500') : 'bg-gray-400'} text-white text-xs`}>
                                                     {hasConfig ? (isConfigActive ? "Active" : "Paused") : "Not Configured"}
                                                 </Badge>
@@ -603,15 +614,6 @@ export const SegmentsPageContent = () => {
                                         >
                                             <Settings className="w-4 h-4 mr-1" />
                                             {hasConfig ? "Edit" : "Configure"}
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => viewSegmentCustomers(segment)}
-                                            className="h-9"
-                                            data-testid={`view-segment-${segment.id}`}
-                                        >
-                                            <Eye className="w-4 h-4" />
                                         </Button>
                                         {!segment.isDefault && (
                                             <Button
