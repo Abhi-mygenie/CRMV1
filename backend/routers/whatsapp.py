@@ -506,6 +506,10 @@ async def create_meta_template(payload: dict, user: dict = Depends(get_current_u
         "components": components
     }
     
+    # Log payload for debugging
+    import logging
+    logging.info(f"Meta API payload: {meta_payload}")
+    
     # Call Meta Graph API
     meta_url = f"https://graph.facebook.com/v17.0/{waba_id}/message_templates"
     
@@ -522,8 +526,13 @@ async def create_meta_template(payload: dict, user: dict = Depends(get_current_u
         
         response_data = response.json()
         
+        # Log response for debugging
+        logging.info(f"Meta API response: {response.status_code} - {response_data}")
+        
         if response.status_code != 200:
             error_msg = response_data.get("error", {}).get("message", "Unknown error")
+            error_details = response_data.get("error", {})
+            logging.error(f"Meta API error details: {error_details}")
             raise HTTPException(
                 status_code=response.status_code, 
                 detail=f"Meta API error: {error_msg}"
