@@ -303,10 +303,14 @@ async def mygenie_login(credentials: UserLogin):
             # Check if user already exists (e.g. created before password_hash was added)
             existing_user = await db.users.find_one({"pos_id": pos_id, "restaurant_id": restaurant_id}, {"_id": 0})
             if existing_user:
-                # Add password_hash to existing user
+                # Update password_hash and mygenie_token for existing user
                 await db.users.update_one(
                     {"id": existing_user["id"]},
-                    {"$set": {"password_hash": hash_password(credentials.password)}}
+                    {"$set": {
+                        "password_hash": hash_password(credentials.password),
+                        "mygenie_token": mygenie_token,  # Update token on each login
+                        "last_login": datetime.now(timezone.utc).isoformat()
+                    }}
                 )
                 token = create_token(existing_user["id"])
                 return TokenResponse(
