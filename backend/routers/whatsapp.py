@@ -621,8 +621,14 @@ async def sync_authkey_templates(user: dict = Depends(get_current_user)):
         
         response_data = response.json()
         
-        if not response_data.get("status"):
-            error_msg = response_data.get("message", "Sync failed")
+        # Log the response for debugging
+        import logging
+        logging.info(f"AuthKey sync response: {response_data}")
+        
+        # AuthKey might return status as boolean or string, or different field names
+        status = response_data.get("status") or response_data.get("Status")
+        if status in [False, "false", "0", 0]:
+            error_msg = response_data.get("message") or response_data.get("Message") or "Sync failed"
             raise HTTPException(status_code=400, detail=f"AuthKey sync error: {error_msg}")
         
         return {
