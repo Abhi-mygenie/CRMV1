@@ -85,10 +85,13 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
             const pollInterval = setInterval(async () => {
                 try {
                     const statusRes = await api.get("/migration/sync-orders/status");
+                    const totalProcessed = (statusRes.data.synced || 0) + (statusRes.data.updated || 0);
                     setOrderSyncProgress({
-                        synced: statusRes.data.orders_synced || 0,
+                        synced: totalProcessed,
                         total: statusRes.data.total_orders || 0,
-                        status: statusRes.data.status
+                        status: statusRes.data.status,
+                        currentPage: statusRes.data.current_page || 0,
+                        totalPages: statusRes.data.total_pages || 0
                     });
                     
                     if (statusRes.data.status === "completed" || statusRes.data.status === "failed") {
@@ -96,7 +99,7 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                         setSyncingOrders(false);
                         fetchMigrationStatus();
                         if (statusRes.data.status === "completed") {
-                            toast.success(`Orders synced: ${statusRes.data.orders_synced}`);
+                            toast.success(`Orders synced: ${totalProcessed}`);
                         }
                     }
                 } catch (err) {
@@ -264,9 +267,9 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                         
                         {syncingOrders && orderSyncProgress && (
                             <div className="mb-3">
-                                <Progress value={orderSyncProgress.total > 0 ? orderSyncProgress.synced / orderSyncProgress.total * 100 : 0} className="h-2" />
+                                <Progress value={orderSyncProgress.totalPages > 0 ? (orderSyncProgress.currentPage / orderSyncProgress.totalPages) * 100 : 0} className="h-2" />
                                 <p className="text-xs text-[#52525B] mt-1 font-body">
-                                    Syncing... {orderSyncProgress.synced} orders
+                                    Syncing... {orderSyncProgress.synced.toLocaleString()} of {orderSyncProgress.total.toLocaleString()} orders (Page {orderSyncProgress.currentPage}/{orderSyncProgress.totalPages})
                                 </p>
                             </div>
                         )}
