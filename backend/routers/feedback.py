@@ -253,6 +253,12 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
         avg_rating = round(rating_result[0].get("avg_rating", 0) or 0, 1)
         total_feedback = rating_result[0].get("count", 0)
     
+    # Get loyalty settings for conditional display
+    loyalty_settings = await db.loyalty_settings.find_one({"user_id": user_id})
+    loyalty_enabled = loyalty_settings.get("loyalty_enabled", True) if loyalty_settings else True
+    wallet_enabled = loyalty_settings.get("wallet_enabled", False) if loyalty_settings else False
+    coupon_enabled = loyalty_settings.get("coupon_enabled", False) if loyalty_settings else False
+    
     return DashboardStats(
         total_customers=total_customers,
         active_customers_30d=active_30d,
@@ -276,5 +282,8 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
         coupons_used=coupons_used,
         discount_availed=discount_availed,
         avg_rating=avg_rating,
-        total_feedback=total_feedback
+        total_feedback=total_feedback,
+        loyalty_enabled=loyalty_enabled,
+        wallet_enabled=wallet_enabled,
+        coupon_enabled=coupon_enabled
     )

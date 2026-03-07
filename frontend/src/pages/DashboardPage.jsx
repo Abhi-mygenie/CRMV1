@@ -392,7 +392,8 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Row 4: Points Issued, Points Redeemed, Points Balance */}
+                {/* Row 4: Points Issued, Points Redeemed, Points Balance - Show only if loyalty_enabled */}
+                {stats?.loyalty_enabled && (
                 <div className="grid grid-cols-3 gap-2 mb-2">
                     <div className="stats-card-compact" data-testid="points-issued-card">
                         <div className="flex items-center gap-1 text-[#329937] mb-1">
@@ -422,8 +423,10 @@ export default function DashboardPage() {
                         </p>
                     </div>
                 </div>
+                )}
 
-                {/* Row 5: Wallet Issued, Wallet Used, Wallet Balance */}
+                {/* Row 5: Wallet Issued, Wallet Used, Wallet Balance - Show only if wallet_enabled */}
+                {stats?.wallet_enabled && (
                 <div className="grid grid-cols-3 gap-2 mb-2">
                     <div className="stats-card-compact" data-testid="wallet-issued-card">
                         <div className="flex items-center gap-1 text-[#F26B33] mb-1">
@@ -453,8 +456,10 @@ export default function DashboardPage() {
                         </p>
                     </div>
                 </div>
+                )}
 
-                {/* Row 6: Total Coupons, Coupons Used, Discount Availed */}
+                {/* Row 6: Total Coupons, Coupons Used, Discount Availed - Show only if coupon_enabled */}
+                {stats?.coupon_enabled && (
                 <div className="grid grid-cols-3 gap-2 mb-2">
                     <div className="stats-card-compact" data-testid="total-coupons-card">
                         <div className="flex items-center gap-1 text-[#8B5CF6] mb-1">
@@ -484,6 +489,7 @@ export default function DashboardPage() {
                         </p>
                     </div>
                 </div>
+                )}
 
                 {/* Row 7: Total Orders, Avg Order Value, Avg Orders/Day */}
                 <div className="grid grid-cols-3 gap-2 mb-5">

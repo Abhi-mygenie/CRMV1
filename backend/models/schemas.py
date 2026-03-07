@@ -643,6 +643,10 @@ class DashboardStats(BaseModel):
     # Legacy fields
     avg_rating: float
     total_feedback: int
+    # Settings flags for conditional display
+    loyalty_enabled: bool = True
+    wallet_enabled: bool = False
+    coupon_enabled: bool = False
 
 # Messaging Models
 class MessageRequest(BaseModel):
