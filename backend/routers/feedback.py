@@ -259,6 +259,67 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
     wallet_enabled = loyalty_settings.get("wallet_enabled", False) if loyalty_settings else False
     coupon_enabled = loyalty_settings.get("coupon_enabled", False) if loyalty_settings else False
     
+    # Row 8: Revenue calculations
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    today_iso = today.isoformat()
+    thirty_one_days_ago = (today - timedelta(days=31)).isoformat()
+    eight_days_ago = (today - timedelta(days=8)).isoformat()
+    
+    # Total Revenue (all time)
+    total_revenue_pipeline = [
+        {"$match": {"user_id": user_id}},
+        {"$group": {"_id": None, "total": {"$sum": "$order_amount"}}}
+    ]
+    total_revenue_result = await db.orders.aggregate(total_revenue_pipeline).to_list(1)
+    total_revenue = total_revenue_result[0].get("total", 0) if total_revenue_result else 0.0
+    
+    # Revenue 30D (excluding today)
+    revenue_30d_pipeline = [
+        {"$match": {"user_id": user_id, "created_at": {"$gte": thirty_one_days_ago, "$lt": today_iso}}},
+        {"$group": {"_id": None, "total": {"$sum": "$order_amount"}}}
+    ]
+    revenue_30d_result = await db.orders.aggregate(revenue_30d_pipeline).to_list(1)
+    revenue_30d = revenue_30d_result[0].get("total", 0) if revenue_30d_result else 0.0
+    
+    # Revenue 7D (excluding today)
+    revenue_7d_pipeline = [
+        {"$match": {"user_id": user_id, "created_at": {"$gte": eight_days_ago, "$lt": today_iso}}},
+        {"$group": {"_id": None, "total": {"$sum": "$order_amount"}}}
+    ]
+    revenue_7d_result = await db.orders.aggregate(revenue_7d_pipeline).to_list(1)
+    revenue_7d = revenue_7d_result[0].get("total", 0) if revenue_7d_result else 0.0
+    
+    # Row 9: Top 3 Selling Items
+    # Top items 30D
+    top_items_30d_pipeline = [
+        {"$match": {"user_id": user_id, "created_at": {"$gte": thirty_days_ago}}},
+        {"$group": {"_id": "$item_name", "qty": {"$sum": "$item_qty"}}},
+        {"$sort": {"qty": -1}},
+        {"$limit": 3},
+        {"$project": {"name": "$_id", "qty": 1, "_id": 0}}
+    ]
+    top_items_30d = await db.order_items.aggregate(top_items_30d_pipeline).to_list(3)
+    
+    # Top items 7D
+    top_items_7d_pipeline = [
+        {"$match": {"user_id": user_id, "created_at": {"$gte": seven_days_ago}}},
+        {"$group": {"_id": "$item_name", "qty": {"$sum": "$item_qty"}}},
+        {"$sort": {"qty": -1}},
+        {"$limit": 3},
+        {"$project": {"name": "$_id", "qty": 1, "_id": 0}}
+    ]
+    top_items_7d = await db.order_items.aggregate(top_items_7d_pipeline).to_list(3)
+    
+    # Top items all time
+    top_items_all_pipeline = [
+        {"$match": {"user_id": user_id}},
+        {"$group": {"_id": "$item_name", "qty": {"$sum": "$item_qty"}}},
+        {"$sort": {"qty": -1}},
+        {"$limit": 3},
+        {"$project": {"name": "$_id", "qty": 1, "_id": 0}}
+    ]
+    top_items_all_time = await db.order_items.aggregate(top_items_all_pipeline).to_list(3)
+    
     return DashboardStats(
         total_customers=total_customers,
         active_customers_30d=active_30d,
@@ -281,6 +342,12 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
         total_coupons=total_coupons,
         coupons_used=coupons_used,
         discount_availed=discount_availed,
+        total_revenue=total_revenue,
+        revenue_30d=revenue_30d,
+        revenue_7d=revenue_7d,
+        top_items_30d=top_items_30d,
+        top_items_7d=top_items_7d,
+        top_items_all_time=top_items_all_time,
         avg_rating=avg_rating,
         total_feedback=total_feedback,
         loyalty_enabled=loyalty_enabled,

@@ -492,7 +492,7 @@ export default function DashboardPage() {
                 )}
 
                 {/* Row 7: Total Orders, Avg Order Value, Avg Orders/Day */}
-                <div className="grid grid-cols-3 gap-2 mb-5">
+                <div className="grid grid-cols-3 gap-2 mb-2">
                     <div className="stats-card-compact" data-testid="total-orders-card">
                         <div className="flex items-center gap-1 text-[#8B5CF6] mb-1">
                             <ShoppingBag className="w-3.5 h-3.5" />
@@ -519,6 +519,86 @@ export default function DashboardPage() {
                         <p className="text-xl font-bold text-[#2B2B2B] font-heading">
                             {stats?.avg_orders_per_day || 0}
                         </p>
+                    </div>
+                </div>
+
+                {/* Row 8: Revenue - Total, 30D, 7D */}
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                    <div className="stats-card-compact" data-testid="total-revenue-card">
+                        <div className="flex items-center gap-1 text-[#329937] mb-1">
+                            <TrendingUp className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Revenue</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
+                            ₹{stats?.total_revenue?.toLocaleString() || 0}
+                        </p>
+                    </div>
+                    <div className="stats-card-compact" data-testid="revenue-30d-card">
+                        <div className="flex items-center gap-1 text-[#329937] mb-1">
+                            <TrendingUp className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Rev (30D)</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
+                            ₹{stats?.revenue_30d?.toLocaleString() || 0}
+                        </p>
+                    </div>
+                    <div className="stats-card-compact" data-testid="revenue-7d-card">
+                        <div className="flex items-center gap-1 text-[#329937] mb-1">
+                            <TrendingUp className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Rev (7D)</span>
+                        </div>
+                        <p className="text-xl font-bold text-[#2B2B2B] font-heading">
+                            ₹{stats?.revenue_7d?.toLocaleString() || 0}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Row 9: Top Selling Items - 30D, 7D, All Time */}
+                <div className="grid grid-cols-3 gap-2 mb-5">
+                    <div className="stats-card-compact" data-testid="top-items-30d-card">
+                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
+                            <Star className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Top 3 (30D)</span>
+                        </div>
+                        <div className="text-xs text-[#2B2B2B]">
+                            {stats?.top_items_30d?.length > 0 ? (
+                                stats.top_items_30d.map((item, i) => (
+                                    <div key={i} className="truncate">{item.name}: {item.qty}</div>
+                                ))
+                            ) : (
+                                <div className="text-[#A1A1AA]">No data</div>
+                            )}
+                        </div>
+                    </div>
+                    <div className="stats-card-compact" data-testid="top-items-7d-card">
+                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
+                            <Star className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Top 3 (7D)</span>
+                        </div>
+                        <div className="text-xs text-[#2B2B2B]">
+                            {stats?.top_items_7d?.length > 0 ? (
+                                stats.top_items_7d.map((item, i) => (
+                                    <div key={i} className="truncate">{item.name}: {item.qty}</div>
+                                ))
+                            ) : (
+                                <div className="text-[#A1A1AA]">No data</div>
+                            )}
+                        </div>
+                    </div>
+                    <div className="stats-card-compact" data-testid="top-items-all-card">
+                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
+                            <Star className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Top 3 (All)</span>
+                        </div>
+                        <div className="text-xs text-[#2B2B2B]">
+                            {stats?.top_items_all_time?.length > 0 ? (
+                                stats.top_items_all_time.map((item, i) => (
+                                    <div key={i} className="truncate">{item.name}: {item.qty}</div>
+                                ))
+                            ) : (
+                                <div className="text-[#A1A1AA]">No data</div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

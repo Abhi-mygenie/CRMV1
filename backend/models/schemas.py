@@ -640,6 +640,14 @@ class DashboardStats(BaseModel):
     total_coupons: int
     coupons_used: int
     discount_availed: float
+    # Row 8: Revenue
+    total_revenue: float
+    revenue_30d: float
+    revenue_7d: float
+    # Row 9: Top Selling Items
+    top_items_30d: list = []
+    top_items_7d: list = []
+    top_items_all_time: list = []
     # Legacy fields
     avg_rating: float
     total_feedback: int
