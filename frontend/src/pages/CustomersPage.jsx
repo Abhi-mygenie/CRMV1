@@ -60,7 +60,8 @@ export default function CustomersPage() {
         // Phase 3 filters
         gender: "all",
         total_spent: "all",
-        is_blocked: "all"
+        is_blocked: "all",
+        has_feedback: "all"
     });
     const [expandedFilterGroups, setExpandedFilterGroups] = useState(["basic", "advanced"]);
     const [newCustomer, setNewCustomer] = useState({ 
@@ -196,6 +197,7 @@ export default function CustomersPage() {
         if (filters.gender && filters.gender !== "all") params.append("gender", filters.gender);
         if (filters.total_spent && filters.total_spent !== "all") params.append("total_spent", filters.total_spent);
         if (filters.is_blocked && filters.is_blocked !== "all") params.append("is_blocked", filters.is_blocked);
+        if (filters.has_feedback && filters.has_feedback !== "all") params.append("has_feedback", filters.has_feedback);
         return params.toString();
     };
 
@@ -1049,6 +1051,22 @@ export default function CustomersPage() {
                                                                 <SelectItem value="all">All</SelectItem>
                                                                 <SelectItem value="true">Has Complaints</SelectItem>
                                                                 <SelectItem value="false">No Complaints</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
+                                                {/* Feedback */}
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Feedback</Label>
+                                                        <Select value={filters.has_feedback} onValueChange={(v) => setFilters({...filters, has_feedback: v})}>
+                                                            <SelectTrigger className="h-8 text-xs">
+                                                                <SelectValue placeholder="All" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">All</SelectItem>
+                                                                <SelectItem value="true">Given Feedback</SelectItem>
+                                                                <SelectItem value="false">No Feedback</SelectItem>
                                                             </SelectContent>
                                                         </Select>
                                                     </div>

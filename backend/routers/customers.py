@@ -529,6 +529,8 @@ async def list_customers(
     # Quick filter chips
     inactive_days: Optional[int] = None,
     most_loyal: Optional[bool] = None,
+    # Feedback filter
+    has_feedback: Optional[str] = None,
     # Sort options
     sort_by: str = "created_at",
     sort_order: str = "desc",
@@ -674,6 +676,13 @@ async def list_customers(
                 ]
             }
         })
+    
+    # Feedback filter - check if customer has given feedback
+    if has_feedback and has_feedback != "all":
+        if has_feedback == "true":
+            query["feedback_count"] = {"$gt": 0}
+        else:
+            query["$or"] = [{"feedback_count": {"$exists": False}}, {"feedback_count": 0}]
     
     if and_conditions:
         query["$and"] = and_conditions
