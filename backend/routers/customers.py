@@ -526,6 +526,9 @@ async def list_customers(
     gender: Optional[str] = None,
     total_spent: Optional[str] = None,
     is_blocked: Optional[str] = None,
+    # Quick filter chips
+    inactive_days: Optional[int] = None,
+    most_loyal: Optional[bool] = None,
     # Sort options
     sort_by: str = "created_at",
     sort_order: str = "desc",
@@ -639,11 +642,48 @@ async def list_customers(
     if is_blocked and is_blocked != "all":
         query["is_blocked"] = is_blocked == "true"
     
+    # Quick filter: Inactive days
+    if inactive_days:
+        cutoff_date = (datetime.now(timezone.utc) - timedelta(days=inactive_days)).isoformat()
+        and_conditions.append({
+            "$or": [
+                {"last_visit": {"$lt": cutoff_date}},
+                {"last_visit": None}
+            ]
+        })
+    
+    # Quick filter: Most loyal (avg visits > 5 per month since registration)
+    if most_loyal:
+        # Use aggregation to calculate avg visits per month
+        # For now, filter customers with high visit frequency
+        # Customers who registered and have visits > 5 * months_since_registration
+        and_conditions.append({
+            "$expr": {
+                "$gte": [
+                    {"$divide": [
+                        "$total_visits",
+                        {"$max": [
+                            {"$divide": [
+                                {"$subtract": [{"$toDate": datetime.now(timezone.utc).isoformat()}, {"$toDate": "$created_at"}]},
+                                2592000000  # milliseconds in 30 days
+                            ]},
+                            1
+                        ]}
+                    ]},
+                    5
+                ]
+            }
+        })
+    
     if and_conditions:
         query["$and"] = and_conditions
     
     sort_direction = -1 if sort_order == "desc" else 1
-    sort_field = sort_by if sort_by in ["created_at", "last_visit", "total_spent", "total_points", "total_visits", "name"] else "created_at"
+    sort_field = sort_by if sort_by in ["created_at", "last_visit", "total_spent", "total_points", "total_visits", "name", "avg_visits_per_month"] else "created_at"
+    
+    # For avg_visits_per_month, use total_visits as proxy (higher visits = more loyal)
+    if sort_field == "avg_visits_per_month":
+        sort_field = "total_visits"
     
     customers = await db.customers.find(query, {"_id": 0}).sort(sort_field, sort_direction).skip(skip).limit(limit).to_list(limit)
     return [Customer(**c) for c in customers]
