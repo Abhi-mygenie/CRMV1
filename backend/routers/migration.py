@@ -224,6 +224,7 @@ async def get_migration_status(user: dict = Depends(get_current_user)):
     """
     Get the current migration status for the user
     Returns sync counts and confirmation status
+    Auto-resets migration flags if all data is cleared
     """
     user_record = await db.users.find_one({"id": user["id"]}, {"_id": 0})
     
@@ -238,9 +239,28 @@ async def get_migration_status(user: dict = Depends(get_current_user)):
         "mygenie_synced": True
     })
     
+    # Auto-reset migration flags if all data is cleared
+    migration_confirmed = user_record.get("migration_confirmed", False)
+    if migration_confirmed and customers_count == 0 and orders_count == 0:
+        # Data was cleared, reset migration flags
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$set": {
+                "migration_confirmed": False,
+                "migration_confirmed_at": None,
+                "total_customers_in_pos": 0,
+                "total_orders_in_pos": 0,
+                "last_customer_sync_at": None,
+                "last_order_sync_at": None
+            }}
+        )
+        migration_confirmed = False
+        user_record["total_customers_in_pos"] = 0
+        user_record["total_orders_in_pos"] = 0
+    
     return {
-        "migration_confirmed": user_record.get("migration_confirmed", False),
-        "migration_confirmed_at": user_record.get("migration_confirmed_at"),
+        "migration_confirmed": migration_confirmed,
+        "migration_confirmed_at": user_record.get("migration_confirmed_at") if migration_confirmed else None,
         "migration_skipped_permanently": user_record.get("migration_skipped_permanently", False),
         "customers_synced": customers_count,
         "orders_synced": orders_count,
