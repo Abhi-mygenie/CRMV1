@@ -16,7 +16,7 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const { login } = useAuth();
+    const { login, setUserAndToken } = useAuth();
     const navigate = useNavigate();
 
     // Forgot Password State
@@ -119,13 +119,22 @@ export default function LoginPage() {
         }
         setForgotLoading(true);
         try {
-            await axios.post(`${API_URL}/api/auth/forgot-password/reset`, {
+            const res = await axios.post(`${API_URL}/api/auth/forgot-password/reset`, {
                 email: forgotEmail,
                 reset_token: resetToken,
                 new_password: newPassword
             });
-            toast.success("Password reset successfully! Please login.");
-            closeForgotPassword();
+            
+            // Auto-login with returned token
+            if (res.data.access_token && res.data.user) {
+                setUserAndToken(res.data.user, res.data.access_token);
+                toast.success("Password reset successfully! Welcome back!");
+                closeForgotPassword();
+                navigate("/");
+            } else {
+                toast.success("Password reset successfully! Please login.");
+                closeForgotPassword();
+            }
         } catch (err) {
             toast.error(err.response?.data?.detail || "Failed to reset password");
         } finally {

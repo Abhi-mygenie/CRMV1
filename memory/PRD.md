@@ -61,3 +61,35 @@ Pull and build CRMV1 from GitHub: https://github.com/Abhi-mygenie/CRMV1.git with
 1. WhatsApp API integration setup
 2. Enable feature toggles in Settings
 3. Test customer sync with MyGenie POS
+
+## Updates - March 7, 2026 (Session 2)
+
+### Implemented Features:
+1. **Forgot Password (OTP-based)**
+   - 3-step flow: Email → OTP → New Password
+   - Testing mode shows OTP on screen (until WhatsApp configured)
+   - Auto-login after successful password reset
+
+2. **WhatsApp Events Reorganization**
+   - POS Events Tab (11 events): new_order_customer, new_order_outlet, order_confirmed, order_ready_customer, item_ready, order_served, item_served, order_ready_delivery, order_dispatched, send_bill_manual, send_bill_auto
+   - CRM Events Tab (7 events): reset_password, welcome_message, birthday, anniversary, points_earned, points_expiring, feedback_request
+
+3. **Login Page Updates**
+   - Hidden Demo Mode button
+   - Hidden Sign Up link
+   - Added Forgot Password flow
+
+4. **Dashboard Updates**
+   - Hamburger menu with User info, Reset Password, Logout
+   - Changed "Email" label to "User"
+
+### API Endpoints Added:
+- POST /api/auth/forgot-password/request-otp
+- POST /api/auth/forgot-password/verify-otp
+- POST /api/auth/forgot-password/reset (returns access_token for auto-login)
+- PUT /api/auth/reset-password (for logged-in users)
+- GET /api/whatsapp/automation/events (returns pos_events and crm_events arrays)
+
+### Pending:
+- WhatsApp API integration for actual OTP delivery
+- POS events trigger mechanism (MyGenie webhook integration)

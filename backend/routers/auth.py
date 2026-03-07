@@ -528,6 +528,7 @@ async def verify_forgot_password_otp(data: dict):
 async def reset_password_with_token(data: dict):
     """
     Reset password using the token from OTP verification.
+    Returns access token for auto-login after successful reset.
     """
     email = data.get("email")
     reset_token = data.get("reset_token")
@@ -568,4 +569,31 @@ async def reset_password_with_token(data: dict):
     # Delete the OTP record
     await db.otp_tokens.delete_one({"id": otp_record["id"]})
     
-    return {"message": "Password reset successfully"}
+    # Get user for auto-login
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Generate access token for auto-login
+    access_token = create_token(user["id"])
+    
+    # Update last login
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"last_login": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {
+        "message": "Password reset successfully",
+        "access_token": access_token,
+        "user": UserResponse(
+            id=user["id"],
+            email=user["email"],
+            restaurant_name=user.get("restaurant_name", ""),
+            phone=user.get("phone", ""),
+            pos_id=user.get("pos_id", ""),
+            pos_name=user.get("pos_name", ""),
+            created_at=user.get("created_at", "")
+        )
+    }

@@ -86,8 +86,17 @@ export const AuthProvider = ({ children }) => {
         setIsDemoMode(false);
     };
 
+    // Direct set user and token (for forgot password auto-login)
+    const setUserAndToken = (userData, accessToken) => {
+        localStorage.setItem("token", accessToken);
+        localStorage.removeItem("is_demo");
+        setToken(accessToken);
+        setUser(userData);
+        setIsDemoMode(false);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, token, api, login, demoLogin, register, logout, loading, isDemoMode }}>
+        <AuthContext.Provider value={{ user, token, api, login, demoLogin, register, logout, loading, isDemoMode, setUserAndToken }}>
             {children}
         </AuthContext.Provider>
     );
