@@ -719,8 +719,8 @@ export default function CustomersPage() {
                             className="absolute inset-0 bg-black/40 animate-backdrop"
                             onClick={() => setShowFilters(false)}
                         />
-                        {/* Slide-up Panel */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[80vh] flex flex-col animate-slide-up shadow-2xl">
+                        {/* Slide-down Panel */}
+                        <div className="absolute top-0 left-0 right-0 bg-white rounded-b-2xl max-h-[80vh] flex flex-col animate-slide-down shadow-2xl">
                             {/* Header */}
                             <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100">
                                 <h2 className="text-sm font-bold text-[#1A1A1A] tracking-wide uppercase">Filters</h2>
