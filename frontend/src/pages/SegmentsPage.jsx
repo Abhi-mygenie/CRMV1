@@ -594,17 +594,15 @@ export const SegmentsPageContent = () => {
                                             <Settings className="w-4 h-4 mr-1" />
                                             {hasConfig ? "Edit" : "Configure"}
                                         </Button>
-                                        {hasConfig && (
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => viewSegmentCustomers(segment)}
-                                                className="h-9"
-                                                data-testid={`view-segment-${segment.id}`}
-                                            >
-                                                <Eye className="w-4 h-4" />
-                                            </Button>
-                                        )}
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => viewSegmentCustomers(segment)}
+                                            className="h-9"
+                                            data-testid={`view-segment-${segment.id}`}
+                                        >
+                                            <Eye className="w-4 h-4" />
+                                        </Button>
                                         {!segment.isDefault && (
                                             <Button
                                                 variant="outline"

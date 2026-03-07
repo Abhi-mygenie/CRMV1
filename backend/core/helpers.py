@@ -138,12 +138,22 @@ def build_customer_query(user_id: str, filters: dict) -> dict:
     query = {"user_id": user_id}
     
     # Tier filter
-    if filters.get("tier"):
+    if filters.get("tier") and filters["tier"] != "all":
         query["tier"] = {"$in": filters["tier"]} if isinstance(filters["tier"], list) else filters["tier"]
     
     # City filter
-    if filters.get("city"):
+    if filters.get("city") and filters["city"] != "all":
         query["city"] = {"$in": filters["city"]} if isinstance(filters["city"], list) else filters["city"]
+    
+    # Customer type filter
+    if filters.get("customer_type") and filters["customer_type"] != "all":
+        query["customer_type"] = filters["customer_type"]
+    
+    # Last visit days (inactive filter)
+    if filters.get("last_visit_days"):
+        cutoff_date = (datetime.now(timezone.utc) - timedelta(days=int(filters["last_visit_days"]))).isoformat()
+        query["$or"] = query.get("$or", [])
+        query["last_visit"] = {"$lt": cutoff_date}
     
     # Points range
     if filters.get("points_min") is not None:
