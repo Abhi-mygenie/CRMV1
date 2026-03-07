@@ -106,6 +106,52 @@ async def resolve_feedback(feedback_id: str, user: dict = Depends(get_current_us
 async def get_dashboard_stats(user: dict = Depends(get_current_user)):
     user_id = user["id"]
     
+    # Header metrics: Loyalty Orders % and Repeat vs New Revenue
+    # Get all repeat customer IDs (total_visits >= 2)
+    repeat_customers = await db.customers.find(
+        {"user_id": user_id, "total_visits": {"$gte": 2}},
+        {"id": 1}
+    ).to_list(None)
+    repeat_customer_ids = [c["id"] for c in repeat_customers]
+    
+    # Get all new customer IDs (total_visits = 1)
+    new_customers = await db.customers.find(
+        {"user_id": user_id, "total_visits": 1},
+        {"id": 1}
+    ).to_list(None)
+    new_customer_ids = [c["id"] for c in new_customers]
+    
+    # Total orders
+    total_orders_count = await db.orders.count_documents({"user_id": user_id})
+    
+    # Loyalty orders (from repeat customers)
+    loyalty_orders_count = await db.orders.count_documents({
+        "user_id": user_id,
+        "customer_id": {"$in": repeat_customer_ids}
+    }) if repeat_customer_ids else 0
+    
+    loyalty_orders_percent = round((loyalty_orders_count / total_orders_count * 100), 1) if total_orders_count > 0 else 0.0
+    
+    # Revenue from repeat customers
+    repeat_revenue_pipeline = [
+        {"$match": {"user_id": user_id, "customer_id": {"$in": repeat_customer_ids}}},
+        {"$group": {"_id": None, "total": {"$sum": "$order_amount"}}}
+    ]
+    repeat_revenue_result = await db.orders.aggregate(repeat_revenue_pipeline).to_list(1) if repeat_customer_ids else []
+    repeat_revenue = repeat_revenue_result[0].get("total", 0) if repeat_revenue_result else 0
+    
+    # Revenue from new customers
+    new_revenue_pipeline = [
+        {"$match": {"user_id": user_id, "customer_id": {"$in": new_customer_ids}}},
+        {"$group": {"_id": None, "total": {"$sum": "$order_amount"}}}
+    ]
+    new_revenue_result = await db.orders.aggregate(new_revenue_pipeline).to_list(1) if new_customer_ids else []
+    new_revenue = new_revenue_result[0].get("total", 0) if new_revenue_result else 0
+    
+    total_revenue_for_percent = repeat_revenue + new_revenue
+    repeat_revenue_percent = round((repeat_revenue / total_revenue_for_percent * 100), 1) if total_revenue_for_percent > 0 else 0.0
+    new_revenue_percent = round((new_revenue / total_revenue_for_percent * 100), 1) if total_revenue_for_percent > 0 else 0.0
+    
     # Row 1: Customer Health
     total_customers = await db.customers.count_documents({"user_id": user_id})
     
@@ -321,6 +367,9 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
     top_items_all_time = await db.order_items.aggregate(top_items_all_pipeline).to_list(3)
     
     return DashboardStats(
+        loyalty_orders_percent=loyalty_orders_percent,
+        repeat_revenue_percent=repeat_revenue_percent,
+        new_revenue_percent=new_revenue_percent,
         total_customers=total_customers,
         active_customers_30d=active_30d,
         new_customers_7d=new_7d,

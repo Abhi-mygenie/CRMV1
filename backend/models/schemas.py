@@ -612,6 +612,10 @@ class Feedback(BaseModel):
 
 # Analytics Models
 class DashboardStats(BaseModel):
+    # Header metrics
+    loyalty_orders_percent: float = 0.0
+    repeat_revenue_percent: float = 0.0
+    new_revenue_percent: float = 0.0
     # Row 1: Customer Health
     total_customers: int
     active_customers_30d: int
