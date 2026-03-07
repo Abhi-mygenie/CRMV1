@@ -716,50 +716,51 @@ export default function CustomersPage() {
                     <div className="fixed inset-0 z-[10000]" data-testid="filter-drawer">
                         {/* Backdrop */}
                         <div 
-                            className="absolute inset-0 bg-black/30"
+                            className="absolute inset-0 bg-black/40 animate-backdrop"
                             onClick={() => setShowFilters(false)}
                         />
                         {/* Slide-up Panel */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[85vh] flex flex-col animate-slide-up">
+                        <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[80vh] flex flex-col animate-slide-up shadow-2xl">
                             {/* Header */}
-                            <div className="flex items-center justify-between px-4 py-3 border-b">
-                                <h2 className="text-base font-semibold">Filters</h2>
-                                <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100">
+                                <h2 className="text-sm font-bold text-[#1A1A1A] tracking-wide uppercase">Filters</h2>
+                                <div className="flex items-center gap-3">
                                     {activeFiltersCount > 0 && (
-                                        <button onClick={clearFilters} className="text-xs text-[#F26B33] font-medium">
+                                        <button onClick={clearFilters} className="text-xs text-[#F26B33] font-semibold" data-testid="clear-filters-btn">
                                             Clear all
                                         </button>
                                     )}
                                     <button 
                                         onClick={() => setShowFilters(false)} 
-                                        className="p-1.5 hover:bg-gray-100 rounded-full"
+                                        className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                                        data-testid="close-filter-btn"
                                     >
-                                        <X className="w-5 h-5" />
+                                        <X className="w-4 h-4 text-gray-500" />
                                     </button>
                                 </div>
                             </div>
 
-                            {/* Compact Filter Content */}
-                            <ScrollArea className="flex-1 p-3">
-                                <div className="space-y-2">
+                            {/* Filter Content */}
+                            <ScrollArea className="flex-1 px-3 py-2">
+                                <div className="space-y-1">
                                     {/* === BASIC SECTION === */}
                                     <div data-testid="filter-section-basic">
                                         <button
                                             onClick={() => toggleFilterGroup("basic")}
-                                            className="flex items-center justify-between w-full py-2 text-sm font-semibold text-[#1A1A1A]"
+                                            className="flex items-center justify-between w-full px-2.5 py-2 rounded-lg bg-[#F8F8F8] hover:bg-[#F0F0F0] transition-colors"
                                             data-testid="filter-toggle-basic"
                                         >
-                                            <span>Basic</span>
-                                            {expandedFilterGroups.includes("basic") ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                            <span className="text-xs font-bold text-[#1A1A1A] uppercase tracking-wider">Basic</span>
+                                            <ChevronDown className={`w-3.5 h-3.5 text-gray-500 transition-transform duration-200 ${expandedFilterGroups.includes("basic") ? "rotate-180" : ""}`} />
                                         </button>
                                         {expandedFilterGroups.includes("basic") && (
-                                            <div className="space-y-3 pb-3">
-                                                {/* Tier + Customer Type */}
+                                            <div className="space-y-2 pt-2 pb-1 px-0.5">
+                                                {/* Tier + Inactive */}
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Tier</Label>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Tier</Label>
                                                         <Select value={filters.tier} onValueChange={(v) => setFilters({...filters, tier: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                            <SelectTrigger className="h-8 text-xs">
                                                                 <SelectValue placeholder="All" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -772,36 +773,9 @@ export default function CustomersPage() {
                                                         </Select>
                                                     </div>
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Type</Label>
-                                                        <Select value={filters.customer_type} onValueChange={(v) => setFilters({...filters, customer_type: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
-                                                                <SelectValue placeholder="All" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="all">All types</SelectItem>
-                                                                <SelectItem value="normal">Normal</SelectItem>
-                                                                <SelectItem value="corporate">Corporate</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-                                                </div>
-
-                                                {/* City + Inactive */}
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">City</Label>
-                                                        <Input
-                                                            type="text"
-                                                            placeholder="Enter city"
-                                                            value={filters.city}
-                                                            onChange={(e) => setFilters({...filters, city: e.target.value})}
-                                                            className="h-9 mt-0.5 text-sm"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Inactive</Label>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Inactive</Label>
                                                         <Select value={filters.last_visit_days} onValueChange={(v) => setFilters({...filters, last_visit_days: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                            <SelectTrigger className="h-8 text-xs">
                                                                 <SelectValue placeholder="All" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -815,13 +789,46 @@ export default function CustomersPage() {
                                                         </Select>
                                                     </div>
                                                 </div>
-
+                                                {/* Visits + Spent */}
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Visits</Label>
+                                                        <Select value={filters.total_visits} onValueChange={(v) => setFilters({...filters, total_visits: v})}>
+                                                            <SelectTrigger className="h-8 text-xs">
+                                                                <SelectValue placeholder="Any" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">Any</SelectItem>
+                                                                <SelectItem value="0">New (0)</SelectItem>
+                                                                <SelectItem value="1-5">1-5</SelectItem>
+                                                                <SelectItem value="6-10">6-10</SelectItem>
+                                                                <SelectItem value="10+">10+</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Spent</Label>
+                                                        <Select value={filters.total_spent} onValueChange={(v) => setFilters({...filters, total_spent: v})}>
+                                                            <SelectTrigger className="h-8 text-xs" data-testid="filter-total-spent">
+                                                                <SelectValue placeholder="Any" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">Any</SelectItem>
+                                                                <SelectItem value="0-500">&lt;500</SelectItem>
+                                                                <SelectItem value="500-2000">500-2K</SelectItem>
+                                                                <SelectItem value="2000-5000">2K-5K</SelectItem>
+                                                                <SelectItem value="5000-10000">5K-10K</SelectItem>
+                                                                <SelectItem value="10000+">10K+</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
                                                 {/* Sort By */}
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Sort By</Label>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Sort By</Label>
                                                         <Select value={filters.sort_by} onValueChange={(v) => setFilters({...filters, sort_by: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                            <SelectTrigger className="h-8 text-xs">
                                                                 <SelectValue />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -838,61 +845,50 @@ export default function CustomersPage() {
                                         )}
                                     </div>
 
-                                    <div className="border-t" />
-
                                     {/* === ADVANCED SECTION === */}
                                     <div data-testid="filter-section-advanced">
                                         <button
                                             onClick={() => toggleFilterGroup("advanced")}
-                                            className="flex items-center justify-between w-full py-2 text-sm font-semibold text-[#1A1A1A]"
+                                            className="flex items-center justify-between w-full px-2.5 py-2 rounded-lg bg-[#F8F8F8] hover:bg-[#F0F0F0] transition-colors"
                                             data-testid="filter-toggle-advanced"
                                         >
-                                            <span>Advanced</span>
-                                            {expandedFilterGroups.includes("advanced") ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                            <span className="text-xs font-bold text-[#1A1A1A] uppercase tracking-wider">Advanced</span>
+                                            <ChevronDown className={`w-3.5 h-3.5 text-gray-500 transition-transform duration-200 ${expandedFilterGroups.includes("advanced") ? "rotate-180" : ""}`} />
                                         </button>
                                         {expandedFilterGroups.includes("advanced") && (
-                                            <div className="space-y-3 pb-3">
-                                                {/* Visits + Spent */}
+                                            <div className="space-y-2 pt-2 pb-1 px-0.5">
+                                                {/* City + Type */}
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Visits</Label>
-                                                        <Select value={filters.total_visits} onValueChange={(v) => setFilters({...filters, total_visits: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
-                                                                <SelectValue placeholder="Any" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="all">Any</SelectItem>
-                                                                <SelectItem value="0">New (0)</SelectItem>
-                                                                <SelectItem value="1-5">1-5</SelectItem>
-                                                                <SelectItem value="6-10">6-10</SelectItem>
-                                                                <SelectItem value="10+">10+</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">City</Label>
+                                                        <Input
+                                                            type="text"
+                                                            placeholder="Enter city"
+                                                            value={filters.city}
+                                                            onChange={(e) => setFilters({...filters, city: e.target.value})}
+                                                            className="h-8 text-xs"
+                                                        />
                                                     </div>
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Spent</Label>
-                                                        <Select value={filters.total_spent} onValueChange={(v) => setFilters({...filters, total_spent: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm" data-testid="filter-total-spent">
-                                                                <SelectValue placeholder="Any" />
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Type</Label>
+                                                        <Select value={filters.customer_type} onValueChange={(v) => setFilters({...filters, customer_type: v})}>
+                                                            <SelectTrigger className="h-8 text-xs">
+                                                                <SelectValue placeholder="All" />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                <SelectItem value="all">Any</SelectItem>
-                                                                <SelectItem value="0-500">&lt;500</SelectItem>
-                                                                <SelectItem value="500-2000">500-2K</SelectItem>
-                                                                <SelectItem value="2000-5000">2K-5K</SelectItem>
-                                                                <SelectItem value="5000-10000">5K-10K</SelectItem>
-                                                                <SelectItem value="10000+">10K+</SelectItem>
+                                                                <SelectItem value="all">All types</SelectItem>
+                                                                <SelectItem value="normal">Normal</SelectItem>
+                                                                <SelectItem value="corporate">Corporate</SelectItem>
                                                             </SelectContent>
                                                         </Select>
                                                     </div>
                                                 </div>
-
                                                 {/* Diet + Time Slot */}
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Diet</Label>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Diet</Label>
                                                         <Select value={filters.diet_preference} onValueChange={(v) => setFilters({...filters, diet_preference: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                            <SelectTrigger className="h-8 text-xs">
                                                                 <SelectValue placeholder="All" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -905,9 +901,9 @@ export default function CustomersPage() {
                                                         </Select>
                                                     </div>
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Time Slot</Label>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Time Slot</Label>
                                                         <Select value={filters.preferred_time_slot} onValueChange={(v) => setFilters({...filters, preferred_time_slot: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                            <SelectTrigger className="h-8 text-xs">
                                                                 <SelectValue placeholder="All" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -920,13 +916,12 @@ export default function CustomersPage() {
                                                         </Select>
                                                     </div>
                                                 </div>
-
-                                                {/* Dining Type + Gender */}
+                                                {/* Dining + Gender */}
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Dining</Label>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Dining</Label>
                                                         <Select value={filters.preferred_dining_type} onValueChange={(v) => setFilters({...filters, preferred_dining_type: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                            <SelectTrigger className="h-8 text-xs">
                                                                 <SelectValue placeholder="All" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -938,9 +933,9 @@ export default function CustomersPage() {
                                                         </Select>
                                                     </div>
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Gender</Label>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Gender</Label>
                                                         <Select value={filters.gender} onValueChange={(v) => setFilters({...filters, gender: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm" data-testid="filter-gender">
+                                                            <SelectTrigger className="h-8 text-xs" data-testid="filter-gender">
                                                                 <SelectValue placeholder="All" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -951,13 +946,12 @@ export default function CustomersPage() {
                                                         </Select>
                                                     </div>
                                                 </div>
-
-                                                {/* Lead Source + WhatsApp */}
+                                                {/* Source + WhatsApp */}
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Source</Label>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Source</Label>
                                                         <Select value={filters.lead_source} onValueChange={(v) => setFilters({...filters, lead_source: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                            <SelectTrigger className="h-8 text-xs">
                                                                 <SelectValue placeholder="All" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -971,9 +965,9 @@ export default function CustomersPage() {
                                                         </Select>
                                                     </div>
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">WhatsApp</Label>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">WhatsApp</Label>
                                                         <Select value={filters.whatsapp_opt_in} onValueChange={(v) => setFilters({...filters, whatsapp_opt_in: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                            <SelectTrigger className="h-8 text-xs">
                                                                 <SelectValue placeholder="All" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -984,13 +978,12 @@ export default function CustomersPage() {
                                                         </Select>
                                                     </div>
                                                 </div>
-
                                                 {/* VIP + Blocked */}
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">VIP Status</Label>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">VIP</Label>
                                                         <Select value={filters.vip_flag} onValueChange={(v) => setFilters({...filters, vip_flag: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                            <SelectTrigger className="h-8 text-xs">
                                                                 <SelectValue placeholder="All" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -1001,9 +994,9 @@ export default function CustomersPage() {
                                                         </Select>
                                                     </div>
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Blocked</Label>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Blocked</Label>
                                                         <Select value={filters.is_blocked} onValueChange={(v) => setFilters({...filters, is_blocked: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                            <SelectTrigger className="h-8 text-xs">
                                                                 <SelectValue placeholder="All" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -1014,13 +1007,12 @@ export default function CustomersPage() {
                                                         </Select>
                                                     </div>
                                                 </div>
-
                                                 {/* Blacklist + Complaint */}
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Blacklist</Label>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Blacklist</Label>
                                                         <Select value={filters.blacklist_flag} onValueChange={(v) => setFilters({...filters, blacklist_flag: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                            <SelectTrigger className="h-8 text-xs">
                                                                 <SelectValue placeholder="All" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -1031,9 +1023,9 @@ export default function CustomersPage() {
                                                         </Select>
                                                     </div>
                                                     <div>
-                                                        <Label className="text-[10px] text-[#52525B] uppercase">Complaint</Label>
+                                                        <Label className="text-[10px] text-[#71717A] uppercase font-medium">Complaint</Label>
                                                         <Select value={filters.complaint_flag} onValueChange={(v) => setFilters({...filters, complaint_flag: v})}>
-                                                            <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                            <SelectTrigger className="h-8 text-xs">
                                                                 <SelectValue placeholder="All" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -1044,23 +1036,24 @@ export default function CustomersPage() {
                                                         </Select>
                                                     </div>
                                                 </div>
-
-                                                {/* Checkboxes Row */}
-                                                <div className="flex flex-wrap gap-3 pt-2">
-                                                    <label className="flex items-center gap-2 text-sm">
+                                                {/* Checkboxes */}
+                                                <div className="flex flex-wrap gap-3 pt-1">
+                                                    <label className="flex items-center gap-1.5 text-xs">
                                                         <Checkbox 
                                                             checked={filters.has_birthday_this_month}
                                                             onCheckedChange={(checked) => setFilters({...filters, has_birthday_this_month: checked})}
+                                                            className="h-3.5 w-3.5"
                                                         />
-                                                        <Cake className="w-3.5 h-3.5 text-pink-500" />
+                                                        <Cake className="w-3 h-3 text-pink-500" />
                                                         Birthday
                                                     </label>
-                                                    <label className="flex items-center gap-2 text-sm">
+                                                    <label className="flex items-center gap-1.5 text-xs">
                                                         <Checkbox 
                                                             checked={filters.has_anniversary_this_month}
                                                             onCheckedChange={(checked) => setFilters({...filters, has_anniversary_this_month: checked})}
+                                                            className="h-3.5 w-3.5"
                                                         />
-                                                        <Heart className="w-3.5 h-3.5 text-red-500" />
+                                                        <Heart className="w-3 h-3 text-red-500" />
                                                         Anniversary
                                                     </label>
                                                 </div>
@@ -1070,9 +1063,9 @@ export default function CustomersPage() {
 
                                     {/* Saved Segments */}
                                     {savedSegments.length > 0 && (
-                                        <div className="pt-2 border-t">
-                                            <Label className="text-[10px] text-[#52525B] uppercase">Saved Segments</Label>
-                                            <div className="flex flex-wrap gap-2 mt-1">
+                                        <div className="pt-1.5">
+                                            <Label className="text-[10px] text-[#71717A] uppercase font-medium px-0.5">Saved Segments</Label>
+                                            <div className="flex flex-wrap gap-1.5 mt-1">
                                                 {savedSegments.map(segment => (
                                                     <button
                                                         key={segment.id}
@@ -1080,7 +1073,7 @@ export default function CustomersPage() {
                                                             loadSegment(segment);
                                                             setShowFilters(false);
                                                         }}
-                                                        className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 rounded-full"
+                                                        className="px-2.5 py-1 text-[11px] bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
                                                     >
                                                         {segment.name} ({segment.customer_count})
                                                     </button>
@@ -1092,20 +1085,20 @@ export default function CustomersPage() {
                             </ScrollArea>
 
                             {/* Footer */}
-                            <div className="p-3 border-t bg-white flex gap-2">
+                            <div className="px-3 py-2.5 border-t border-gray-100 bg-white flex gap-2">
                                 {activeFiltersCount > 0 && (
                                     <Button 
                                         onClick={() => setShowSaveSegmentDialog(true)}
                                         variant="outline"
-                                        className="flex-1 h-10 rounded-xl border-[#F26B33] text-[#F26B33] text-sm"
+                                        className="flex-1 h-9 rounded-xl border-[#F26B33] text-[#F26B33] text-xs font-semibold"
                                         data-testid="save-segment-btn"
                                     >
-                                        <Save className="w-4 h-4 mr-1" /> Save
+                                        <Save className="w-3.5 h-3.5 mr-1" /> Save
                                     </Button>
                                 )}
                                 <Button 
                                     onClick={() => setShowFilters(false)}
-                                    className="flex-1 h-10 rounded-xl bg-[#F26B33] hover:bg-[#D85A2A] text-white font-semibold text-sm"
+                                    className="flex-1 h-9 rounded-xl bg-[#F26B33] hover:bg-[#D85A2A] text-white font-semibold text-xs"
                                     data-testid="apply-filters-btn"
                                 >
                                     Show {customers.length} Customers
