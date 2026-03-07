@@ -156,7 +156,7 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
         {"$match": {"user_id": user_id}},
         {"$group": {
             "_id": None,
-            "total_revenue": {"$sum": "$total_amount"},
+            "total_revenue": {"$sum": "$order_amount"},
             "count": {"$sum": 1}
         }}
     ]
