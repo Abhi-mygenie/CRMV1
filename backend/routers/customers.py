@@ -1001,7 +1001,11 @@ async def create_segment(segment_data: SegmentCreate, user: dict = Depends(get_c
     segment_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc).isoformat()
     
-    customer_count = await count_customers_by_filters(user["id"], segment_data.filters)
+    # Use frontend-provided count if available, otherwise calculate
+    if segment_data.customer_count is not None:
+        customer_count = segment_data.customer_count
+    else:
+        customer_count = await count_customers_by_filters(user["id"], segment_data.filters)
     
     segment_doc = {
         "id": segment_id,

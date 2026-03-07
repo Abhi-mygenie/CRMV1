@@ -449,6 +449,7 @@ class CouponUsage(BaseModel):
 class SegmentCreate(BaseModel):
     name: str
     filters: dict
+    customer_count: Optional[int] = None  # Accept from frontend
 
 class SegmentUpdate(BaseModel):
     name: Optional[str] = None

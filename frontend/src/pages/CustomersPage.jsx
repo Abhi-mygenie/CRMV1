@@ -231,22 +231,30 @@ export default function CustomersPage() {
         }
 
         try {
+            // Save ALL filter values (including "all")
             const segmentFilters = {
-                tier: filters.tier !== "all" ? filters.tier : undefined,
-                customer_type: filters.customer_type !== "all" ? filters.customer_type : undefined,
-                last_visit_days: filters.last_visit_days !== "all" ? filters.last_visit_days : undefined,
-                city: filters.city || undefined,
-                search: search || undefined
+                tier: filters.tier,
+                customer_type: filters.customer_type,
+                last_visit_days: filters.last_visit_days,
+                city: filters.city || "",
+                total_visits: filters.total_visits,
+                total_spent: filters.total_spent,
+                diet_preference: filters.diet_preference,
+                preferred_time_slot: filters.preferred_time_slot,
+                preferred_dining_type: filters.preferred_dining_type,
+                gender: filters.gender,
+                lead_source: filters.lead_source,
+                whatsapp_opt_in: filters.whatsapp_opt_in,
+                vip_flag: filters.vip_flag,
+                has_birthday_this_month: filters.has_birthday_this_month,
+                has_anniversary_this_month: filters.has_anniversary_this_month,
+                search: search || ""
             };
-
-            // Remove undefined values
-            Object.keys(segmentFilters).forEach(key => 
-                segmentFilters[key] === undefined && delete segmentFilters[key]
-            );
 
             await api.post('/segments', {
                 name: segmentName,
-                filters: segmentFilters
+                filters: segmentFilters,
+                customer_count: customers.length  // Pass displayed count
             });
 
             toast.success(`Segment "${segmentName}" saved successfully!`);
