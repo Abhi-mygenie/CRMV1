@@ -110,22 +110,23 @@ export default function DashboardPage() {
         checkMigrationStatus();
     }, []);
 
+    const fetchDashboardData = async () => {
+        try {
+            const [statsRes, customersRes] = await Promise.all([
+                api.get("/analytics/dashboard"),
+                api.get("/customers?limit=5")
+            ]);
+            setStats(statsRes.data);
+            setRecentCustomers(customersRes.data);
+        } catch (err) {
+            toast.error("Failed to load dashboard");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [statsRes, customersRes] = await Promise.all([
-                    api.get("/analytics/dashboard"),
-                    api.get("/customers?limit=5")
-                ]);
-                setStats(statsRes.data);
-                setRecentCustomers(customersRes.data);
-            } catch (err) {
-                toast.error("Failed to load dashboard");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
+        fetchDashboardData();
     }, []);
 
     useEffect(() => {
@@ -154,6 +155,13 @@ export default function DashboardPage() {
         );
     }
 
+    const handleMigrationComplete = () => {
+        setShowMigrationOverlay(false);
+        // Refresh dashboard data after migration completes
+        fetchDashboardData();
+        toast.success("Migration completed! Dashboard refreshed.");
+    };
+
     return (
         <MobileLayout>
             {/* Migration Overlay */}
@@ -161,7 +169,7 @@ export default function DashboardPage() {
                 <MigrationOverlay 
                     api={api}
                     onClose={() => setShowMigrationOverlay(false)}
-                    onComplete={() => setShowMigrationOverlay(false)}
+                    onComplete={handleMigrationComplete}
                 />
             )}
             
