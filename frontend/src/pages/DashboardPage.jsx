@@ -321,6 +321,9 @@ export default function DashboardPage() {
                         </div>
                         <p className="text-xl font-bold text-[#2B2B2B] font-heading">
                             {stats?.repeat_2_plus || 0}
+                            <span className="text-xs font-normal text-[#52525B] ml-1">
+                                ({stats?.total_customers > 0 ? ((stats.repeat_2_plus / stats.total_customers) * 100).toFixed(1) : 0}%)
+                            </span>
                         </p>
                     </div>
                     <div className="stats-card-compact" data-testid="repeat-5-card">
@@ -330,6 +333,9 @@ export default function DashboardPage() {
                         </div>
                         <p className="text-xl font-bold text-[#2B2B2B] font-heading">
                             {stats?.repeat_5_plus || 0}
+                            <span className="text-xs font-normal text-[#52525B] ml-1">
+                                ({stats?.total_customers > 0 ? ((stats.repeat_5_plus / stats.total_customers) * 100).toFixed(1) : 0}%)
+                            </span>
                         </p>
                     </div>
                     <div className="stats-card-compact" data-testid="repeat-10-card">
@@ -339,6 +345,9 @@ export default function DashboardPage() {
                         </div>
                         <p className="text-xl font-bold text-[#2B2B2B] font-heading">
                             {stats?.repeat_10_plus || 0}
+                            <span className="text-xs font-normal text-[#52525B] ml-1">
+                                ({stats?.total_customers > 0 ? ((stats.repeat_10_plus / stats.total_customers) * 100).toFixed(1) : 0}%)
+                            </span>
                         </p>
                     </div>
                 </div>
