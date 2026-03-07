@@ -166,7 +166,7 @@ def build_customer_query(user_id: str, filters: dict) -> dict:
         query["total_points"] = query.get("total_points", {})
         query["total_points"]["$lte"] = filters["points_max"]
     
-    # Visits range
+    # Visits range (numeric)
     if filters.get("visits_min") is not None:
         query["total_visits"] = query.get("total_visits", {})
         query["total_visits"]["$gte"] = filters["visits_min"]
@@ -174,7 +174,33 @@ def build_customer_query(user_id: str, filters: dict) -> dict:
         query["total_visits"] = query.get("total_visits", {})
         query["total_visits"]["$lte"] = filters["visits_max"]
     
-    # Spent range
+    # Visits filter (string-based like "6-10", "10+", etc)
+    total_visits = filters.get("total_visits")
+    if total_visits and total_visits != "all":
+        if total_visits == "0":
+            query["total_visits"] = 0
+        elif total_visits == "1-5":
+            query["total_visits"] = {"$gte": 1, "$lte": 5}
+        elif total_visits == "6-10":
+            query["total_visits"] = {"$gte": 6, "$lte": 10}
+        elif total_visits == "10+":
+            query["total_visits"] = {"$gt": 10}
+    
+    # Total spent filter (string-based like "0-500", "10000+", etc)
+    total_spent_filter = filters.get("total_spent")
+    if total_spent_filter and total_spent_filter != "all":
+        if total_spent_filter == "0-500":
+            query["total_spent"] = {"$lt": 500}
+        elif total_spent_filter == "500-2000":
+            query["total_spent"] = {"$gte": 500, "$lte": 2000}
+        elif total_spent_filter == "2000-5000":
+            query["total_spent"] = {"$gte": 2000, "$lte": 5000}
+        elif total_spent_filter == "5000-10000":
+            query["total_spent"] = {"$gte": 5000, "$lte": 10000}
+        elif total_spent_filter == "10000+":
+            query["total_spent"] = {"$gte": 10000}
+    
+    # Spent range (numeric)
     if filters.get("spent_min") is not None:
         query["total_spent"] = query.get("total_spent", {})
         query["total_spent"]["$gte"] = filters["spent_min"]

@@ -477,7 +477,7 @@ export const SegmentsPageContent = () => {
                                     {/* Filter Tags - only for non-default segments */}
                                     {!segment.isDefault && segment.filters && Object.keys(segment.filters).length > 0 && (
                                         <div className="flex flex-wrap gap-1.5 mb-3 ml-6">
-                                            {segment.filters.tier && (
+                                            {segment.filters.tier && segment.filters.tier !== "all" && (
                                                 <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs">
                                                     Tier: {segment.filters.tier}
                                                 </span>
@@ -487,14 +487,24 @@ export const SegmentsPageContent = () => {
                                                     City: {segment.filters.city}
                                                 </span>
                                             )}
-                                            {segment.filters.customer_type && (
+                                            {segment.filters.customer_type && segment.filters.customer_type !== "all" && (
                                                 <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs">
                                                     Type: {segment.filters.customer_type}
                                                 </span>
                                             )}
-                                            {segment.filters.last_visit_days && (
+                                            {segment.filters.last_visit_days && segment.filters.last_visit_days !== "all" && (
                                                 <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs">
                                                     Inactive: {segment.filters.last_visit_days}+ days
+                                                </span>
+                                            )}
+                                            {segment.filters.total_visits && segment.filters.total_visits !== "all" && (
+                                                <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs">
+                                                    Visits: {segment.filters.total_visits}
+                                                </span>
+                                            )}
+                                            {segment.filters.total_spent && segment.filters.total_spent !== "all" && (
+                                                <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs">
+                                                    Spent: {segment.filters.total_spent}
                                                 </span>
                                             )}
                                             {segment.filters.search && (
