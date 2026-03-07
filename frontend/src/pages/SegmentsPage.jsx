@@ -473,6 +473,21 @@ export const SegmentsPageContent = () => {
                                                 >
                                                     <Eye className="w-4 h-4" />
                                                 </button>
+                                                {!segment.isDefault && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setEditingSegment(segment);
+                                                            setSegmentName(segment.name);
+                                                            setShowEditDialog(true);
+                                                        }}
+                                                        className="text-gray-400 hover:text-[#F26B33] p-0.5 rounded transition-colors"
+                                                        title="Edit segment name"
+                                                        data-testid={`edit-segment-inline-${segment.id}`}
+                                                    >
+                                                        <Edit2 className="w-4 h-4" />
+                                                    </button>
+                                                )}
                                                 <Badge className={`${hasConfig ? (isConfigActive ? 'bg-[#25D366]' : 'bg-amber-500') : 'bg-gray-400'} text-white text-xs`}>
                                                     {hasConfig ? (isConfigActive ? "Active" : "Paused") : "Not Configured"}
                                                 </Badge>
@@ -600,7 +615,7 @@ export const SegmentsPageContent = () => {
                                         </div>
                                     )}
 
-                                    {/* Action Buttons - matching WhatsApp Automation style (centered Configure button) */}
+                                    {/* Action Buttons - Configure only */}
                                     <div className="flex gap-2">
                                         <Button
                                             variant="outline"
@@ -615,21 +630,6 @@ export const SegmentsPageContent = () => {
                                             <Settings className="w-4 h-4 mr-1" />
                                             {hasConfig ? "Edit" : "Configure"}
                                         </Button>
-                                        {!segment.isDefault && (
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => {
-                                                    setEditingSegment(segment);
-                                                    setSegmentName(segment.name);
-                                                    setShowEditDialog(true);
-                                                }}
-                                                className="h-9"
-                                                data-testid={`edit-segment-${segment.id}`}
-                                            >
-                                                <Edit2 className="w-4 h-4" />
-                                            </Button>
-                                        )}
                                     </div>
                                 </CardContent>
                             </Card>
