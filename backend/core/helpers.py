@@ -150,10 +150,13 @@ def build_customer_query(user_id: str, filters: dict) -> dict:
         query["customer_type"] = filters["customer_type"]
     
     # Last visit days (inactive filter)
-    if filters.get("last_visit_days"):
-        cutoff_date = (datetime.now(timezone.utc) - timedelta(days=int(filters["last_visit_days"]))).isoformat()
-        query["$or"] = query.get("$or", [])
-        query["last_visit"] = {"$lt": cutoff_date}
+    if filters.get("last_visit_days") and filters["last_visit_days"] != "all":
+        try:
+            days = int(filters["last_visit_days"])
+            cutoff_date = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+            query["last_visit"] = {"$lt": cutoff_date}
+        except (ValueError, TypeError):
+            pass
     
     # Points range
     if filters.get("points_min") is not None:
