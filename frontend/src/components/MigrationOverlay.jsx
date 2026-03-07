@@ -194,7 +194,7 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                                     <h3 className="font-semibold text-[#2B2B2B] font-body">Sync Customers</h3>
                                     {migrationStatus?.customers_synced > 0 && (
                                         <p className="text-xs text-[#329937] flex items-center gap-1 font-body">
-                                            <Check className="w-3 h-3" /> {migrationStatus.customers_synced} synced
+                                            <Check className="w-3 h-3" /> {migrationStatus.customers_synced.toLocaleString()}{migrationStatus.total_customers_in_pos > 0 ? ` / ${migrationStatus.total_customers_in_pos.toLocaleString()}` : ''} synced
                                         </p>
                                     )}
                                 </div>
@@ -257,7 +257,7 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                                     <h3 className="font-semibold text-[#2B2B2B] font-body">Sync Orders</h3>
                                     {migrationStatus?.orders_synced > 0 && (
                                         <p className="text-xs text-[#329937] flex items-center gap-1 font-body">
-                                            <Check className="w-3 h-3" /> {migrationStatus.orders_synced} synced
+                                            <Check className="w-3 h-3" /> {migrationStatus.orders_synced.toLocaleString()}{migrationStatus.total_orders_in_pos > 0 ? ` / ${migrationStatus.total_orders_in_pos.toLocaleString()}` : ''} synced
                                         </p>
                                     )}
                                 </div>

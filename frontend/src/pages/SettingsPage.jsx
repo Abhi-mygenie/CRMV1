@@ -637,7 +637,7 @@ export default function SettingsPage() {
                                             </div>
                                             {migrationStatus?.customers_synced > 0 && (
                                                 <Badge className="bg-green-100 text-green-700 border-0">
-                                                    {migrationStatus.customers_synced} synced
+                                                    {migrationStatus.customers_synced.toLocaleString()}{migrationStatus.total_customers_in_pos > 0 ? ` / ${migrationStatus.total_customers_in_pos.toLocaleString()}` : ''} synced
                                                 </Badge>
                                             )}
                                         </div>
@@ -697,7 +697,7 @@ export default function SettingsPage() {
                                             </div>
                                             {migrationStatus?.orders_synced > 0 && (
                                                 <Badge className="bg-green-100 text-green-700 border-0">
-                                                    {migrationStatus.orders_synced} synced
+                                                    {migrationStatus.orders_synced.toLocaleString()}{migrationStatus.total_orders_in_pos > 0 ? ` / ${migrationStatus.total_orders_in_pos.toLocaleString()}` : ''} synced
                                                 </Badge>
                                             )}
                                         </div>

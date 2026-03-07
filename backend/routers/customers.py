@@ -56,8 +56,14 @@ async def background_customer_sync(user_id: str, mygenie_token: str):
             
             data = response.json()
             customer_list = data.get("customers", [])
-            total_customers = len(customer_list)
+            total_customers = data.get("total_customers", len(customer_list))
             customer_sync_status[user_id]["total_customers"] = total_customers
+            
+            # Store total from POS in user record
+            await db.users.update_one(
+                {"id": user_id},
+                {"$set": {"total_customers_in_pos": total_customers}}
+            )
             
             for i, mygenie_customer in enumerate(customer_list):
                 customer_data = {

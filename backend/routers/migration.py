@@ -67,6 +67,13 @@ async def background_order_sync(user_id: str, mygenie_token: str):
                 sync_status[user_id]["total_pages"] = last_page
                 sync_status[user_id]["total_orders"] = total_orders
                 
+                # Store total from POS in user record (only on first page)
+                if page == 1:
+                    await db.users.update_one(
+                        {"id": user_id},
+                        {"$set": {"total_orders_in_pos": total_orders}}
+                    )
+                
                 for mygenie_order in order_list:
                     user_obj = mygenie_order.get("user") or {}
                     pos_customer_id = mygenie_order.get("user_id")
@@ -237,6 +244,8 @@ async def get_migration_status(user: dict = Depends(get_current_user)):
         "migration_skipped_permanently": user_record.get("migration_skipped_permanently", False),
         "customers_synced": customers_count,
         "orders_synced": orders_count,
+        "total_customers_in_pos": user_record.get("total_customers_in_pos", 0),
+        "total_orders_in_pos": user_record.get("total_orders_in_pos", 0),
         "last_customer_sync": user_record.get("last_customer_sync_at"),
         "last_order_sync": user_record.get("last_order_sync_at")
     }
