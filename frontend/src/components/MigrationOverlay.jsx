@@ -223,29 +223,45 @@ export function MigrationOverlay({ api, onClose, onComplete }) {
                                 ) : migrationStatus?.customers_synced > 0 ? "Sync Again" : "Sync Customers"}
                             </Button>
                             {migrationStatus?.customers_synced > 0 && (
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button variant="outline" className="h-10 rounded-xl text-red-600 border-red-200 hover:bg-red-50">
-                                            Revert
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Revert Customer Sync?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                This will delete all {migrationStatus.customers_synced} synced customers. This action cannot be undone.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={handleRevertCustomers} className="bg-red-600 hover:bg-red-700">
+                                migrationStatus?.orders_synced > 0 ? (
+                                    <Button 
+                                        variant="outline" 
+                                        className="h-10 rounded-xl text-gray-400 border-gray-200 cursor-not-allowed"
+                                        disabled
+                                        title="Revert orders first"
+                                    >
+                                        Revert
+                                    </Button>
+                                ) : (
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant="outline" className="h-10 rounded-xl text-red-600 border-red-200 hover:bg-red-50">
                                                 Revert
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Revert Customer Sync?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This will delete all {migrationStatus.customers_synced} synced customers. This action cannot be undone.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={handleRevertCustomers} className="bg-red-600 hover:bg-red-700">
+                                                    Revert
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                )
                             )}
                         </div>
+                        {migrationStatus?.customers_synced > 0 && migrationStatus?.orders_synced > 0 && (
+                            <p className="text-xs text-[#A1A1AA] mt-2 flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" /> Revert orders first to revert customers
+                            </p>
+                        )}
                     </div>
 
                     {/* Step 2: Sync Orders */}

@@ -418,7 +418,20 @@ async def revert_migration(user: dict = Depends(get_current_user)):
 async def revert_customers(user: dict = Depends(get_current_user)):
     """
     Revert only synced customers - keeps orders intact
+    Blocked if synced orders exist (must revert orders first)
     """
+    # Check if synced orders exist - cannot revert customers while orders depend on them
+    orders_count = await db.orders.count_documents({
+        "user_id": user["id"],
+        "mygenie_synced": True
+    })
+    
+    if orders_count > 0:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot revert customers while {orders_count} synced orders exist. Please revert orders first."
+        )
+    
     # Delete synced customers (only those marked as mygenie_synced)
     customers_result = await db.customers.delete_many({
         "user_id": user["id"],
