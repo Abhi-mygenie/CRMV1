@@ -1,201 +1,63 @@
 # DinePoints CRM V1 - Product Requirements Document
 
-## Overview
-Restaurant CRM system for customer management, loyalty points, and WhatsApp marketing integration with MyGenie POS.
+## Original Problem Statement
+Pull and build CRMV1 from GitHub: https://github.com/Abhi-mygenie/CRMV1.git with MongoDB database import script
 
-## Repository
-- Source: https://github.com/Abhi-mygenie/CRMV1
-- Stack: React (Frontend) + FastAPI (Backend) + MongoDB
+## Architecture
+- **Frontend**: React 19 + Tailwind CSS + shadcn/ui + Capacitor (mobile-ready)
+- **Backend**: FastAPI (Python) with Motor (async MongoDB driver)
+- **Database**: MongoDB with 15+ collections
+- **Scheduler**: APScheduler for loyalty cron jobs
 
----
+## User Personas
+1. **Restaurant Owners** - Manage customers, loyalty programs, send WhatsApp campaigns
+2. **Demo Users** - Explore features with pre-loaded test data
 
-## Migration API Endpoints (Updated March 2026)
+## Core Requirements (Static)
+- Customer management with loyalty tiers
+- Points earning/redemption system
+- Wallet deposits and transactions
+- Coupon generation and tracking
+- WhatsApp template messaging
+- Feedback collection and analytics
+- MyGenie POS data migration
 
-### Customer Migration (Step 1)
-```
-POST /api/v1/vendoremployee/whatsappcrm/customer-migration
-Authorization: Bearer {mygenie_token}
-```
+## What's Been Implemented (March 7, 2026)
+- ✅ GitHub repository cloned and built
+- ✅ Backend dependencies installed (apscheduler, qrcode, pillow)
+- ✅ Frontend dependencies installed via yarn
+- ✅ MongoDB seeded with 4,409 documents
+- ✅ Demo login mode functional
+- ✅ All pages working: Dashboard, Customers, Templates, Feedback, Settings
 
-**Field Mappings:**
-| API Field | CRM Field |
-|-----------|-----------|
-| `name` | `name` |
-| `phone` | `phone` |
-| `dob` | `dob` |
-| `anniversary` | `anniversary` |
-| `country_code` | `country_code` |
-| `customer_type` | `customer_type` |
-| `address` | `address` |
-| `city` | `city` |
-| `pincode` | `pincode` |
-| `pos_id` | `pos_id` |
-| `id` | `pos_customer_id` |
+## Collections Seeded
+- users: 3 documents
+- loyalty_settings: 3 documents  
+- customers: 85 documents
+- segments: 4 documents
+- coupons: 3 documents
+- orders: 794 documents
+- order_items: 2,560 documents
+- points_transactions: 826 documents
+- wallet_transactions: 61 documents
+- feedback: 20 documents
+- automation_rules: 22 documents
+- whatsapp_templates: 23 documents
 
-### Order Migration (Step 2)
-```
-POST /api/v1/vendoremployee/whatsappcrm/customer-order-migration?page=N
-Authorization: Bearer {mygenie_token}
-```
-
-**Pagination:**
-- 25 orders per page
-- Response includes: `current_page`, `last_page`, `total_orders`
-
-**Field Mappings:**
-| API Field | CRM Field |
-|-----------|-----------|
-| `id` | `pos_order_id` |
-| `restaurant_order_id` | `restaurant_order_id` |
-| `user.phone` | `cust_mobile` |
-| `user.f_name + l_name` | `cust_name` |
-| `orderDetails` | `items` |
-| `orderDetails[].food_details.name` | `items[].item_name` |
-| `orderDetails[].price` | `items[].item_price` |
-| `order_status` | `order_status` |
-
----
-
-## Feature Toggles
-
-All features are **DISABLED by default** during migration:
-
-| Feature | Toggle Field | Tab Location |
-|---------|--------------|--------------|
-| Loyalty Points | `loyalty_enabled` | Settings > Loyalty |
-| Coupons | `coupon_enabled` | Settings > Coupons |
-| Wallet | `wallet_enabled` | Settings > Wallet |
-
-When disabled:
-- No points calculations during order migration
-- No coupon/wallet features visible in UI
-- Safe for data migration without side effects
-
----
-
-## Database Collections
-
-| Collection | Documents | Description |
-|------------|-----------|-------------|
-| users | 3 | Restaurant owner accounts |
-| loyalty_settings | 3 | Points/coupon/wallet config |
-| customers | 1,480+ | Customer profiles |
-| segments | 4 | Marketing segments |
-| coupons | 3 | Promotional codes |
-| orders | 5,000+ | Order history |
-| order_items | 5,000+ | Individual items for analytics |
-| points_transactions | 826 | Points history |
-| wallet_transactions | 61 | Wallet history |
-| feedback | 20 | Customer reviews |
-| automation_rules | 22 | WhatsApp automation |
-| whatsapp_templates | 23 | Message templates |
-
----
-
-## User Accounts (Seeded)
-
-| Email | Restaurant | Password |
-|-------|------------|----------|
-| demo@restaurant.com | Demo Restaurant | (check db) |
-| owner@18march.com | 18march | test123 |
-| owner@youngmonk.com | Young Monk Cafe | (check db) |
-| owner@kunafamahal.com | Kunafa Mahal | (check db) |
-
----
-
-## Settings Tabs
-
-1. **Migration** - Data sync from MyGenie POS
-2. **Profile** - Restaurant profile settings
-3. **WhatsApp** - Automation rules & templates
-4. **Loyalty** - Points earning/redemption (toggle + settings)
-5. **Coupons** - Coupon management (toggle + list)
-6. **Wallet** - Wallet feature (toggle + coming soon)
-
----
-
-## Customer Filters
-
-### Basic Filters
-- Tier (Bronze/Silver/Gold/Platinum)
-- Customer Type
-- City
-- Inactive For (Win-back)
-- Total Visits
-- Total Spent
-
-### Marketing Filters
-- Lead Source
-- Gender
-- WhatsApp Opt-In
-
-### Other Filters
-- Dining Preferences
-- Special Occasions
-- Loyalty & Wallet
-
----
-
-## Background Sync Features
-
-### Customer Sync
-- Runs in background
-- Progress: "Syncing customers... 100/1432"
-- Endpoint: `GET /api/customers/sync-status`
-
-### Order Sync
-- Runs in background with pagination
-- Progress: "Syncing orders... 1700/7000"
-- Endpoint: `GET /api/migration/sync-orders/status`
-
----
-
-## What's Implemented (March 6, 2026)
-
-- [x] Repository cloned and built
-- [x] Seed script with toggle defaults
-- [x] Customer migration with correct field mappings
-- [x] Order migration with pagination (80+ pages)
-- [x] Background sync with progress display
-- [x] Customer stats update (total_visits, total_spent, last_visit)
-- [x] Revert functionality with AlertDialog
-- [x] Segments tab bug fix
-- [x] Filter reorganization
-- [x] Feature toggles (Loyalty/Coupon/Wallet) - all disabled by default
-- [x] Separate tabs for each toggle
-
----
-
-## Backlog
-
+## Prioritized Backlog
 ### P0 (Critical)
-- None currently
+- None - core functionality working
 
-### P1 (High)
-- Wallet features implementation
-- WhatsApp integration testing
+### P1 (High Priority)
+- Configure WhatsApp API key for messaging
+- Enable loyalty/coupon/wallet features (disabled by default)
 
-### P2 (Medium)
-- Migration summary dashboard
-- Bulk customer actions
+### P2 (Medium Priority)
+- Analytics dashboard with charts
+- Customer retention reports
 - Export functionality
 
-### P3 (Low)
-- Advanced analytics
-- Multi-language support
-
----
-
-## Running the Seed Script
-
-```bash
-cd /app/db_export
-
-# Update/Upsert mode (default)
-python seed_database.py
-
-# Clear and fresh import
-python seed_database.py --clear
-```
-
-**Note:** All feature toggles will be set to `false` (disabled) by default.
+## Next Tasks
+1. WhatsApp API integration setup
+2. Enable feature toggles in Settings
+3. Test customer sync with MyGenie POS
