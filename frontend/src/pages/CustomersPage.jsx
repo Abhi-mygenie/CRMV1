@@ -663,51 +663,62 @@ export default function CustomersPage() {
                     </Button>
                 </div>
 
-                {/* Sorting Tabs - Orange non-selected, Green selected */}
-                <div className="flex gap-2 overflow-x-auto pb-3 mb-3 -mx-4 px-4 scrollbar-hide">
+                {/* Sorting Tabs - Smaller compact chips */}
+                <div className="flex gap-1.5 overflow-x-auto pb-3 mb-3 -mx-4 px-4 scrollbar-hide">
                     <button
-                        onClick={() => setFilters({...filters, sort_by: "created_at", sort_order: "desc"})}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all font-body ${
-                            filters.sort_by === "created_at" 
+                        onClick={() => setFilters({...filters, sort_by: "created_at", sort_order: "desc", inactive_days: null})}
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all font-body ${
+                            filters.sort_by === "created_at" && !filters.inactive_days
                                 ? 'bg-[#329937] text-white' 
                                 : 'bg-[#F5F5F5] text-[#F26B33] hover:bg-[#F26B33]/10'
                         }`}
                         data-testid="sort-tab-recent"
                     >
-                        Recent {filters.sort_by === "created_at" && <Check className="w-4 h-4" />}
+                        Recent {filters.sort_by === "created_at" && !filters.inactive_days && <Check className="w-3 h-3" />}
                     </button>
                     <button
-                        onClick={() => setFilters({...filters, sort_by: "total_visits", sort_order: "desc"})}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all font-body ${
+                        onClick={() => setFilters({...filters, sort_by: "total_visits", sort_order: "desc", inactive_days: null})}
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all font-body ${
                             filters.sort_by === "total_visits" 
                                 ? 'bg-[#329937] text-white' 
                                 : 'bg-[#F5F5F5] text-[#F26B33] hover:bg-[#F26B33]/10'
                         }`}
                         data-testid="sort-tab-most-visited"
                     >
-                        Most Visited {filters.sort_by === "total_visits" && <Check className="w-4 h-4" />}
+                        Visited {filters.sort_by === "total_visits" && <Check className="w-3 h-3" />}
                     </button>
                     <button
-                        onClick={() => setFilters({...filters, sort_by: "total_spent", sort_order: "desc"})}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all font-body ${
+                        onClick={() => setFilters({...filters, sort_by: "total_spent", sort_order: "desc", inactive_days: null})}
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all font-body ${
                             filters.sort_by === "total_spent" 
                                 ? 'bg-[#329937] text-white' 
                                 : 'bg-[#F5F5F5] text-[#F26B33] hover:bg-[#F26B33]/10'
                         }`}
                         data-testid="sort-tab-most-spent"
                     >
-                        Most Spent {filters.sort_by === "total_spent" && <Check className="w-4 h-4" />}
+                        Spent {filters.sort_by === "total_spent" && <Check className="w-3 h-3" />}
                     </button>
                     <button
-                        onClick={() => setFilters({...filters, sort_by: "total_points", sort_order: "desc"})}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all font-body ${
+                        onClick={() => setFilters({...filters, sort_by: "total_points", sort_order: "desc", inactive_days: null})}
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all font-body ${
                             filters.sort_by === "total_points" 
                                 ? 'bg-[#329937] text-white' 
                                 : 'bg-[#F5F5F5] text-[#F26B33] hover:bg-[#F26B33]/10'
                         }`}
                         data-testid="sort-tab-highest-points"
                     >
-                        Highest Points {filters.sort_by === "total_points" && <Check className="w-4 h-4" />}
+                        Points {filters.sort_by === "total_points" && <Check className="w-3 h-3" />}
+                    </button>
+                    <button
+                        onClick={() => setFilters({...filters, inactive_days: 30, sort_by: "last_visit", sort_order: "asc"})}
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all font-body ${
+                            filters.inactive_days === 30
+                                ? 'bg-[#EF4444] text-white' 
+                                : 'bg-[#F5F5F5] text-[#EF4444] hover:bg-[#EF4444]/10'
+                        }`}
+                        data-testid="sort-tab-inactive"
+                    >
+                        Inactive (30d) {filters.inactive_days === 30 && <Check className="w-3 h-3" />}
                     </button>
                 </div>
 
