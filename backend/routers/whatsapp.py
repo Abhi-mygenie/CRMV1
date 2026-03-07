@@ -406,6 +406,261 @@ async def submit_custom_template(template_id: str, user: dict = Depends(get_curr
     return {"message": "Template submitted for approval", "id": template_id}
 
 
+# ---- Meta API Integration (Stage 1) ----
+
+@router.post("/meta/create-template")
+async def create_meta_template(payload: dict, user: dict = Depends(get_current_user)):
+    """
+    Stage 1: Create a WhatsApp template on Meta using Graph API.
+    Transforms our template format to Meta's required format.
+    """
+    # Get user's Meta credentials
+    user_doc = await db.users.find_one(
+        {"id": user["id"]}, 
+        {"meta_waba_id": 1, "meta_access_token": 1}
+    )
+    
+    if not user_doc:
+        raise HTTPException(status_code=400, detail="User not found")
+    
+    waba_id = user_doc.get("meta_waba_id")
+    access_token = user_doc.get("meta_access_token")
+    
+    if not waba_id or not access_token:
+        raise HTTPException(
+            status_code=400, 
+            detail="Meta WABA ID and Access Token are required. Please configure them in Settings."
+        )
+    
+    # Build Meta API payload
+    template_name = payload.get("template_name", "").strip().lower().replace(" ", "_")
+    category = payload.get("category", "utility").upper()
+    language = payload.get("language", "en")
+    
+    components = []
+    
+    # Header component
+    header_type = payload.get("header_type", "none")
+    if header_type != "none":
+        header_component = {
+            "type": "HEADER",
+            "format": header_type.upper()
+        }
+        if header_type == "text":
+            header_text = payload.get("header_content", "")
+            header_component["text"] = header_text
+            # Add example if header has variables
+            header_examples = payload.get("header_examples", [])
+            if "{{" in header_text and header_examples:
+                header_component["example"] = {"header_text": header_examples}
+        components.append(header_component)
+    
+    # Body component (required)
+    body_text = payload.get("body", "")
+    if not body_text:
+        raise HTTPException(status_code=400, detail="Body text is required")
+    
+    body_component = {
+        "type": "BODY",
+        "text": body_text
+    }
+    
+    # Add body examples if variables exist
+    body_examples = payload.get("body_examples", [])
+    if "{{" in body_text and body_examples:
+        body_component["example"] = {"body_text": [body_examples]}
+    
+    components.append(body_component)
+    
+    # Footer component (optional)
+    footer_text = payload.get("footer", "")
+    if footer_text:
+        components.append({
+            "type": "FOOTER",
+            "text": footer_text
+        })
+    
+    # Buttons component (optional)
+    buttons = payload.get("buttons", [])
+    if buttons:
+        button_components = []
+        for btn in buttons:
+            btn_type = btn.get("type", "QUICK_REPLY").upper()
+            btn_obj = {"type": btn_type, "text": btn.get("text", "")}
+            if btn_type == "URL":
+                btn_obj["url"] = btn.get("url", "")
+            elif btn_type == "PHONE_NUMBER":
+                btn_obj["phone_number"] = btn.get("phone_number", "")
+            button_components.append(btn_obj)
+        
+        if button_components:
+            components.append({
+                "type": "BUTTONS",
+                "buttons": button_components
+            })
+    
+    meta_payload = {
+        "name": template_name,
+        "language": language,
+        "category": category,
+        "components": components
+    }
+    
+    # Call Meta Graph API
+    meta_url = f"https://graph.facebook.com/v17.0/{waba_id}/message_templates"
+    
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            response = await client.post(
+                meta_url,
+                headers={
+                    "Authorization": f"Bearer {access_token}",
+                    "Content-Type": "application/json"
+                },
+                json=meta_payload
+            )
+        
+        response_data = response.json()
+        
+        if response.status_code != 200:
+            error_msg = response_data.get("error", {}).get("message", "Unknown error")
+            raise HTTPException(
+                status_code=response.status_code, 
+                detail=f"Meta API error: {error_msg}"
+            )
+        
+        # Save template locally with meta_template_id
+        now = datetime.now(timezone.utc).isoformat()
+        template_id = str(uuid.uuid4())
+        
+        import re
+        variables = list(set(re.findall(r'\{\{\d+\}\}', body_text)))
+        variables.sort(key=lambda v: int(v.strip('{}') or 0))
+        
+        doc = {
+            "id": template_id,
+            "user_id": user["id"],
+            "template_name": template_name,
+            "category": payload.get("category", "utility"),
+            "language": language,
+            "header_type": header_type,
+            "header_content": payload.get("header_content", ""),
+            "body": body_text,
+            "footer": footer_text,
+            "buttons": buttons,
+            "variables": variables,
+            "body_examples": body_examples,
+            "header_examples": payload.get("header_examples", []),
+            "meta_template_id": response_data.get("id"),
+            "status": "pending",  # Meta templates start as pending review
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        await db.custom_templates.insert_one(doc)
+        doc.pop("_id", None)
+        
+        return {
+            "message": "Template created on Meta successfully",
+            "meta_template_id": response_data.get("id"),
+            "template": doc
+        }
+        
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"Failed to connect to Meta API: {str(e)}")
+
+
+# ---- AuthKey Sync API (Stage 2) ----
+
+@router.post("/authkey/sync-templates")
+async def sync_authkey_templates(user: dict = Depends(get_current_user)):
+    """
+    Stage 2: Sync/migrate templates from Meta to AuthKey.
+    Should be called after creating template on Meta.
+    """
+    # Get user's AuthKey credentials
+    user_doc = await db.users.find_one(
+        {"id": user["id"]}, 
+        {"authkey_api_key": 1, "brand_number": 1}
+    )
+    
+    if not user_doc:
+        raise HTTPException(status_code=400, detail="User not found")
+    
+    api_key = user_doc.get("authkey_api_key")
+    brand_number = user_doc.get("brand_number")
+    
+    if not api_key:
+        raise HTTPException(
+            status_code=400, 
+            detail="AuthKey API key is required. Please configure it in Settings."
+        )
+    
+    if not brand_number:
+        raise HTTPException(
+            status_code=400, 
+            detail="Brand number is required. Please configure it in Settings."
+        )
+    
+    # Call AuthKey migration API
+    authkey_url = "https://console.authkey.io/restapi/wptemplateMigration.php"
+    
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            response = await client.post(
+                authkey_url,
+                headers={
+                    "Authorization": f"Basic {api_key}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "method": "migrate",
+                    "brand_number": brand_number
+                }
+            )
+        
+        response_data = response.json()
+        
+        if not response_data.get("status"):
+            error_msg = response_data.get("message", "Sync failed")
+            raise HTTPException(status_code=400, detail=f"AuthKey sync error: {error_msg}")
+        
+        return {
+            "message": "Templates synced to AuthKey successfully",
+            "response": response_data
+        }
+        
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"Failed to connect to AuthKey API: {str(e)}")
+
+
+# ---- Combined Create & Sync ----
+
+@router.post("/create-and-sync-template")
+async def create_and_sync_template(payload: dict, user: dict = Depends(get_current_user)):
+    """
+    Combined endpoint: Creates template on Meta (Stage 1) then syncs to AuthKey (Stage 2).
+    """
+    # Stage 1: Create on Meta
+    meta_result = await create_meta_template(payload, user)
+    
+    # Stage 2: Sync to AuthKey
+    try:
+        sync_result = await sync_authkey_templates(user)
+        return {
+            "message": "Template created and synced successfully",
+            "meta_result": meta_result,
+            "sync_result": sync_result
+        }
+    except HTTPException as e:
+        # Meta succeeded but AuthKey failed - return partial success
+        return {
+            "message": "Template created on Meta but AuthKey sync failed",
+            "meta_result": meta_result,
+            "sync_error": e.detail
+        }
+
+
 @router.put("/event-template-map")
 async def save_event_template_map(payload: dict, user: dict = Depends(get_current_user)):
     """Save event→template mappings. Upserts per (user_id, event_key)."""

@@ -31,9 +31,10 @@ export default function TemplatesPage() {
     const [showAddTemplate, setShowAddTemplate] = useState(false);
     const [editingCustomTemplate, setEditingCustomTemplate] = useState(null);
     const [newTemplate, setNewTemplate] = useState({
-        template_name: "", category: "utility", language: "en", header_type: "none", header_content: "", body: "", footer: "", buttons: [], media_url: ""
+        template_name: "", category: "utility", language: "en", header_type: "none", header_content: "", body: "", footer: "", buttons: [], media_url: "", body_examples: [], header_examples: []
     });
     const [savingTemplate, setSavingTemplate] = useState(false);
+    const [submittingToMeta, setSubmittingToMeta] = useState(false);
     
     // Variable mapping state
     const [showVariableMappingModal, setShowVariableMappingModal] = useState(false);
@@ -182,10 +183,37 @@ export default function TemplatesPage() {
             }
             setShowAddTemplate(false);
             setEditingCustomTemplate(null);
-            setNewTemplate({ template_name: "", category: "utility", language: "en", header_type: "none", header_content: "", body: "", footer: "", buttons: [], media_url: "" });
+            setNewTemplate({ template_name: "", category: "utility", language: "en", header_type: "none", header_content: "", body: "", footer: "", buttons: [], media_url: "", body_examples: [], header_examples: [] });
             fetchCustomTemplates();
         } catch (err) { toast.error("Failed to save template"); }
         finally { setSavingTemplate(false); }
+    };
+
+    const handleSubmitToMeta = async () => {
+        if (!newTemplate.template_name.trim() || !newTemplate.body.trim()) { 
+            toast.error("Template name and body are required"); 
+            return; 
+        }
+        
+        // Check if body has variables and examples are provided
+        const bodyVarCount = (newTemplate.body.match(/\{\{\d+\}\}/g) || []).length;
+        if (bodyVarCount > 0 && newTemplate.body_examples.length < bodyVarCount) {
+            toast.error(`Please provide ${bodyVarCount} example values for body variables`);
+            return;
+        }
+        
+        setSubmittingToMeta(true);
+        try {
+            const response = await api.post("/whatsapp/create-and-sync-template", newTemplate);
+            toast.success(response.data.message || "Template submitted to Meta successfully!");
+            setShowAddTemplate(false);
+            setEditingCustomTemplate(null);
+            setNewTemplate({ template_name: "", category: "utility", language: "en", header_type: "none", header_content: "", body: "", footer: "", buttons: [], media_url: "", body_examples: [], header_examples: [] });
+            fetchCustomTemplates();
+        } catch (err) { 
+            toast.error(err.response?.data?.detail || "Failed to submit template to Meta"); 
+        }
+        finally { setSubmittingToMeta(false); }
     };
 
     const handleDeleteCustomTemplate = async (templateId) => {
@@ -203,7 +231,8 @@ export default function TemplatesPage() {
         setNewTemplate({
             template_name: template.template_name, category: template.category, language: template.language,
             header_type: template.header_type || "none", header_content: template.header_content || "",
-            body: template.body, footer: template.footer || "", buttons: template.buttons || [], media_url: template.media_url || ""
+            body: template.body, footer: template.footer || "", buttons: template.buttons || [], media_url: template.media_url || "",
+            body_examples: template.body_examples || [], header_examples: template.header_examples || []
         });
         setShowAddTemplate(true);
     };
@@ -406,7 +435,7 @@ export default function TemplatesPage() {
                 )}
                 
                 {/* Add Template Dialog */}
-                <Dialog open={showAddTemplate} onOpenChange={(open) => { setShowAddTemplate(open); if (!open) { setEditingCustomTemplate(null); setNewTemplate({ template_name: "", category: "utility", language: "en", header_type: "none", header_content: "", body: "", footer: "", buttons: [], media_url: "" }); } }}>
+                <Dialog open={showAddTemplate} onOpenChange={(open) => { setShowAddTemplate(open); if (!open) { setEditingCustomTemplate(null); setNewTemplate({ template_name: "", category: "utility", language: "en", header_type: "none", header_content: "", body: "", footer: "", buttons: [], media_url: "", body_examples: [], header_examples: [] }); } }}>
                     <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                             <DialogTitle className="flex items-center gap-2"><Plus className="w-5 h-5 text-[#25D366]" />{editingCustomTemplate ? "Edit Template" : "Add New Template"}</DialogTitle>
@@ -418,16 +447,72 @@ export default function TemplatesPage() {
                                 <div className="space-y-1"><Label className="text-sm font-medium">Category</Label><Select value={newTemplate.category} onValueChange={(val) => setNewTemplate(p => ({...p, category: val}))}><SelectTrigger className="rounded-lg" data-testid="new-tpl-category"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="marketing">Marketing</SelectItem><SelectItem value="utility">Utility</SelectItem><SelectItem value="authentication">Authentication</SelectItem></SelectContent></Select></div>
                                 <div className="space-y-1"><Label className="text-sm font-medium">Language</Label><Select value={newTemplate.language} onValueChange={(val) => setNewTemplate(p => ({...p, language: val}))}><SelectTrigger className="rounded-lg" data-testid="new-tpl-language"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="en">English</SelectItem><SelectItem value="hi">Hindi</SelectItem></SelectContent></Select></div>
                             </div>
-                            <div className="space-y-1"><Label className="text-sm font-medium">Header (optional)</Label><Select value={newTemplate.header_type} onValueChange={(val) => setNewTemplate(p => ({...p, header_type: val, header_content: ""}))}><SelectTrigger className="rounded-lg" data-testid="new-tpl-header-type"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="none">None</SelectItem><SelectItem value="text">Text</SelectItem><SelectItem value="image">Image</SelectItem><SelectItem value="video">Video</SelectItem><SelectItem value="document">Document</SelectItem></SelectContent></Select>
-                                {newTemplate.header_type === "text" && <Input value={newTemplate.header_content} onChange={(e) => setNewTemplate(p => ({...p, header_content: e.target.value}))} placeholder="Header text..." className="rounded-lg mt-2" data-testid="new-tpl-header-text" />}
+                            <div className="space-y-1"><Label className="text-sm font-medium">Header (optional)</Label><Select value={newTemplate.header_type} onValueChange={(val) => setNewTemplate(p => ({...p, header_type: val, header_content: "", header_examples: []}))}><SelectTrigger className="rounded-lg" data-testid="new-tpl-header-type"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="none">None</SelectItem><SelectItem value="text">Text</SelectItem><SelectItem value="image">Image</SelectItem><SelectItem value="video">Video</SelectItem><SelectItem value="document">Document</SelectItem></SelectContent></Select>
+                                {newTemplate.header_type === "text" && (
+                                    <>
+                                        <Input value={newTemplate.header_content} onChange={(e) => setNewTemplate(p => ({...p, header_content: e.target.value}))} placeholder="Header text with {{1}} variable..." className="rounded-lg mt-2" data-testid="new-tpl-header-text" />
+                                        {newTemplate.header_content.includes("{{") && (
+                                            <Input 
+                                                value={newTemplate.header_examples[0] || ""} 
+                                                onChange={(e) => setNewTemplate(p => ({...p, header_examples: [e.target.value]}))} 
+                                                placeholder="Example value for header variable" 
+                                                className="rounded-lg mt-2 bg-blue-50" 
+                                                data-testid="new-tpl-header-example" 
+                                            />
+                                        )}
+                                    </>
+                                )}
                                 {(newTemplate.header_type === "image" || newTemplate.header_type === "video" || newTemplate.header_type === "document") && <Input value={newTemplate.media_url} onChange={(e) => setNewTemplate(p => ({...p, media_url: e.target.value}))} placeholder="Media URL..." className="rounded-lg mt-2" data-testid="new-tpl-media-url" />}
                             </div>
-                            <div className="space-y-1"><Label className="text-sm font-medium">Body</Label><textarea value={newTemplate.body} onChange={(e) => setNewTemplate(p => ({...p, body: e.target.value}))} placeholder={"Hi {{1}},\nYour order {{2}} is confirmed.\nTotal: ₹{{3}}"} className="w-full min-h-[120px] rounded-lg border border-gray-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#F26B33] focus:border-transparent resize-y" data-testid="new-tpl-body" /><p className="text-xs text-gray-400">Use {"{{1}}"}, {"{{2}}"}, etc. for variables</p></div>
+                            <div className="space-y-1">
+                                <Label className="text-sm font-medium">Body</Label>
+                                <textarea value={newTemplate.body} onChange={(e) => setNewTemplate(p => ({...p, body: e.target.value, body_examples: []}))} placeholder={"Hi {{1}},\nYour order {{2}} is confirmed.\nTotal: ₹{{3}}"} className="w-full min-h-[120px] rounded-lg border border-gray-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#F26B33] focus:border-transparent resize-y" data-testid="new-tpl-body" />
+                                <p className="text-xs text-gray-400">Use {"{{1}}"}, {"{{2}}"}, etc. for variables</p>
+                            </div>
+                            
+                            {/* Body Example Values */}
+                            {(() => {
+                                const bodyVars = newTemplate.body.match(/\{\{\d+\}\}/g) || [];
+                                const uniqueVars = [...new Set(bodyVars)].sort((a, b) => parseInt(a.match(/\d+/)) - parseInt(b.match(/\d+/)));
+                                if (uniqueVars.length === 0) return null;
+                                return (
+                                    <div className="space-y-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                        <Label className="text-sm font-medium text-blue-800">Example Values for Variables (Required for Meta)</Label>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {uniqueVars.map((v, i) => (
+                                                <div key={v} className="space-y-1">
+                                                    <Label className="text-xs text-blue-600">{v}</Label>
+                                                    <Input 
+                                                        value={newTemplate.body_examples[i] || ""} 
+                                                        onChange={(e) => {
+                                                            const newExamples = [...newTemplate.body_examples];
+                                                            newExamples[i] = e.target.value;
+                                                            setNewTemplate(p => ({...p, body_examples: newExamples}));
+                                                        }}
+                                                        placeholder={`Example for ${v}`}
+                                                        className="h-8 text-sm rounded"
+                                                        data-testid={`new-tpl-body-example-${i}`}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                            
                             <div className="space-y-1"><Label className="text-sm font-medium">Footer (optional)</Label><Input value={newTemplate.footer} onChange={(e) => setNewTemplate(p => ({...p, footer: e.target.value}))} placeholder="e.g., Reply STOP to unsubscribe" className="rounded-lg" data-testid="new-tpl-footer" /></div>
                             {newTemplate.body && (
                                 <div className="space-y-1"><Label className="text-xs text-gray-500">Preview</Label><div className="bg-[#E5DDD5] p-3 rounded-lg"><div className="bg-[#DCF8C6] rounded-lg p-3 shadow-sm">{newTemplate.header_type === "text" && newTemplate.header_content && <p className="text-sm font-bold text-[#1A1A1A] mb-1">{newTemplate.header_content}</p>}<p className="text-sm text-[#1A1A1A] whitespace-pre-wrap">{newTemplate.body}</p>{newTemplate.footer && <p className="text-xs text-gray-500 mt-2 border-t border-gray-200 pt-1">{newTemplate.footer}</p>}</div></div></div>
                             )}
-                            <DialogFooter className="gap-2"><Button variant="outline" onClick={() => setShowAddTemplate(false)}>Cancel</Button><Button onClick={handleSaveCustomTemplate} disabled={savingTemplate} className="bg-[#F26B33] hover:bg-[#D85A2A] text-white" data-testid="save-new-template-btn">{savingTemplate ? "Saving..." : editingCustomTemplate ? "Update Template" : "Save as Draft"}</Button></DialogFooter>
+                            <DialogFooter className="gap-2 flex-col sm:flex-row">
+                                <Button variant="outline" onClick={() => setShowAddTemplate(false)}>Cancel</Button>
+                                <Button onClick={handleSaveCustomTemplate} disabled={savingTemplate} variant="outline" data-testid="save-new-template-btn">
+                                    {savingTemplate ? "Saving..." : "Save as Draft"}
+                                </Button>
+                                <Button onClick={handleSubmitToMeta} disabled={submittingToMeta} className="bg-[#25D366] hover:bg-[#1da851] text-white" data-testid="submit-to-meta-btn">
+                                    {submittingToMeta ? "Submitting..." : "Submit to Meta"}
+                                </Button>
+                            </DialogFooter>
                         </div>
                     </DialogContent>
                 </Dialog>
