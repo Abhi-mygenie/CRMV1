@@ -14,16 +14,40 @@ Pull https://github.com/Abhi-mygenie/CRMV1.git and build this project, import DB
 - [x] Installed all dependencies (Python + Node.js)
 - [x] Imported 15 database collections (4,406 documents)
 - [x] Demo Login for testing (demo@mygenie.com / demo123)
-- [x] Dashboard with comprehensive metrics grid (conditional row visibility)
+- [x] Dashboard with comprehensive metrics grid
 - [x] Customer management with filters, segments, add/edit
 - [x] Data sync with transaction histories (points, wallet, coupons)
 - [x] Filter drawer redesigned as compact slide-up modal
-- [x] **Filter drawer reorganized into Basic & Advanced sections** (Feb 7, 2026)
-  - Basic: Tier, Type, City, Inactive, Sort By
-  - Advanced: Visits, Spent, Diet, Time Slot, Dining, Gender, Source, WhatsApp, VIP, Blocked, Blacklist, Complaint, Birthday, Anniversary
-  - Z-index fix applied for proper layering above bottom nav
+- [x] Filter drawer with Basic & Advanced sections
+- [x] Revert customer validation (block if orders exist)
+- [x] Dashboard refresh after migration
+- [x] Compact filter chips with "Most Loyal" + "Inactive 30d"
+- [x] Filter drawer scroll fix
+- [x] "Feedback Given" filter
+- [x] "+ Add" button on Segments page
+- [x] Segment customer count fix with filter tags
+- [x] View/Edit/Delete buttons next to segment name
+- [x] Delete segment with confirmation dialog
+- [x] "Save Segment" button + redirect to Segments tab
 
-## Core Features (from codebase)
+## Refactoring (Mar 7, 2026)
+
+### Backend - feedback.py → services/
+**Before**: 469 lines monolithic file with analytics + feedback
+**After**: Clean separation into services:
+- `/services/analytics_service.py` - Dashboard statistics (11 functions)
+- `/services/feedback_service.py` - Feedback CRUD operations (3 functions)
+- `/routers/feedback.py` - Thin route handlers (~140 lines)
+
+### Frontend - CustomersPage.jsx → components/customers/
+**Before**: 2312 lines monolithic component
+**After**: Extracted reusable components:
+- `FilterDrawer.jsx` - Slide-down filter modal
+- `CustomerCard.jsx` - Individual customer display
+- `SortChips.jsx` - Quick filter/sort chips
+- `SegmentStatsBar.jsx` - Tier breakdown display
+
+## Core Features
 - User authentication (JWT + Demo Login)
 - Customer management with QR codes
 - Points/loyalty system
@@ -41,15 +65,18 @@ Pull https://github.com/Abhi-mygenie/CRMV1.git and build this project, import DB
 
 ## Key API Endpoints
 - POST /api/auth/demo-login
-- GET /api/feedback/dashboard-stats/{user_id}
-- GET /api/customers/{user_id}
-- POST /api/customers/segment/{user_id}
+- GET /api/analytics/dashboard
+- GET /api/customers
+- POST /api/segments
 - POST /api/mygenie/sync-customers
 - POST /api/mygenie/sync-orders
 
-## Upcoming Tasks
-- P1: Add `+ Add` button to Segments page/tab header
+## Backlog (Completed)
+- ~~P1: Add `+ Add` button to Segments page/tab header~~ ✅
+- ~~Refactor CustomersPage.jsx into smaller components~~ ✅
+- ~~Refactor feedback.py into smaller service modules~~ ✅
 
-## Backlog
-- Refactor CustomersPage.jsx into smaller components (FilterDrawer, SegmentsTab)
-- Refactor feedback.py into smaller service modules
+## Future Enhancements
+- Import new components into CustomersPage.jsx (optional optimization)
+- Add unit tests for service modules
+- Performance optimization with async parallel queries
