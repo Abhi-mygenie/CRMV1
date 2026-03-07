@@ -647,9 +647,9 @@ export const SegmentsPageContent = () => {
                                     {selectedSegment.customer_count} customers match this segment
                                 </DialogDescription>
                             </DialogHeader>
-                            <ScrollArea className="flex-1 max-h-[50vh]">
+                            <div className="flex-1 overflow-y-auto max-h-[50vh]" style={{ overscrollBehavior: 'contain' }}>
                                 {selectedSegment.customers ? (
-                                    <div className="space-y-2 pr-4">
+                                    <div className="space-y-2 pr-2">
                                         {selectedSegment.customers.length === 0 ? (
                                             <p className="text-center text-[#52525B] py-4">No customers in this segment</p>
                                         ) : (
@@ -687,7 +687,7 @@ export const SegmentsPageContent = () => {
                                 ) : (
                                     <p className="text-center text-[#52525B] py-8">Loading customers...</p>
                                 )}
-                            </ScrollArea>
+                            </div>
                         </DialogContent>
                     </Dialog>
                 )}
