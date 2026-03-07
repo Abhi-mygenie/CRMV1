@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { toast } from "sonner";
-import { MessageSquare, Settings, Search, Phone, Check, Edit2, Trash2, Eye, Calendar, Filter, Clock, Save, Wallet, Pause, Play, Send } from "lucide-react";
+import { MessageSquare, Settings, Search, Phone, Check, Edit2, Trash2, Eye, Calendar, Filter, Clock, Save, Wallet, Pause, Play, Send, Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -381,6 +381,18 @@ export const SegmentsPageContent = () => {
 
     return (
             <div className="p-4 max-w-lg mx-auto" data-testid="segments-page">
+                {/* Header with Add Button */}
+                <div className="flex items-center justify-between mb-4">
+                    <h1 className="text-xl font-bold text-[#1A1A1A]">Segments</h1>
+                    <Button
+                        onClick={() => navigate('/customers', { state: { openFilters: true } })}
+                        className="h-9 px-3 rounded-full bg-[#F26B33] hover:bg-[#D85A2A] text-white text-sm font-medium"
+                        data-testid="add-segment-btn"
+                    >
+                        <Plus className="w-4 h-4 mr-1" /> Add
+                    </Button>
+                </div>
+
                 {/* Info Card */}
                 <Card className="rounded-xl border-0 shadow-sm bg-[#25D366]/5 mb-4">
                     <CardContent className="p-4">

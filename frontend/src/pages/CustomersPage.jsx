@@ -36,7 +36,7 @@ export default function CustomersPage() {
     const [showAddModal, setShowAddModal] = useState(location.state?.openAddModal || false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState(null);
-    const [showFilters, setShowFilters] = useState(false);
+    const [showFilters, setShowFilters] = useState(location.state?.openFilters || false);
     const [segments, setSegments] = useState(null);
     const [filters, setFilters] = useState({
         tier: "all",
