@@ -208,35 +208,15 @@ async def demo_login():
 async def mygenie_login(credentials: UserLogin):
     """
     Login flow:
-    1. Check local DB by email - if user exists with password_hash, authenticate locally
-    2. If user not in local DB, authenticate via MyGenie API and create user
+    1. Always authenticate via MyGenie API to get fresh token
+    2. Update or create user in local DB with fresh mygenie_token
     """
     import httpx
     
-    # Step 1: Check local DB first
+    # Check if local user exists (for later)
     local_user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
     
-    if local_user and local_user.get("password_hash") and local_user.get("api_key"):
-        # Existing user - authenticate locally
-        if not verify_password(credentials.password, local_user["password_hash"]):
-            raise HTTPException(status_code=401, detail="Invalid credentials")
-        
-        token = create_token(local_user["id"])
-        return TokenResponse(
-            access_token=token,
-            user=UserResponse(
-                id=local_user["id"],
-                email=local_user["email"],
-                restaurant_name=local_user.get("restaurant_name", "Unknown"),
-                phone=local_user.get("phone", ""),
-                pos_id=local_user.get("pos_id", ""),
-                pos_name=local_user.get("pos_name", ""),
-                created_at=local_user["created_at"]
-            ),
-            is_demo=False
-        )
-    
-    # Step 2: User not in local DB - authenticate via MyGenie
+    # Always authenticate via MyGenie to get fresh token
     mygenie_api_url = os.getenv("MYGENIE_API_URL", "https://preprod.mygenie.online")
     login_endpoint = os.getenv("MYGENIE_LOGIN_ENDPOINT", "/api/v1/auth/vendoremployee/login")
     profile_endpoint = os.getenv("MYGENIE_PROFILE_ENDPOINT", "/api/v1/vendoremployee/profile")
@@ -300,8 +280,11 @@ async def mygenie_login(credentials: UserLogin):
             pos_name = "MyGenie"
             user_id = f"pos_{pos_id}_restaurant_{restaurant_id}"
             
-            # Check if user already exists (e.g. created before password_hash was added)
+            # Check if user already exists - by pos_id/restaurant_id OR by email
             existing_user = await db.users.find_one({"pos_id": pos_id, "restaurant_id": restaurant_id}, {"_id": 0})
+            if not existing_user and local_user:
+                existing_user = local_user
+            
             if existing_user:
                 # Update password_hash and mygenie_token for existing user
                 await db.users.update_one(
