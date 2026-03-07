@@ -5,7 +5,7 @@ import {
     Users, Plus, Search, ChevronRight, Star, TrendingUp, Gift, Phone, User, Check,
     Edit2, Trash2, Building2, Calendar, MapPin, Filter, Clock, ChevronDown, Tag,
     ChevronLeft, Save, Layers, Wallet, Rocket, Cake, Heart, Utensils, MessageCircle,
-    Flag, Crown, Leaf, ChevronUp, Home, Sparkles
+    Flag, Crown, Leaf, ChevronUp, Home, Sparkles, X
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -703,482 +703,327 @@ export default function CustomersPage() {
                     </button>
                 </div>
 
-                {/* Full Screen Filter Drawer */}
+                {/* Compact Filter Drawer */}
                 {showFilters && (
-                    <div className="fixed inset-0 bg-white z-50 flex flex-col" data-testid="filter-drawer">
-                        {/* Header */}
-                        <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white">
-                            <button onClick={() => setShowFilters(false)} className="p-2 -ml-2">
-                                <ChevronLeft className="w-5 h-5" />
-                            </button>
-                            <h2 className="text-lg font-semibold">Filters</h2>
-                            {activeFiltersCount > 0 ? (
-                                <button onClick={clearFilters} className="text-sm text-[#F26B33] font-medium">
-                                    Clear all
-                                </button>
-                            ) : (
-                                <div className="w-16"></div>
-                            )}
-                        </div>
-
-                        {/* Filter Content */}
-                        <ScrollArea className="flex-1">
-                            <div className="p-4 space-y-2">
-                                
-                                {/* Basic Filters Group */}
-                                <div className="border rounded-xl overflow-hidden">
-                                    <button 
-                                        onClick={() => toggleFilterGroup("basic")}
-                                        className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <Users className="w-4 h-4 text-[#F26B33]" />
-                                            <span className="font-medium text-sm">Basic Filters</span>
-                                        </div>
-                                        {expandedFilterGroups.includes("basic") ? (
-                                            <ChevronUp className="w-4 h-4 text-gray-400" />
-                                        ) : (
-                                            <ChevronDown className="w-4 h-4 text-gray-400" />
-                                        )}
-                                    </button>
-                                    {expandedFilterGroups.includes("basic") && (
-                                        <div className="p-4 space-y-4 bg-white">
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Tier</Label>
-                                                <Select value={filters.tier} onValueChange={(v) => setFilters({...filters, tier: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue placeholder="All tiers" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All tiers</SelectItem>
-                                                        <SelectItem value="Bronze">Bronze</SelectItem>
-                                                        <SelectItem value="Silver">Silver</SelectItem>
-                                                        <SelectItem value="Gold">Gold</SelectItem>
-                                                        <SelectItem value="Platinum">Platinum</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Customer Type</Label>
-                                                <Select value={filters.customer_type} onValueChange={(v) => setFilters({...filters, customer_type: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue placeholder="All types" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All types</SelectItem>
-                                                        <SelectItem value="normal">Normal</SelectItem>
-                                                        <SelectItem value="corporate">Corporate</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">City</Label>
-                                                <Input
-                                                    type="text"
-                                                    placeholder="Enter city..."
-                                                    value={filters.city}
-                                                    onChange={(e) => setFilters({...filters, city: e.target.value})}
-                                                    className="h-10 mt-1"
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Inactive For (Win-back)</Label>
-                                                <Select value={filters.last_visit_days} onValueChange={(v) => setFilters({...filters, last_visit_days: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue placeholder="All customers" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All customers</SelectItem>
-                                                        <SelectItem value="7">7+ days</SelectItem>
-                                                        <SelectItem value="14">14+ days</SelectItem>
-                                                        <SelectItem value="30">30+ days</SelectItem>
-                                                        <SelectItem value="60">60+ days</SelectItem>
-                                                        <SelectItem value="90">90+ days</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Total Visits</Label>
-                                                <Select value={filters.total_visits} onValueChange={(v) => setFilters({...filters, total_visits: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue placeholder="Any" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">Any</SelectItem>
-                                                        <SelectItem value="0">New (0 visits)</SelectItem>
-                                                        <SelectItem value="1-5">1-5 visits</SelectItem>
-                                                        <SelectItem value="6-10">6-10 visits</SelectItem>
-                                                        <SelectItem value="10+">10+ visits</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Total Spent</Label>
-                                                <Select value={filters.total_spent} onValueChange={(v) => setFilters({...filters, total_spent: v})}>
-                                                    <SelectTrigger className="h-10 mt-1" data-testid="filter-total-spent">
-                                                        <SelectValue placeholder="Any" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">Any</SelectItem>
-                                                        <SelectItem value="0-500">Under 500</SelectItem>
-                                                        <SelectItem value="500-2000">500 - 2,000</SelectItem>
-                                                        <SelectItem value="2000-5000">2,000 - 5,000</SelectItem>
-                                                        <SelectItem value="5000-10000">5,000 - 10,000</SelectItem>
-                                                        <SelectItem value="10000+">10,000+</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                        </div>
+                    <div className="fixed inset-0 z-50" data-testid="filter-drawer">
+                        {/* Backdrop */}
+                        <div 
+                            className="absolute inset-0 bg-black/30"
+                            onClick={() => setShowFilters(false)}
+                        />
+                        {/* Slide-up Panel */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[85vh] flex flex-col animate-slide-up">
+                            {/* Header */}
+                            <div className="flex items-center justify-between px-4 py-3 border-b">
+                                <h2 className="text-base font-semibold">Filters</h2>
+                                <div className="flex items-center gap-2">
+                                    {activeFiltersCount > 0 && (
+                                        <button onClick={clearFilters} className="text-xs text-[#F26B33] font-medium">
+                                            Clear all
+                                        </button>
                                     )}
-                                </div>
-
-                                {/* Dining Preferences Group */}
-                                <div className="border rounded-xl overflow-hidden">
                                     <button 
-                                        onClick={() => toggleFilterGroup("dining")}
-                                        className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+                                        onClick={() => setShowFilters(false)} 
+                                        className="p-1.5 hover:bg-gray-100 rounded-full"
                                     >
-                                        <div className="flex items-center gap-2">
-                                            <Utensils className="w-4 h-4 text-green-500" />
-                                            <span className="font-medium text-sm">Dining Preferences</span>
-                                        </div>
-                                        {expandedFilterGroups.includes("dining") ? (
-                                            <ChevronUp className="w-4 h-4 text-gray-400" />
-                                        ) : (
-                                            <ChevronDown className="w-4 h-4 text-gray-400" />
-                                        )}
+                                        <X className="w-5 h-5" />
                                     </button>
-                                    {expandedFilterGroups.includes("dining") && (
-                                        <div className="p-4 space-y-4 bg-white">
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Diet Preference</Label>
-                                                <Select value={filters.diet_preference} onValueChange={(v) => setFilters({...filters, diet_preference: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue placeholder="All" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All</SelectItem>
-                                                        <SelectItem value="veg">Vegetarian</SelectItem>
-                                                        <SelectItem value="non_veg">Non-Vegetarian</SelectItem>
-                                                        <SelectItem value="vegan">Vegan</SelectItem>
-                                                        <SelectItem value="jain">Jain</SelectItem>
-                                                        <SelectItem value="eggetarian">Eggetarian</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Preferred Time Slot</Label>
-                                                <Select value={filters.preferred_time_slot} onValueChange={(v) => setFilters({...filters, preferred_time_slot: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue placeholder="All" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All</SelectItem>
-                                                        <SelectItem value="breakfast">Breakfast (8-11 AM)</SelectItem>
-                                                        <SelectItem value="lunch">Lunch (12-3 PM)</SelectItem>
-                                                        <SelectItem value="evening">Evening (4-7 PM)</SelectItem>
-                                                        <SelectItem value="dinner">Dinner (7-11 PM)</SelectItem>
-                                                        <SelectItem value="late_night">Late Night (11 PM+)</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Dining Type</Label>
-                                                <Select value={filters.preferred_dining_type} onValueChange={(v) => setFilters({...filters, preferred_dining_type: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue placeholder="All" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All</SelectItem>
-                                                        <SelectItem value="Dine-In">Dine-In</SelectItem>
-                                                        <SelectItem value="Takeaway">Takeaway</SelectItem>
-                                                        <SelectItem value="Delivery">Delivery</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
+                            </div>
 
-                                {/* Marketing Permissions Group */}
-                                <div className="border rounded-xl overflow-hidden">
-                                    <button 
-                                        onClick={() => toggleFilterGroup("marketing")}
-                                        className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <MessageCircle className="w-4 h-4 text-purple-500" />
-                                            <span className="font-medium text-sm">Marketing Permissions</span>
+                            {/* Compact Filter Content */}
+                            <ScrollArea className="flex-1 p-3">
+                                <div className="space-y-3">
+                                    {/* Row 1: Tier + Customer Type */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">Tier</Label>
+                                            <Select value={filters.tier} onValueChange={(v) => setFilters({...filters, tier: v})}>
+                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                    <SelectValue placeholder="All" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">All tiers</SelectItem>
+                                                    <SelectItem value="Bronze">Bronze</SelectItem>
+                                                    <SelectItem value="Silver">Silver</SelectItem>
+                                                    <SelectItem value="Gold">Gold</SelectItem>
+                                                    <SelectItem value="Platinum">Platinum</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </div>
-                                        {expandedFilterGroups.includes("marketing") ? (
-                                            <ChevronUp className="w-4 h-4 text-gray-400" />
-                                        ) : (
-                                            <ChevronDown className="w-4 h-4 text-gray-400" />
-                                        )}
-                                    </button>
-                                    {expandedFilterGroups.includes("marketing") && (
-                                        <div className="p-4 space-y-4 bg-white">
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Lead Source</Label>
-                                                <Select value={filters.lead_source} onValueChange={(v) => setFilters({...filters, lead_source: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue placeholder="All sources" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All sources</SelectItem>
-                                                        <SelectItem value="Walk-in">Walk-in</SelectItem>
-                                                        <SelectItem value="Swiggy">Swiggy</SelectItem>
-                                                        <SelectItem value="Zomato">Zomato</SelectItem>
-                                                        <SelectItem value="Instagram">Instagram</SelectItem>
-                                                        <SelectItem value="Facebook">Facebook</SelectItem>
-                                                        <SelectItem value="Google">Google</SelectItem>
-                                                        <SelectItem value="Referral">Referral</SelectItem>
-                                                        <SelectItem value="WhatsApp">WhatsApp</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Gender</Label>
-                                                <Select value={filters.gender} onValueChange={(v) => setFilters({...filters, gender: v})}>
-                                                    <SelectTrigger className="h-10 mt-1" data-testid="filter-gender">
-                                                        <SelectValue placeholder="All" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All</SelectItem>
-                                                        <SelectItem value="male">Male</SelectItem>
-                                                        <SelectItem value="female">Female</SelectItem>
-                                                        <SelectItem value="other">Other</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">WhatsApp Opt-In</Label>
-                                                <Select value={filters.whatsapp_opt_in} onValueChange={(v) => setFilters({...filters, whatsapp_opt_in: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue placeholder="All" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All</SelectItem>
-                                                        <SelectItem value="true">Opted-In</SelectItem>
-                                                        <SelectItem value="false">Not Opted-In</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">Type</Label>
+                                            <Select value={filters.customer_type} onValueChange={(v) => setFilters({...filters, customer_type: v})}>
+                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                    <SelectValue placeholder="All" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">All types</SelectItem>
+                                                    <SelectItem value="normal">Normal</SelectItem>
+                                                    <SelectItem value="corporate">Corporate</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
 
-                                {/* Special Occasions Group */}
-                                <div className="border rounded-xl overflow-hidden">
-                                    <button 
-                                        onClick={() => toggleFilterGroup("occasions")}
-                                        className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <Cake className="w-4 h-4 text-pink-500" />
-                                            <span className="font-medium text-sm">Special Occasions</span>
+                                    {/* Row 2: City + Inactive */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">City</Label>
+                                            <Input
+                                                type="text"
+                                                placeholder="Enter city"
+                                                value={filters.city}
+                                                onChange={(e) => setFilters({...filters, city: e.target.value})}
+                                                className="h-9 mt-0.5 text-sm"
+                                            />
                                         </div>
-                                        {expandedFilterGroups.includes("occasions") ? (
-                                            <ChevronUp className="w-4 h-4 text-gray-400" />
-                                        ) : (
-                                            <ChevronDown className="w-4 h-4 text-gray-400" />
-                                        )}
-                                    </button>
-                                    {expandedFilterGroups.includes("occasions") && (
-                                        <div className="p-4 space-y-3 bg-white">
-                                            <label className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer hover:bg-gray-50 transition-colors">
-                                                <Checkbox 
-                                                    checked={filters.has_birthday_this_month}
-                                                    onCheckedChange={(checked) => setFilters({...filters, has_birthday_this_month: checked})}
-                                                />
-                                                <div className="flex items-center gap-2">
-                                                    <Cake className="w-4 h-4 text-pink-500" />
-                                                    <span className="text-sm">Birthday this month</span>
-                                                </div>
-                                            </label>
-                                            <label className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer hover:bg-gray-50 transition-colors">
-                                                <Checkbox 
-                                                    checked={filters.has_anniversary_this_month}
-                                                    onCheckedChange={(checked) => setFilters({...filters, has_anniversary_this_month: checked})}
-                                                />
-                                                <div className="flex items-center gap-2">
-                                                    <Heart className="w-4 h-4 text-red-500" />
-                                                    <span className="text-sm">Anniversary this month</span>
-                                                </div>
-                                            </label>
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">Inactive</Label>
+                                            <Select value={filters.last_visit_days} onValueChange={(v) => setFilters({...filters, last_visit_days: v})}>
+                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                    <SelectValue placeholder="All" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">All</SelectItem>
+                                                    <SelectItem value="7">7+ days</SelectItem>
+                                                    <SelectItem value="14">14+ days</SelectItem>
+                                                    <SelectItem value="30">30+ days</SelectItem>
+                                                    <SelectItem value="60">60+ days</SelectItem>
+                                                    <SelectItem value="90">90+ days</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
 
-                                {/* Flags & Status Group */}
-                                <div className="border rounded-xl overflow-hidden">
-                                    <button 
-                                        onClick={() => toggleFilterGroup("flags")}
-                                        className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <Flag className="w-4 h-4 text-red-500" />
-                                            <span className="font-medium text-sm">Flags & Status</span>
+                                    {/* Row 3: Visits + Spent */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">Visits</Label>
+                                            <Select value={filters.total_visits} onValueChange={(v) => setFilters({...filters, total_visits: v})}>
+                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                    <SelectValue placeholder="Any" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">Any</SelectItem>
+                                                    <SelectItem value="0">New (0)</SelectItem>
+                                                    <SelectItem value="1-5">1-5</SelectItem>
+                                                    <SelectItem value="6-10">6-10</SelectItem>
+                                                    <SelectItem value="10+">10+</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </div>
-                                        {expandedFilterGroups.includes("flags") ? (
-                                            <ChevronUp className="w-4 h-4 text-gray-400" />
-                                        ) : (
-                                            <ChevronDown className="w-4 h-4 text-gray-400" />
-                                        )}
-                                    </button>
-                                    {expandedFilterGroups.includes("flags") && (
-                                        <div className="p-4 space-y-4 bg-white">
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">VIP Status</Label>
-                                                <Select value={filters.vip_flag} onValueChange={(v) => setFilters({...filters, vip_flag: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue placeholder="All" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All</SelectItem>
-                                                        <SelectItem value="true">VIP Only</SelectItem>
-                                                        <SelectItem value="false">Non-VIP</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Complaint Flag</Label>
-                                                <Select value={filters.complaint_flag} onValueChange={(v) => setFilters({...filters, complaint_flag: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue placeholder="All" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All</SelectItem>
-                                                        <SelectItem value="true">Has Complaints</SelectItem>
-                                                        <SelectItem value="false">No Complaints</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Blacklist Status</Label>
-                                                <Select value={filters.blacklist_flag} onValueChange={(v) => setFilters({...filters, blacklist_flag: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue placeholder="All" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All</SelectItem>
-                                                        <SelectItem value="true">Blacklisted</SelectItem>
-                                                        <SelectItem value="false">Not Blacklisted</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Blocked Status</Label>
-                                                <Select value={filters.is_blocked} onValueChange={(v) => setFilters({...filters, is_blocked: v})}>
-                                                    <SelectTrigger className="h-10 mt-1" data-testid="filter-is-blocked">
-                                                        <SelectValue placeholder="All" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">All</SelectItem>
-                                                        <SelectItem value="true">Blocked Only</SelectItem>
-                                                        <SelectItem value="false">Not Blocked</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">Spent</Label>
+                                            <Select value={filters.total_spent} onValueChange={(v) => setFilters({...filters, total_spent: v})}>
+                                                <SelectTrigger className="h-9 mt-0.5 text-sm" data-testid="filter-total-spent">
+                                                    <SelectValue placeholder="Any" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">Any</SelectItem>
+                                                    <SelectItem value="0-500">&lt;500</SelectItem>
+                                                    <SelectItem value="500-2000">500-2K</SelectItem>
+                                                    <SelectItem value="2000-5000">2K-5K</SelectItem>
+                                                    <SelectItem value="5000-10000">5K-10K</SelectItem>
+                                                    <SelectItem value="10000+">10K+</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
 
-                                {/* Sort Options Group */}
-                                <div className="border rounded-xl overflow-hidden">
-                                    <button 
-                                        onClick={() => toggleFilterGroup("sort")}
-                                        className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <TrendingUp className="w-4 h-4 text-gray-500" />
-                                            <span className="font-medium text-sm">Sort Options</span>
+                                    {/* Row 4: Diet + Time Slot */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">Diet</Label>
+                                            <Select value={filters.diet_preference} onValueChange={(v) => setFilters({...filters, diet_preference: v})}>
+                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                    <SelectValue placeholder="All" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">All</SelectItem>
+                                                    <SelectItem value="veg">Veg</SelectItem>
+                                                    <SelectItem value="non_veg">Non-Veg</SelectItem>
+                                                    <SelectItem value="vegan">Vegan</SelectItem>
+                                                    <SelectItem value="jain">Jain</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </div>
-                                        {expandedFilterGroups.includes("sort") ? (
-                                            <ChevronUp className="w-4 h-4 text-gray-400" />
-                                        ) : (
-                                            <ChevronDown className="w-4 h-4 text-gray-400" />
-                                        )}
-                                    </button>
-                                    {expandedFilterGroups.includes("sort") && (
-                                        <div className="p-4 space-y-4 bg-white">
-                                            <div>
-                                                <Label className="text-xs text-[#52525B]">Sort By</Label>
-                                                <Select value={filters.sort_by} onValueChange={(v) => setFilters({...filters, sort_by: v})}>
-                                                    <SelectTrigger className="h-10 mt-1">
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="created_at">Date Added</SelectItem>
-                                                        <SelectItem value="last_visit">Last Visit</SelectItem>
-                                                        <SelectItem value="total_spent">Total Spent</SelectItem>
-                                                        <SelectItem value="total_points">Points</SelectItem>
-                                                        <SelectItem value="name">Name</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">Time Slot</Label>
+                                            <Select value={filters.preferred_time_slot} onValueChange={(v) => setFilters({...filters, preferred_time_slot: v})}>
+                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                    <SelectValue placeholder="All" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">All</SelectItem>
+                                                    <SelectItem value="breakfast">Breakfast</SelectItem>
+                                                    <SelectItem value="lunch">Lunch</SelectItem>
+                                                    <SelectItem value="evening">Evening</SelectItem>
+                                                    <SelectItem value="dinner">Dinner</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
 
-                                {/* Saved Segments */}
-                                {savedSegments.length > 0 && (
-                                    <div className="border rounded-xl overflow-hidden">
-                                        <div className="p-4 bg-gray-50">
-                                            <div className="flex items-center gap-2">
-                                                <Layers className="w-4 h-4 text-indigo-500" />
-                                                <span className="font-medium text-sm">Saved Segments</span>
-                                            </div>
+                                    {/* Row 5: Dining Type + Gender */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">Dining</Label>
+                                            <Select value={filters.preferred_dining_type} onValueChange={(v) => setFilters({...filters, preferred_dining_type: v})}>
+                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                    <SelectValue placeholder="All" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">All</SelectItem>
+                                                    <SelectItem value="Dine-In">Dine-In</SelectItem>
+                                                    <SelectItem value="Takeaway">Takeaway</SelectItem>
+                                                    <SelectItem value="Delivery">Delivery</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </div>
-                                        <div className="p-4 space-y-2 bg-white">
-                                            {savedSegments.map(segment => (
-                                                <div key={segment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">Gender</Label>
+                                            <Select value={filters.gender} onValueChange={(v) => setFilters({...filters, gender: v})}>
+                                                <SelectTrigger className="h-9 mt-0.5 text-sm" data-testid="filter-gender">
+                                                    <SelectValue placeholder="All" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">All</SelectItem>
+                                                    <SelectItem value="male">Male</SelectItem>
+                                                    <SelectItem value="female">Female</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+
+                                    {/* Row 6: Lead Source + WhatsApp */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">Source</Label>
+                                            <Select value={filters.lead_source} onValueChange={(v) => setFilters({...filters, lead_source: v})}>
+                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                    <SelectValue placeholder="All" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">All</SelectItem>
+                                                    <SelectItem value="Walk-in">Walk-in</SelectItem>
+                                                    <SelectItem value="Swiggy">Swiggy</SelectItem>
+                                                    <SelectItem value="Zomato">Zomato</SelectItem>
+                                                    <SelectItem value="Instagram">Instagram</SelectItem>
+                                                    <SelectItem value="Referral">Referral</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">WhatsApp</Label>
+                                            <Select value={filters.whatsapp_opt_in} onValueChange={(v) => setFilters({...filters, whatsapp_opt_in: v})}>
+                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                    <SelectValue placeholder="All" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">All</SelectItem>
+                                                    <SelectItem value="true">Opted-In</SelectItem>
+                                                    <SelectItem value="false">Not Opted</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+
+                                    {/* Row 7: VIP + Sort */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">VIP Status</Label>
+                                            <Select value={filters.vip_flag} onValueChange={(v) => setFilters({...filters, vip_flag: v})}>
+                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                    <SelectValue placeholder="All" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">All</SelectItem>
+                                                    <SelectItem value="true">VIP Only</SelectItem>
+                                                    <SelectItem value="false">Non-VIP</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div>
+                                            <Label className="text-[10px] text-[#52525B] uppercase">Sort By</Label>
+                                            <Select value={filters.sort_by} onValueChange={(v) => setFilters({...filters, sort_by: v})}>
+                                                <SelectTrigger className="h-9 mt-0.5 text-sm">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="created_at">Date Added</SelectItem>
+                                                    <SelectItem value="last_visit">Last Visit</SelectItem>
+                                                    <SelectItem value="total_spent">Total Spent</SelectItem>
+                                                    <SelectItem value="total_points">Points</SelectItem>
+                                                    <SelectItem value="name">Name</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+
+                                    {/* Checkboxes Row */}
+                                    <div className="flex flex-wrap gap-3 pt-2">
+                                        <label className="flex items-center gap-2 text-sm">
+                                            <Checkbox 
+                                                checked={filters.has_birthday_this_month}
+                                                onCheckedChange={(checked) => setFilters({...filters, has_birthday_this_month: checked})}
+                                            />
+                                            <Cake className="w-3.5 h-3.5 text-pink-500" />
+                                            Birthday
+                                        </label>
+                                        <label className="flex items-center gap-2 text-sm">
+                                            <Checkbox 
+                                                checked={filters.has_anniversary_this_month}
+                                                onCheckedChange={(checked) => setFilters({...filters, has_anniversary_this_month: checked})}
+                                            />
+                                            <Heart className="w-3.5 h-3.5 text-red-500" />
+                                            Anniversary
+                                        </label>
+                                    </div>
+
+                                    {/* Saved Segments */}
+                                    {savedSegments.length > 0 && (
+                                        <div className="pt-2 border-t">
+                                            <Label className="text-[10px] text-[#52525B] uppercase">Saved Segments</Label>
+                                            <div className="flex flex-wrap gap-2 mt-1">
+                                                {savedSegments.map(segment => (
                                                     <button
+                                                        key={segment.id}
                                                         onClick={() => {
                                                             loadSegment(segment);
                                                             setShowFilters(false);
                                                         }}
-                                                        className="flex-1 text-left"
+                                                        className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 rounded-full"
                                                     >
-                                                        <p className="text-sm font-medium text-[#1A1A1A]">{segment.name}</p>
-                                                        <p className="text-xs text-[#52525B]">{segment.customer_count} customers</p>
+                                                        {segment.name} ({segment.customer_count})
                                                     </button>
-                                                    <button
-                                                        onClick={() => deleteSegment(segment.id)}
-                                                        className="ml-2 p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
+                                </div>
+                            </ScrollArea>
+
+                            {/* Footer */}
+                            <div className="p-3 border-t bg-white flex gap-2">
+                                {activeFiltersCount > 0 && (
+                                    <Button 
+                                        onClick={() => setShowSaveSegmentDialog(true)}
+                                        variant="outline"
+                                        className="flex-1 h-10 rounded-xl border-[#F26B33] text-[#F26B33] text-sm"
+                                        data-testid="save-segment-btn"
+                                    >
+                                        <Save className="w-4 h-4 mr-1" /> Save
+                                    </Button>
                                 )}
-
-                            </div>
-                        </ScrollArea>
-
-                        {/* Footer with Apply Button */}
-                        <div className="p-4 border-t bg-white sticky bottom-0 space-y-2">
-                            {activeFiltersCount > 0 && (
                                 <Button 
-                                    onClick={() => {
-                                        setShowSaveSegmentDialog(true);
-                                    }}
-                                    variant="outline"
-                                    className="w-full h-11 rounded-xl border-[#F26B33] text-[#F26B33] hover:bg-[#F26B33]/5"
-                                    data-testid="save-segment-btn"
+                                    onClick={() => setShowFilters(false)}
+                                    className="flex-1 h-10 rounded-xl bg-[#F26B33] hover:bg-[#D85A2A] text-white font-semibold text-sm"
+                                    data-testid="apply-filters-btn"
                                 >
-                                    <Save className="w-4 h-4 mr-2" /> Save as Segment
+                                    Show {customers.length} Customers
                                 </Button>
-                            )}
-                            <Button 
-                                onClick={() => setShowFilters(false)}
-                                className="w-full h-12 rounded-xl bg-[#F26B33] hover:bg-[#D85A2A] text-white font-semibold"
-                                data-testid="apply-filters-btn"
-                            >
-                                Show {customers.length} Customers
-                            </Button>
+                            </div>
                         </div>
                     </div>
                 )}
