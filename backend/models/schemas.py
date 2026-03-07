@@ -638,7 +638,7 @@ class DashboardStats(BaseModel):
     wallet_balance: float
     # Row 7: Coupons
     total_coupons: int
-    active_coupons: int
+    coupons_used: int
     discount_availed: float
     # Legacy fields
     avg_rating: float

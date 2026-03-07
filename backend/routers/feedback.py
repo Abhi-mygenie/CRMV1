@@ -221,23 +221,20 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
             wallet_used += stat["total"]
     wallet_balance = wallet_issued - wallet_used
     
-    # Row 6: Coupons
+    # Row 7: Coupons (from coupon_transactions)
     total_coupons = await db.coupons.count_documents({"user_id": user_id})
-    active_coupons = await db.coupons.count_documents({
-        "user_id": user_id,
-        "is_active": True
-    })
+    coupons_used = await db.coupon_transactions.count_documents({"user_id": user_id})
     
-    # Discount availed from coupons (sum of discount_amount from orders with coupon)
-    discount_pipeline = [
-        {"$match": {"user_id": user_id, "coupon_discount": {"$gt": 0}}},
+    # Discount availed from coupon_transactions
+    coupon_discount_pipeline = [
+        {"$match": {"user_id": user_id}},
         {"$group": {
             "_id": None,
-            "total_discount": {"$sum": "$coupon_discount"}
+            "total_discount": {"$sum": "$discount_amount"}
         }}
     ]
-    discount_result = await db.orders.aggregate(discount_pipeline).to_list(1)
-    discount_availed = discount_result[0].get("total_discount", 0) if discount_result else 0.0
+    coupon_discount_result = await db.coupon_transactions.aggregate(coupon_discount_pipeline).to_list(1)
+    discount_availed = coupon_discount_result[0].get("total_discount", 0) if coupon_discount_result else 0.0
     
     # Rating (legacy)
     rating_pipeline = [
@@ -276,7 +273,7 @@ async def get_dashboard_stats(user: dict = Depends(get_current_user)):
         wallet_used=wallet_used,
         wallet_balance=wallet_balance,
         total_coupons=total_coupons,
-        active_coupons=active_coupons,
+        coupons_used=coupons_used,
         discount_availed=discount_availed,
         avg_rating=avg_rating,
         total_feedback=total_feedback

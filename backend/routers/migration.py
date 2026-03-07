@@ -116,6 +116,8 @@ async def background_order_sync(user_id: str, mygenie_token: str):
                         "cust_email": cust_email,
                         "order_amount": float(mygenie_order.get("order_amount") or 0),
                         "delivery_charge": float(mygenie_order.get("delivery_charge") or 0),
+                        "coupon_code": mygenie_order.get("coupon_code"),
+                        "coupon_discount": float(mygenie_order.get("coupon_discount_amount") or mygenie_order.get("coupon_discount") or 0),
                         "payment_method": mygenie_order.get("payment_method"),
                         "payment_status": mygenie_order.get("payment_status"),
                         "order_status": mygenie_order.get("order_status"),
@@ -206,6 +208,28 @@ async def background_order_sync(user_id: str, mygenie_token: str):
                                     "created_at": order_date or now
                                 }
                                 await db.points_transactions.insert_one(points_tx_doc)
+                            
+                            # Create coupon_transaction if coupon was used
+                            coupon_discount = order_doc.get("coupon_discount", 0)
+                            coupon_code = order_doc.get("coupon_code")
+                            if coupon_discount > 0 or coupon_code:
+                                coupon_tx_doc = {
+                                    "id": str(uuid.uuid4()),
+                                    "user_id": user_id,
+                                    "customer_id": customer["id"],
+                                    "order_id": order_doc["id"],
+                                    "coupon_code": coupon_code,
+                                    "discount_amount": coupon_discount,
+                                    "description": "Coupon used (synced from MyGenie)",
+                                    "created_at": order_date or now
+                                }
+                                await db.coupon_transactions.insert_one(coupon_tx_doc)
+                                
+                                # Update customer total_coupon_used
+                                await db.customers.update_one(
+                                    {"id": customer["id"]},
+                                    {"$inc": {"total_coupon_used": 1}}
+                                )
                             
                             # Update customer stats including points
                             update_fields = {

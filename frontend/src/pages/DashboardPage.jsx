@@ -454,7 +454,7 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Row 6: Total Coupons, Active Coupons, Discount Availed */}
+                {/* Row 6: Total Coupons, Coupons Used, Discount Availed */}
                 <div className="grid grid-cols-3 gap-2 mb-2">
                     <div className="stats-card-compact" data-testid="total-coupons-card">
                         <div className="flex items-center gap-1 text-[#8B5CF6] mb-1">
@@ -465,13 +465,13 @@ export default function DashboardPage() {
                             {stats?.total_coupons || 0}
                         </p>
                     </div>
-                    <div className="stats-card-compact" data-testid="active-coupons-card">
-                        <div className="flex items-center gap-1 text-[#329937] mb-1">
+                    <div className="stats-card-compact" data-testid="coupons-used-card">
+                        <div className="flex items-center gap-1 text-[#F26B33] mb-1">
                             <Ticket className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Active</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wider font-body">Used</span>
                         </div>
                         <p className="text-xl font-bold text-[#2B2B2B] font-heading">
-                            {stats?.active_coupons || 0}
+                            {stats?.coupons_used || 0}
                         </p>
                     </div>
                     <div className="stats-card-compact" data-testid="discount-availed-card">
