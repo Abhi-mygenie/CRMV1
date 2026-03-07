@@ -120,6 +120,7 @@ async def background_customer_sync(user_id: str, mygenie_token: str):
                         {"$set": customer_data}
                     )
                     updated_count += 1
+                    customer_id = existing["id"]
                 else:
                     customer_data["id"] = str(uuid.uuid4())
                     customer_data["created_at"] = mygenie_customer.get("created_time") or now
@@ -140,6 +141,59 @@ async def background_customer_sync(user_id: str, mygenie_token: str):
                     
                     await db.customers.insert_one(customer_data)
                     synced_count += 1
+                    customer_id = customer_data["id"]
+                
+                # Create transaction records from customer totals (only for new customers)
+                if not existing:
+                    customer_created_at = customer_data.get("created_at", now)
+                    
+                    # Points earned transaction
+                    if customer_data.get("total_points_earned", 0) > 0:
+                        await db.points_transactions.insert_one({
+                            "id": str(uuid.uuid4()),
+                            "user_id": user_id,
+                            "customer_id": customer_id,
+                            "transaction_type": "earn",
+                            "points": customer_data["total_points_earned"],
+                            "description": "Historical points (synced from MyGenie)",
+                            "created_at": customer_created_at
+                        })
+                    
+                    # Points redeemed transaction
+                    if customer_data.get("total_points_redeemed", 0) > 0:
+                        await db.points_transactions.insert_one({
+                            "id": str(uuid.uuid4()),
+                            "user_id": user_id,
+                            "customer_id": customer_id,
+                            "transaction_type": "redeem",
+                            "points": customer_data["total_points_redeemed"],
+                            "description": "Historical redemption (synced from MyGenie)",
+                            "created_at": customer_created_at
+                        })
+                    
+                    # Wallet credit transaction
+                    if customer_data.get("total_wallet_received", 0) > 0:
+                        await db.wallet_transactions.insert_one({
+                            "id": str(uuid.uuid4()),
+                            "user_id": user_id,
+                            "customer_id": customer_id,
+                            "transaction_type": "credit",
+                            "amount": customer_data["total_wallet_received"],
+                            "description": "Historical wallet credit (synced from MyGenie)",
+                            "created_at": customer_created_at
+                        })
+                    
+                    # Wallet debit transaction
+                    if customer_data.get("total_wallet_used", 0) > 0:
+                        await db.wallet_transactions.insert_one({
+                            "id": str(uuid.uuid4()),
+                            "user_id": user_id,
+                            "customer_id": customer_id,
+                            "transaction_type": "debit",
+                            "amount": customer_data["total_wallet_used"],
+                            "description": "Historical wallet usage (synced from MyGenie)",
+                            "created_at": customer_created_at
+                        })
                 
                 # Update progress every 10 customers
                 if (i + 1) % 10 == 0:
